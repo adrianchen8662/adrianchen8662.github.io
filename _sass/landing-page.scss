@@ -62,7 +62,7 @@
 }
 
 .typewriter {
-    font-family: Courier, monospace;
+    font-family: inherit, inherit;
 	display: inline-block;
 }
 
@@ -74,7 +74,7 @@
     white-space: nowrap;
     font-size: 30px;
     font-weight: 700;
-    border-right: 4px solid orange;
+    border-right: 4px solid white;
     box-sizing: border-box;
 }
 
@@ -92,6 +92,6 @@
         border-color: transparent 
     }
     50% { 
-        border-color: orange; 
+        border-color: white; 
     }
 }
