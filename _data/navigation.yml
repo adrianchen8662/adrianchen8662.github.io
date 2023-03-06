@@ -1,9 +1,9 @@
-- name: Pricing
-  link: /pricing/
+- name: Resume
+  link: /resume/
   new_window: false
-  highlight: false
-- name: Blog
-  link: /blog/
+  highlight: true
+- name: ECE Final Project
+  link: /final_project/
   new_window: false
   highlight: false
 - name: About
@@ -14,11 +14,3 @@
   link: /contact/
   new_window: false
   highlight: false
-- name: Login
-  link: /
-  new_window: true
-  highlight: false
-- name: Sign Up
-  link: /
-  new_window: true
-  highlight: true

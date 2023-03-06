@@ -2,14 +2,19 @@
   - name: Resume
     link: /resume/
   - name: ECE Final Project
-    link: /ECE  Project/
+    link: /final_project/
   - name: About
     link: /about/
   - name: Contact
     link: /contact/
 - links:
+  - name: Projects
+    link: /projects/
+  - name: Classwork
+    link: /classwork/
+- links:
   - name: Github
-    link: https://github.com/adrianchen8662/argus
+    link: https://github.com/adrianchen8662/
     new_window: true
     social_icon: Github # TODO: check icons
   - name: LinkedIn
