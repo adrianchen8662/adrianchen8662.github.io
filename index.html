@@ -5,12 +5,12 @@ description: Track and optimize your sales team in real time
 <section class="hero">
 	<div class="text-container">
 		<div id="container">
-			<div id="text">Hi, I'm Adrian Chen. I'm a </div>
+			<div id="text"></div>
 		</div>
 		<script type="text/javascript">
 
 			// List of sentences
-			var _CONTENT = [ "Twinkle, twinkle, little star", "How I wonder what you are", "Up above the world so high", "Like a diamond in the sky" ];
+			var _CONTENT = [ "Programmer", "Computer Engineer", "Computer Security and Quality Intern", "Purdue Student" ];
 			
 			// Current sentence being processed
 			var _PART = 0;
@@ -26,7 +26,7 @@ description: Track and optimize your sales team in real time
 			
 			// Implements typing effect
 			function Type() { 
-				var text =  _CONTENT[_PART].substring(0, _PART_INDEX + 1);
+				var text =  "Hi, I'm Adrian Chen. I'm a " + _CONTENT[_PART].substring(0, _PART_INDEX + 1);
 				_ELEMENT.innerHTML = text;
 				_PART_INDEX++;
 			
