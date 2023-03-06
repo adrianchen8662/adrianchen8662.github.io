@@ -1,39 +1,18 @@
 - links:
-  - name: Pricing
-    link: /pricing/
-  - name: Blog
-    link: /blog/
+  - name: Resume
+    link: /resume/
+  - name: ECE Final Project
+    link: /ECE  Project/
   - name: About
     link: /about/
   - name: Contact
     link: /contact/
 - links:
-  - name: Login
-    link: /
+  - name: Github
+    link: https://github.com/adrianchen8662/argus
     new_window: true
-  - name: Sign Up
-    link: /
+    social_icon: Github # TODO: check icons
+  - name: LinkedIn
+    link: https://www.linkedin.com/in/adrian-chen-728513181/
     new_window: true
-  - name: Docs
-    link: /
-    new_window: true
-  - name: Status
-    link: /
-    new_window: true
-- links:
-  - name: Facebook
-    link: https://facebook.com/cloudcannon/
-    new_window: true
-    social_icon: Facebook
-  - name: Twitter
-    link: https://twitter.com/cloudcannon/
-    social_icon: Twitter
-    new_window: true
-  - name: YouTube
-    link: https://youtube.com/cloudcannon/
-    social_icon: YouTube
-    new_window: true
-  - name: RSS
-    link: /feed.xml
-    social_icon: RSS
-    new_window: false
+    social_icon: LinkedIn # TODO: check icons
