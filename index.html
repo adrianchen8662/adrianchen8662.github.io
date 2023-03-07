@@ -26,12 +26,12 @@ description: Track and optimize your sales team in real time
 			
 			// Implements typing effect
 			function Type() { 
-				var text =  "Hi, I'm Adrian Chen. I'm a \n" + _CONTENT[_PART].substring(0, _PART_INDEX + 1);
+				var text =  "Hi, I'm Adrian Chen. I'm a \r\n" + _CONTENT[_PART].substring(0, _PART_INDEX + 1);
 				_ELEMENT.innerHTML = text.fontsize(24);
 				_PART_INDEX++;
 			
 				// If full sentence has been displayed then start to delete the sentence after some time
-				if(text === "Hi, I'm Adrian Chen. I'm a \n" + _CONTENT[_PART]) {
+				if(text === "Hi, I'm Adrian Chen. I'm a \r\n" + _CONTENT[_PART]) {
 					clearInterval(_INTERVAL_VAL);
 					setTimeout(function() {
 						_INTERVAL_VAL = setInterval(Delete, 50);
@@ -41,12 +41,12 @@ description: Track and optimize your sales team in real time
 			
 			// Implements deleting effect
 			function Delete() {
-				var text =  "Hi, I'm Adrian Chen. I'm a \n" + _CONTENT[_PART].substring(0, _PART_INDEX - 1);
+				var text =  "Hi, I'm Adrian Chen. I'm a \r\n" + _CONTENT[_PART].substring(0, _PART_INDEX - 1);
 				_ELEMENT.innerHTML = text.fontsize(24);
 				_PART_INDEX--;
 			
 				// If sentence has been deleted then start to display the next sentence
-				if(text === "Hi, I'm Adrian Chen. I'm a \n") {
+				if(text === "Hi, I'm Adrian Chen. I'm a \r\n") {
 					clearInterval(_INTERVAL_VAL);
 			
 					// If last sentence then display the first one, else move to the next
