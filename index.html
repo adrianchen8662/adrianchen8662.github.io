@@ -27,7 +27,7 @@ description: Track and optimize your sales team in real time
 			// Implements typing effect
 			function Type() { 
 				var text =  "Hi, I'm Adrian Chen. I'm a " + _CONTENT[_PART].substring(0, _PART_INDEX + 1);
-				_ELEMENT.innerHTML = text.fontsize(48);
+				_ELEMENT.innerHTML = text.fontsize(24);
 				_PART_INDEX++;
 			
 				// If full sentence has been displayed then start to delete the sentence after some time
@@ -42,7 +42,7 @@ description: Track and optimize your sales team in real time
 			// Implements deleting effect
 			function Delete() {
 				var text =  "Hi, I'm Adrian Chen. I'm a " + _CONTENT[_PART].substring(0, _PART_INDEX - 1);
-				_ELEMENT.innerHTML = text.fontsize(48);
+				_ELEMENT.innerHTML = text.fontsize(24);
 				_PART_INDEX--;
 			
 				// If sentence has been deleted then start to display the next sentence
