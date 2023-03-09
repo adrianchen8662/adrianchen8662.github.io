@@ -39,6 +39,13 @@
 
 
 button {
+	font-family: system-ui, sans-serif;
+	font-size: 10rem;
+	cursor: pointer;
+	padding: .1em .6em;
+	font-weight: bold;  
+	border: none;
+
 	--c:  #229091; /* the color*/
 	
 	box-shadow: 0 0 0 .1em inset var(--c); 
@@ -61,11 +68,3 @@ button {
 	background-color: var(--c);
 	color: #fff;
   }
-button {
-	font-family: system-ui, sans-serif;
-	font-size: 10rem;
-	cursor: pointer;
-	padding: .1em .6em;
-	font-weight: bold;  
-	border: none;
-}
