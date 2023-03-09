@@ -61,3 +61,12 @@ button {
 	background-color: var(--c);
 	color: #fff;
   }
+
+  button {
+	font-family: system-ui, sans-serif;
+	font-size: 3.5rem;
+	cursor: pointer;
+	padding: .1em .6em;
+	font-weight: bold;  
+	border: none;
+  }
