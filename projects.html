@@ -1,80 +1,78 @@
 ---
-title: Our team
+title: Projects
 description: >-
-  We've built an amazing, fantastic team of developers, marketers, designers and
-  sales people.
+  Description of projects done either for class at Purdue University or for personal use. 
 ---
 
-ECE 36200 &ndash; Microprocessor
-Piano and Synthesizer Project
-Overview:
-I worked as project lead to use an ARM-based STM32 microcontroller to create an electric piano and synthesizer that could play notes and record/playback music.
-Keywords:
-RISC, ARM, C, microcontroller, leadership, GPIO, DAC, Timers, PWM
-What I Did:
-I served as project lead and built the circuitry for connecting the microcontroller to the 24 buttons that made the electric piano, the TRRS audio jack, the 12-key multiplexed keypad, and the OLED display panel. I created the software specs for each component of the project and coded the user-interface for the OLED display and the keypad.
-Challenges:
-The project was composed of students, so there was no set leader. I created the project idea and the general outline of how each component should work and talk to one another, then assigned them among the team members.
-There were also hardware limitations to what we wanted to do. The microcontroller only had 32 kilobytes of RAM and ran at 48 MHz (regular CPU runs around 3GHz), so any data structure we used had to be compact, and the code had to be efficient. We ran out of space for storing information on music tracks, so we cut down on space using uint_8 or uint_16 to save bits. The code started to get slower, so while loops were replaced with interrupts and code was optimized using C techniques. We also pre-generated information such as amplitude/volume curves and fit the outputted waveform to that, saving CPU time by only doing the complex calculation once.
-Coursework
-I2C
-SPI
-PWM
-GPIO
-DAC
-ADC
-Timers
-Flash Memory
-SRAM
-ARM
-ECE 39595 &ndash; C++ Object/Oriented
-Zork Project
-Overview:
-Recreated Zork using C++ and utilized its objects to read from an XML file to create a virtual environment, where a player could interact, move, and generally play a fully functional text-based video game. The code was collaborated on with 1 other person through GitHub, which allowed for easier version control and merging of code.
-Keywords:
-C++, Object-Oriented, Parsing, Collaboration, GitHub
-What I Did:
-I wrote the XML parser to read dungeon information from an XML file and create C++ objects that stored the information. I also wrote the logic for player movement, inventory, and triggers that occur if an action would do something other than what it&rsquo;s supposed to do, i.e., moving forward triggering a booby trap or attacking a goblin with a fist does nothing while the sword works.
-Challenges:
-It was difficult to keep the code running efficiently with so many things to check for a command. Often, one command could cause a chain of events, and making it faster was very hard. Using multithreading, the code was able to run faster. The code was also very easy to leak memory, since all the objects had to have pointers maintained, and many objects were referenced by other objects in a big object reference onion. Smart pointers fixed the leaks easier than having to free each layer of objects.
-EPICS &ndash; EVEI
-Physics box
-Overview:
-Worked as a team member on the EVEI (Electric Vehicle Event Infrastructure) team that created the go-karts for the Purdue Go-Kart club. The team presented twice to industry professionals from companies such as Caterpillar and General Motors on project ideas and progress.
-Keywords:
-Python, Arduino, Team Collaboration, Linux, Professional Environment
-What I Did:
-I worked on the physics box, a bit of hardware that contained an Arduino and ports for reading values from potentiometers and accelerometers. The physics box served as a container for the sensors and sends the data to a computer connected via USB. The computer then stores the information into a CSV file. The original code only worked with Linux because of USB limitations, so I ported the code to Windows and MacOS. I also used Matplotlib to read the CSV file to generate graphs in real time, allowing for easier visualization of the data.
-MySQL and Yahoo Finance API Stock Tracker
-Overview:
-Stored stock ticker and date bought in a MySQL database and utilized the Yahoo Finance API to gain information of stock prices. The Yahoo Finance API doesn&rsquo;t provide historical data, so the MySQL database stores the information at the time of purchase. A python program accesses the MySQL database and performs calculations on the information such as gain/loss over time and its performance compared to S&amp;P 500 and Nasdaq.
-This project was created to practice accessing and writing information to a MySQL database and pulling information from an API.
-Keywords:
-MySQL, API, Python
-ECE 20875 &ndash; Data Science
-Bicycle Project:
-Overview:
-Python project that used the information on number of bicyclists across 4 New York City bridges and number of inches of rain to create confidence values of how well these were related using Gaussian mixture models.
-Scikit-learn: Library for Gaussian mixture model
-Numpy: Library for multidimensional arrays
-Matplotlib: Data visualizer to create graphs and lines of best fit
-Keywords:
-Gaussian Mixture Models, Machine Learning, Clustering, Numpy, Sklearn, Matplotlib, Python
-Challenges:
-The data was tens of thousands of entries, so anything other than using machine learning and automating the process of digging through this data was impossible. By using Gaussian mixture models, the data could be modeled and predictions could be made on whether or not precipitation had an appreciable effect on rain, and vice versa.
-The result of the modelling gave us too low of a confidence value for precipitation and number of bikers to be correlated. However, with more testing, we found that the seasons was the best predicter for how many bikers will be present on the bridges.
-ECE 40400
-Self-made versions of cryptographic algorithms such as AES, DES, SHA and RSA
-Created firewall rules using iptables and shell scripts
-Experimented and prevented attacks through buffer overflow, TCP DOS, and junk mail.
-
-ECE 46300
-an understanding of the fundamental principles underlying packet switching networks, and different Local Area Network technologies. [1,6]
-an ability to implement network protocols using network socket programming. [1,2]
-an understanding of the key principles behind retransmission protocols, congestion control algorithms, and TCP. [1]
-an understanding of the basic concepts of routing. [1,6]
-Created programs in Python and C:
-DV and Link state IP layer &ndash; python
-MAC learning and Spanning tree protocol &ndash; python
-TCP file transfer with reliability &ndash; C
-Webserver and client - C
+<h1>ECE 36200 &ndash; Microprocessor</h1><br>
+<h2>Piano and Synthesizer Project</h2><br>
+<h3>Overview:</h3><br>
+I worked as project lead to use an ARM-based STM32 microcontroller to create an electric piano and synthesizer that could play notes and record/playback music.<br>
+<h3>What I Did:</h3><br>
+I served as project lead and built the circuitry for connecting the microcontroller to the 24 buttons that made the electric piano, the TRRS audio jack, the 12-key multiplexed keypad, and the OLED display panel. I created the software specs for each component of the project and coded the user-interface for the OLED display and the keypad.<br>
+<h3>Challenges:</h3><br>
+The project was composed of students, so there was no set leader. I created the project idea and the general outline of how each component should work and talk to one another, then assigned them among the team members.<br>
+There were also hardware limitations to what we wanted to do. The microcontroller only had 32 kilobytes of RAM and ran at 48 MHz (regular CPU runs around 3GHz), so any data structure we used had to be compact, and the code had to be efficient. We ran out of space for storing information on music tracks, so we cut down on space using uint_8 or uint_16 to save bits. The code started to get slower, so while loops were replaced with interrupts and code was optimized using C techniques. We also pre-generated information such as amplitude/volume curves and fit the outputted waveform to that, saving CPU time by only doing the complex calculation once.<br>
+Coursework<br>
+I2C<br>
+SPI<br>
+PWM<br>
+GPIO<br>
+DAC<br>
+ADC<br>
+Timers<br>
+Flash Memory<br>
+SRAM<br>
+ARM<br>
+<br>
+<h1>ECE 39595 &ndash; C++ Object/Oriented</h1><br>
+<h2>Zork Project</h2><br>
+<h3>Overview:</h3><br>
+Recreated Zork using C++ and utilized its objects to read from an XML file to create a virtual environment, where a player could interact, move, and generally play a fully functional text-based video game. The code was collaborated on with 1 other person through GitHub, which allowed for easier version control and merging of code.<br>
+<h3>What I Did:</h3><br>
+I wrote the XML parser to read dungeon information from an XML file and create C++ objects that stored the information. I also wrote the logic for player movement, inventory, and triggers that occur if an action would do something other than what it&rsquo;s supposed to do, i.e., moving forward triggering a booby trap or attacking a goblin with a fist does nothing while the sword works.<br>
+<h3>Challenges:</h3><br>
+It was difficult to keep the code running efficiently with so many things to check for a command. Often, one command could cause a chain of events, and making it faster was very hard. Using multithreading, the code was able to run faster. The code was also very easy to leak memory, since all the objects had to have pointers maintained, and many objects were referenced by other objects in a big object reference onion. Smart pointers fixed the leaks easier than having to free each layer of objects.<br>
+<br>
+<h1>EPICS &ndash; EVEI</h1><br>
+<h2>Physics box</h2><br>
+<h3>Overview:</h3><br>
+Worked as a team member on the EVEI (Electric Vehicle Event Infrastructure) team that created the go-karts for the Purdue Go-Kart club. The team presented twice to industry professionals from companies such as Caterpillar and General Motors on project ideas and progress.<br>
+Keywords:<br>
+Python, Arduino, Team Collaboration, Linux, Professional Environment<br>
+What I Did:<br>
+I worked on the physics box, a bit of hardware that contained an Arduino and ports for reading values from potentiometers and accelerometers. The physics box served as a container for the sensors and sends the data to a computer connected via USB. The computer then stores the information into a CSV file. The original code only worked with Linux because of USB limitations, so I ported the code to Windows and MacOS. I also used Matplotlib to read the CSV file to generate graphs in real time, allowing for easier visualization of the data.<br>
+<br>
+<h1>MySQL and Yahoo Finance API Stock Tracker</h1><br>
+<h2>Overview:</h2><br>
+Stored stock ticker and date bought in a MySQL database and utilized the Yahoo Finance API to gain information of stock prices. The Yahoo Finance API doesn&rsquo;t provide historical data, so the MySQL database stores the information at the time of purchase. A python program accesses the MySQL database and performs calculations on the information such as gain/loss over time and its performance compared to S&amp;P 500 and Nasdaq.<br>
+This project was created to practice accessing and writing information to a MySQL database and pulling information from an API.<br>
+Keywords:<br>
+MySQL, API, Python<br>
+<br>
+<h1>ECE 20875 &ndash; Data Science</h1><br>
+<h2>Bicycle Project:</h2><br>
+<h3>Overview:</h3><br>
+Python project that used the information on number of bicyclists across 4 New York City bridges and number of inches of rain to create confidence values of how well these were related using Gaussian mixture models.<br>
+Scikit-learn: Library for Gaussian mixture model<br>
+Numpy: Library for multidimensional arrays<br>
+Matplotlib: Data visualizer to create graphs and lines of best fit<br>
+<h3>Challenges:</h3><br>
+The data was tens of thousands of entries, so anything other than using machine learning and automating the process of digging through this data was impossible. By using Gaussian mixture models, the data could be modeled and predictions could be made on whether or not precipitation had an appreciable effect on rain, and vice versa.<br>
+The result of the modelling gave us too low of a confidence value for precipitation and number of bikers to be correlated. However, with more testing, we found that the seasons was the best predicter for how many bikers will be present on the bridges.<br>
+<br>
+<h1>ECE 40400</h1><br>
+Self-made versions of cryptographic algorithms such as AES, DES, SHA and RSA<br>
+Created firewall rules using iptables and shell scripts<br>
+Experimented and prevented attacks through buffer overflow, TCP DOS, and junk mail.<br>
+<br>
+<h1>ECE 46300</h1><br>
+Gained an understanding of the fundamental principles underlying packet switching networks, and different Local Area Network technologies. <br>
+Gained an ability to implement network protocols using network socket programming. <br>
+Gained an understanding of the key principles behind retransmission protocols, congestion control algorithms, and TCP. <br>
+Gained an understanding of the basic concepts of routing. <br>
+Created programs in Python and C: <br>
+DV and Link state IP layer &ndash; python<br>
+MAC learning and Spanning tree protocol &ndash; python<br>
+TCP file transfer with reliability &ndash; C<br>
+Webserver and client - C<br>
