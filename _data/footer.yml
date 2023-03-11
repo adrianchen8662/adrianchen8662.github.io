@@ -10,16 +10,14 @@
 - links:
   - name: Projects
     link: /projects/
-  - name: Classwork
-    link: /classwork/
   - name: Personal Links
     link: /personal/
 - links:
   - name: Github
     link: https://github.com/adrianchen8662/
     new_window: true
-    social_icon: Github # TODO: check icons
+    social_icon: Github
   - name: LinkedIn
     link: https://www.linkedin.com/in/adrian-chen-728513181/
     new_window: true
-    social_icon: LinkedIn # TODO: check icons
+    social_icon: LinkedIn
