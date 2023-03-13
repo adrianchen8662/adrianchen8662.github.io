@@ -4,7 +4,7 @@
 title: 
 url: "https://proud-alligator.cloudvent.net"
 baseurl:
-google_analytics_key:
+google_analytics_key: G-93RXGJMV4K
 google_maps_javascript_api_key:
 disqus_shortname:
 
@@ -94,6 +94,7 @@ _select_data:
     - Twitter
     - YouTube
     - RSS
+    - Github
 
 _comments:
   map: Update the map location and display settings.
