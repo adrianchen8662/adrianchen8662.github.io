@@ -10,13 +10,13 @@ Argus is the capstone project for the Open-Source Senior Design course at Purdue
 
 ## How Argus Works
 
-Filler text.
+[filler text]
 
-## What's the Point of Argus? 
+## What's The Point of Argus? 
 
 Current providers are able to detect movement, but cannot tell what caused that movement. Argus seeks to be able to leverage computer vision to recognise what is being seen, and notifies the user accordingly. Current providers of home security also use centralized servers, creating questions about what the data is being used, as the cameras on a security system must naturally be on at all times. Argus provides a self-hosted alternative in a lightweight package that can run on basic hardware. See the recommended specs here[insert hyperlink here to the github readme, specifially the spec subsection]. 
 
-## Building and installing Argus
+## Building And Installing Argus
 [To be determined. The packaging solution has not been decided yet, as there are multiple languages being used.]
 
 ## Using Argus
@@ -45,7 +45,7 @@ Current Raspberry Pi's have multiple cores and threads, while the current code o
 Justin Chan  
 
 ### Professor for ECE 49595
-Santiago Torres-Arias
+[Santiago Torres-Arias](https://badhomb.re/)
 
 ### Software Used
 [Compreface](https://github.com/exadel-inc/CompreFace) - Used in the server for facial recognition and storage  
