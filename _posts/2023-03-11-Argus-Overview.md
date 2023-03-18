@@ -1,5 +1,5 @@
 ---
-date: 3/11/2023
+date: 2023-03-11
 title: Argus Overview 
 categories:
   - Overview

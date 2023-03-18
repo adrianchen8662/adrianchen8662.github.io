@@ -1,5 +1,5 @@
 ---
-date: 3/18/2023
+date: 2023-03-18
 title: Doorbell Design Choices 
 categories:
   - Doorbell
