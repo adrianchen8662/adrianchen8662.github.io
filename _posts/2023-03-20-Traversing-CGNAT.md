@@ -76,4 +76,4 @@ For people running Docker, there is a docker image available on [Docker Hub](htt
 After installing, running Tailscale will lead you to a login link, where you connect that computer to your account. You will then be able to access a Tailscale network with IP addresses that look like 100:xxx:xxx:xxx. These are IP addresses that are only accessible for the devices in your network, and nowhere else. Connect other devices on here, and use those IP addresses to access your server through a CGNAT.  
 
 ### Zerotier
-I haven't personally used Zerotier, since Tailscale provies Funnels. To setup your own network on Zerotier, they have excellent documentation on installing [here](https://www.zerotier.com/download/) and using[here](https://docs.zerotier.com/getting-started/getting-started). 
+I haven't personally used Zerotier, since Tailscale provies Funnels. To setup your own network on Zerotier, they have excellent documentation on installing [here](https://www.zerotier.com/download/) and setup [here](https://docs.zerotier.com/getting-started/getting-started). 
