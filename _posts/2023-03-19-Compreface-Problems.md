@@ -10,7 +10,7 @@ The original Compreface had many issues. This blog documents those issues and ho
 
 ## Performance Issues
 
-In Compreface, there are different custom builds that the user can install(more information [here](https://github.com/exadel-inc/CompreFace/blob/master/docs/Custom-builds.md) on custom builds and a list of custom builds [here](https://github.com/exadel-inc/CompreFace/blob/master/custom-builds/README.md)). The original version, FaceNet, was extremely memory and CPU intensive, with one instance crashing my computer. 
+In Compreface, there are different custom builds that the user can install (more information [here](https://github.com/exadel-inc/CompreFace/blob/master/docs/Custom-builds.md) on custom builds and a list of custom builds [here](https://github.com/exadel-inc/CompreFace/blob/master/custom-builds/README.md)). The original version, FaceNet, was extremely memory and CPU intensive, with one instance crashing my computer. 
 
 Here's the performance of compreface-core, the main container running image processing. A REST API call was made to push an image to Compreface, and for it to store that image. The memory usage jumps to 900 MB, and CPU usage was pegged at 100% for 5 seconds as it processed the image. 
 
