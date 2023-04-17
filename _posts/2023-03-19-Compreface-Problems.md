@@ -39,3 +39,6 @@ Because of the evidence that proves that MobileNet uses a lot less resources for
 ## Packaging Something that Needs Docker
 
 Currently, the doorbell and server use Python as the backend and ReactJS as the frontend. Packaging and deploying the doorbell code should not be hard, but Compreface requires multiple Docker instances to work. The possible server computer might not have a Docker environment or have docker-compose, so even though a docker-compose file would work, packaging it with these limitations would be difficult. More research is needed on how to package this, with or without Docker. 
+
+Update (4/17/2023):
+docker-compose files work if you combine the compreface docker-compose with the information you want. Currently, we have separate builds being maintained for the doorbell and server. 
