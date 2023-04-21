@@ -3,6 +3,7 @@ date: 2023-04-01
 title: Doorbell Design Choices 
 categories:
   - Doorbell
+  - Blog
 author_staff_member: Adrian Chen
 ---
 
@@ -28,3 +29,5 @@ Later, if live video and audio is implemented, then there would have to be chang
 
 ## Why Are We Using Only OpenCV On The Doorbell?
 The reason why we are only using OpenCV on the doorbell and not doing family recognition or logo detection is because we wanted to keep the doorbell as computationally efficient as possible to both lower powerdraw and to allow the doorbell to be run on as low of a spec hardware as possible. Currently, it looks to be possible to run on a Raspberry Pi Model B or a Raspberry Pi Zero, allowing for a tiny DIY doorbell around the cost of $20. Moving the computationally heavy components off of the doorbell and onto a home server that can run things much more efficiently and allow for greater storage options makes much more sense than having a bulky, hard to manage doorbell all on its own. 
+
+Update (4/21/2023):

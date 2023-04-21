@@ -3,6 +3,7 @@ date: 2023-03-19
 title: Compreface Problems
 categories:
   - Server
+  - Blog
 author_staff_member: Adrian Chen
 ---
 

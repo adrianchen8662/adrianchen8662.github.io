@@ -3,6 +3,7 @@ date: 2023-03-20
 title: Traversing CGNAT 
 categories:
   - Server
+  - Blog
 author_staff_member: Adrian Chen
 ---
 
