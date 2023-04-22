@@ -9,7 +9,7 @@ author_staff_member: Adrian Chen
 
 The server API serves as the endpoint for the doorbell and to serve information to the frontend. 
 
-![API Schematic](https://i.imgur.com/mbPkn5j.png)
+![API Schematic](https://i.imgur.com/xkwODzj.png)
 
 ## GetLogs
 ### /getlogs  
