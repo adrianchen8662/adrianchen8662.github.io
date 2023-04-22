@@ -20,9 +20,13 @@ Current providers are able to detect movement, but cannot tell what caused that 
 
 ## Building And Installing Argus
 [To be determined. The packaging solution has not been decided yet, as there are multiple languages being used.]
+![Setup for Doorbell](../images/setup.png)
 
 ## Using Argus
 [To be determined. The frontend of both the server and doorbell are currently in development.]
+![Unknown](../images/unknown.png)
+![Delivery](../images/delivery.png)
+![Family](../images/family.png)
 
 ## What's Next? 
 
