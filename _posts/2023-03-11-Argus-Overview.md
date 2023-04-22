@@ -12,7 +12,7 @@ Argus is the capstone project for the Open-Source Senior Design course at Purdue
 ## How Argus Works
 
 [Currently being updated. ]
-![How it works](https://i.imgur.com/H9JKQKq.png)
+![How it works](https://i.imgur.com/gMTQ2v3.png)
 
 ## What's The Point of Argus? 
 
