@@ -1,5 +1,5 @@
 ---
-import { BLOGS } from '../blogs';
+import { BLOGS, blogUrl } from '../blogs';
 import { PROFILES } from '../site';
 
 const pages = [
@@ -7,7 +7,7 @@ const pages = [
   { name: 'About', href: '/about/' },
   { name: 'Contact', href: '/contact/' },
 ];
-const blogs = BLOGS.map((blog) => ({ name: blog.name, href: `/${blog.id}/` }));
+const blogs = BLOGS.map((blog) => ({ name: blog.name, href: blogUrl(blog) }));
 const profiles = PROFILES.filter((profile) => profile.icon);
 
 const icons = {

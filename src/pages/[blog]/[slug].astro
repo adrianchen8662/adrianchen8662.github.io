@@ -7,7 +7,7 @@ import { blogOf, excerpt, getPosts, postSlug, postUrl, type Post } from '../../l
 export async function getStaticPaths() {
   const posts = await getPosts();
   return posts.map((post) => ({
-    params: { blog: blogOf(post).id, slug: postSlug(post) },
+    params: { blog: blogOf(post).slug, slug: postSlug(post) },
     props: { post },
   }));
 }

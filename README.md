@@ -41,12 +41,14 @@ categories:
 The first paragraph is the excerpt in the blog's post list.
 ```
 
-It's published at `/<blog>/title-of-post/`.
+It's published at `/<blog address>/title-of-post/`, where the blog's address is its `slug` in `src/blogs.ts`.
 
 ## Adding a blog
 
 1. Create `_posts/<id>/` for its posts. Until it has one, keep an empty `.gitkeep` file in it, since git doesn't store empty folders.
-2. Add the blog to `src/blogs.ts`. It shows up in the Blogs menu and the footer, at `/<id>/`.
+2. Add the blog to `src/blogs.ts`: its folder (`id`), its address (`slug`, the blog's full name, like `njit-cs-632-advanced-database-system-design`), its menu `name`, page `title` and `description`. It shows up in the Blogs menu and the footer.
+
+If a blog's address changes, move the old one into `formerSlugs`; the old address and its posts' old addresses then forward to the new ones.
 
 ## Updating the timeline
 

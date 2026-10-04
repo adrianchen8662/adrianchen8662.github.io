@@ -2,6 +2,12 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import { BLOGS } from './src/blogs.ts';
+
+// Old addresses only forward to new ones (see src/pages/[...moved].astro), so keep them out of the sitemap
+const formerBlogPaths = BLOGS.flatMap((blog) => (blog.formerSlugs ?? []).map((slug) => `/${slug}/`));
+/** @param {string} path */
+const isMoved = (path) => /\/\d{4}\/\d{2}\/\d{2}\//.test(path) || formerBlogPaths.some((prefix) => path.startsWith(prefix));
 
 export default defineConfig({
   site: 'https://adrianchen8662.github.io',
@@ -9,7 +15,6 @@ export default defineConfig({
   markdown: { shikiConfig: { theme: 'github-dark-default' } },
   integrations: [
     react(),
-    // Old Jekyll post URLs only redirect to the new ones, so keep them out of the sitemap
-    sitemap({ filter: (page) => !/\/\d{4}\/\d{2}\/\d{2}\//.test(page) }),
+    sitemap({ filter: (page) => !isMoved(new URL(page).pathname) }),
   ],
 });

@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { BLOGS, type Blog } from '../blogs';
+import { BLOGS, blogUrl, type Blog } from '../blogs';
 
 export type Post = CollectionEntry<'posts'>;
 
@@ -26,7 +26,7 @@ export function postSlug(post: Post) {
 }
 
 export function postUrl(post: Post) {
-  return `/${blogOf(post).id}/${postSlug(post)}/`;
+  return `${blogUrl(blogOf(post))}${postSlug(post)}/`;
 }
 
 /** Where the Jekyll site published a post: /<categories>/<yyyy>/<mm>/<dd>/<Name>/ */

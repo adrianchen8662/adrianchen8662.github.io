@@ -1,0 +1,45 @@
+---
+// Pages that moved: each old address forwards to the new one, so existing links keep working
+import { BLOGS, blogUrl } from '../blogs';
+import { blogOf, getPosts, jekyllUrl, postSlug, postUrl } from '../lib/posts';
+
+export async function getStaticPaths() {
+  const moves: { from: string; to: string; title: string }[] = [];
+  const posts = await getPosts();
+
+  // Blogs and their posts at the blog's former addresses
+  for (const blog of BLOGS) {
+    for (const former of blog.formerSlugs ?? []) {
+      moves.push({ from: `/${former}/`, to: blogUrl(blog), title: blog.title });
+    }
+  }
+  for (const post of posts) {
+    for (const former of blogOf(post).formerSlugs ?? []) {
+      moves.push({ from: `/${former}/${postSlug(post)}/`, to: postUrl(post), title: post.data.title });
+    }
+  }
+
+  // Posts from the Jekyll site, at the addresses Jekyll gave them; they were all in this blog
+  for (const post of await getPosts('ece49595')) {
+    moves.push({ from: jekyllUrl(post), to: postUrl(post), title: post.data.title });
+  }
+
+  return moves.map(({ from, to, title }) => ({ params: { moved: from.slice(1, -1) }, props: { to, title } }));
+}
+
+const { to, title } = Astro.props;
+const absolute = new URL(to, Astro.site).href;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title}</title>
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={absolute} />
+  </head>
+  <body>
+    <p>This page has moved to <a href={to}>{absolute}</a>.</p>
+  </body>
+</html>
