@@ -30,7 +30,10 @@ function byRecency(a: { start: string; end?: string }, b: { start: string; end?:
 }
 
 export async function getTimeline(): Promise<TimelineYear[]> {
-  const entries = (await getCollection('timeline')).map((entry) => entry.data);
+  // A certification is a moment, not a span: it starts and ends when it's issued
+  const entries = (await getCollection('timeline')).map(({ data }) =>
+    data.kind === 'certification' ? { ...data, end: data.start } : data,
+  );
 
   // Jobs at the same organization share a card, like LinkedIn's experience section
   const items: TimelineItem[] = [];

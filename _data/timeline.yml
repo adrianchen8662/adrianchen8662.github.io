@@ -3,12 +3,14 @@
 # Add an entry anywhere in this list; the page sorts everything from the present
 # back into the past, and groups jobs at the same organization the way LinkedIn does.
 #
-#   kind:          work, education or project
-#   title:         job title, degree or project name
-#   organization:  employer or school
+#   kind:          work, education, project or certification
+#   title:         job title, degree, project or certification name
+#   organization:  employer, school or issuer
 #   start, end:    YYYY-MM, or just YYYY. Leave out end while it's still going on, or give
 #                  the expected finish; it shows as "(expected)" until that month has passed.
-#   type, location, workplace, description, skills, link: optional
+#                  For a certification, start is when it was issued; use expires instead of end.
+#   type, location, workplace, description, skills, link, image: optional
+#                  (image: src is a path relative to this file, plus alt text describing it)
 
 - kind: work
   title: Software Engineer
@@ -49,6 +51,9 @@
   link:
     label: Read the project blog
     href: /purdue-ece-49595-open-source-software-senior-design-projects/
+  image:
+    src: ./images/argus-timeline.png
+    alt: Argus's timeline screen, a grid of doorbell captures labeled Delivery, Family or Unknown
 
 - kind: education
   title: Bachelor of Science - BS, Computer Engineering
@@ -95,3 +100,27 @@
   organization: West Windsor-Plainsboro High School South
   start: 2015
   end: 2019
+
+- kind: certification
+  title: AWS Certified Developer - Associate
+  organization: Amazon Web Services (AWS)
+  start: 2023-08
+  expires: 2026-08
+  link:
+    label: Show credential
+    href: https://www.credly.com/badges/25fda49b-458d-432e-8178-46398f8c0450/public_url
+
+- kind: certification
+  title: Project Management Foundations by Linkedin Learning
+  organization: National Association of State Boards of Accountancy (NASBA)
+  start: 2023-06
+
+- kind: certification
+  title: Linux for Developers by Coursera
+  organization: The Linux Foundation
+  start: 2019-07
+
+- kind: certification
+  title: Open Source Software Development Methods by Coursera
+  organization: The Linux Foundation
+  start: 2019-07

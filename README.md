@@ -70,7 +70,7 @@ Add an entry to `_data/timeline.yml`; order doesn't matter. The home page sorts 
     - C++
 ```
 
-`type`, `location`, `workplace`, `end` and `link` (`label` and `href`) are optional; the comments at the top of the file list them.
+`type`, `location`, `workplace`, `end`, `link` (`label` and `href`) and `image` (`src` and `alt`) are optional; the comments at the top of the file list them. For a certification, use `kind: certification`, `start` for when it was issued and `expires` for when it runs out.
 
 ## Deploying
 

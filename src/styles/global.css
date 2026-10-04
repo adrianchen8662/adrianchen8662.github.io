@@ -27,6 +27,8 @@
   --education-text: var(--golden-olive);
   --project-color: var(--moss-green);
   --project-text: var(--green-gray);
+  --certification-color: var(--green-gray);
+  --certification-text: var(--green-gray);
 
   --font: "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color-scheme: light;
@@ -52,6 +54,8 @@
     --education-text: #d3bb7c;
     --project-color: var(--moss-green);
     --project-text: #c9be56;
+    --certification-color: #bfb894;
+    --certification-text: #cfc8a6;
     color-scheme: dark;
   }
 }
@@ -74,6 +78,8 @@
   --education-text: #d3bb7c;
   --project-color: var(--moss-green);
   --project-text: #c9be56;
+  --certification-color: #bfb894;
+  --certification-text: #cfc8a6;
   color-scheme: dark;
 }
 
@@ -583,6 +589,11 @@ h2 strong {
   --kind-text: var(--project-text);
 }
 
+.kind-certification {
+  --kind-color: var(--certification-color);
+  --kind-text: var(--certification-text);
+}
+
 .timeline-card {
   padding: 20px 24px;
   background: var(--surface);
@@ -635,6 +646,15 @@ h2 strong {
 .timeline-link {
   margin: 12px 0 0;
   font-weight: 600;
+}
+
+.timeline-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 14px 0 0;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
 }
 
 /* several jobs at one organization */

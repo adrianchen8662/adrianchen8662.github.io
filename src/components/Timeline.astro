@@ -1,11 +1,11 @@
 ---
 import TimelineDetails from './TimelineDetails.astro';
-import { currentMonth, formatDuration, formatRange, inProgress } from '../lib/dates';
+import { currentMonth, formatDuration, formatRange, formatYearMonth, inProgress } from '../lib/dates';
 import { getTimeline, type TimelineEntry, type TimelineItem } from '../lib/timeline';
 
 const years = await getTimeline();
 const now = currentMonth();
-const kindLabel = { work: 'Work', education: 'Education', project: 'Project' };
+const kindLabel = { work: 'Work', education: 'Education', project: 'Project', certification: 'Certification' };
 
 const joined = (...parts: (string | undefined)[]) => parts.filter(Boolean).join(' · ');
 
@@ -13,6 +13,12 @@ const joined = (...parts: (string | undefined)[]) => parts.filter(Boolean).join(
 function length(start: string, end?: string) {
   const ongoing = inProgress(end, now);
   return { text: formatDuration(start, ongoing ? now : end!), since: ongoing ? start : undefined };
+}
+
+/** "Issued Aug 2023 · Expires Aug 2026", or "Expired" once that month has passed */
+function issued(entry: TimelineEntry) {
+  const expiry = entry.expires && `${inProgress(entry.expires, now) ? 'Expires' : 'Expired'} ${formatYearMonth(entry.expires)}`;
+  return joined(`Issued ${formatYearMonth(entry.start)}`, expiry);
 }
 
 /** The lines at the top of a card. LinkedIn leads with the school for degrees and the title otherwise. */
@@ -24,7 +30,7 @@ function header(item: TimelineItem) {
   return {
     title: entry.kind === 'education' ? entry.organization : entry.title,
     subtitle: entry.kind === 'education' ? entry.title : joined(entry.organization, entry.type),
-    range: formatRange(entry.start, entry.end),
+    range: entry.kind === 'certification' ? issued(entry) : formatRange(entry.start, entry.end),
     place: joined(entry.location, entry.workplace),
   };
 }
