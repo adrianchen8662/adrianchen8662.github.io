@@ -1,0 +1,10 @@
+---
+layout: page
+---
+<div class="text-container">
+	<p class="editor-link"><a href="cloudcannon:collections/_posts" class="btn"><strong>&#9998;</strong> Add Post</a></p>
+	{% assign blog_posts = site.posts | where: "blog", page.blog %}
+	<ul class="blog-posts">
+		{% include list-posts.html posts=blog_posts %}
+	</ul>
+</div>

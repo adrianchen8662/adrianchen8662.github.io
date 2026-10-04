@@ -1,6 +1,7 @@
 ---
 date: 2023-03-19
 title: Compreface Problems
+blog: final-project
 categories:
   - Server
   - Blog

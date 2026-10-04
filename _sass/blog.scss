@@ -98,15 +98,15 @@
 .blog-filter {
 	text-align: center;
 	a {
-		background: #eee;
+		background: mix($light-golden-olive, #fff, 35%);
     padding: 3px 5px;
     font-size: .8em;
     border-radius: 5px;
-    color: #888;
+    color: $green-gray;
 		transition: .2s ease-in-out;
 
 		&:hover {
-			color: #555;
+			color: $brand-color;
 			text-decoration: none;
 		}
 	}

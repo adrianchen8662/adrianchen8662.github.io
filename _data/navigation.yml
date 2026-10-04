@@ -2,10 +2,11 @@
   link: /resume/
   new_window: false
   highlight: true
-- name: ECE Final Project
-  link: /final-project/
-  new_window: false
-  highlight: false
+- name: Blogs
+  dropdown:
+    - name: ECE Final Project
+      link: /final-project/
+      new_window: false
 - name: About
   link: /about/
   new_window: false

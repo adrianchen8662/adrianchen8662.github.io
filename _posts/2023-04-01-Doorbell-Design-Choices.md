@@ -1,6 +1,7 @@
 ---
 date: 2023-04-01
 title: Doorbell Design Choices 
+blog: final-project
 categories:
   - Doorbell
   - Blog

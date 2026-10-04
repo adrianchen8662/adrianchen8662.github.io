@@ -51,6 +51,35 @@
 				document.body.classList.toggle("nav-open");
 				return false;
 			};
+
+			var dropdowns = document.querySelectorAll("nav .dropdown");
+
+			function setDropdown(dropdown, open) {
+				dropdown.classList.toggle("open", open);
+				dropdown.querySelector(".dropdown-toggle").setAttribute("aria-expanded", open);
+			}
+
+			dropdowns.forEach(function (dropdown) {
+				dropdown.querySelector(".dropdown-toggle").onclick = function () {
+					setDropdown(dropdown, !dropdown.classList.contains("open"));
+				};
+			});
+
+			// Close dropdowns on a click outside them or on Escape
+			document.addEventListener("click", function (event) {
+				dropdowns.forEach(function (dropdown) {
+					if (!dropdown.contains(event.target)) {
+						setDropdown(dropdown, false);
+					}
+				});
+			});
+			document.addEventListener("keydown", function (event) {
+				if (event.key === "Escape") {
+					dropdowns.forEach(function (dropdown) {
+						setDropdown(dropdown, false);
+					});
+				}
+			});
 		</script>
 	</body>
 </html>

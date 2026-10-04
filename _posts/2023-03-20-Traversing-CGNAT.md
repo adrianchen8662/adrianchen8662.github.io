@@ -1,6 +1,7 @@
 ---
 date: 2023-03-20
 title: Traversing CGNAT 
+blog: final-project
 categories:
   - Server
   - Blog
