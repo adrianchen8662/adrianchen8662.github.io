@@ -18,10 +18,11 @@ npm run preview   # serve the built site from dist/
 | Path | What it holds |
 | --- | --- |
 | `_posts/<blog>/` | Blog posts, one folder per blog in the Blogs menu |
+| `_data/timeline.yml` | Jobs, schooling and projects for the home page timeline |
 | `src/blogs.ts` | The blogs: menu name, page heading and intro |
 | `src/site.ts` | Navigation and profile links |
 | `src/pages/` | One file per page; `[blog]/` builds each blog and its posts |
-| `src/components/` | Navigation, footer, typewriter heading, ListenBrainz card |
+| `src/components/` | Navigation, footer, typewriter heading, timeline, ListenBrainz card |
 | `src/styles/global.css` | The palette and site styles |
 | `public/` | Files served as they are: images, favicon, `robots.txt` |
 
@@ -46,6 +47,23 @@ It's published at `/<blog>/title-of-post/`.
 
 1. Create `_posts/<id>/` for its posts.
 2. Add the blog to `src/blogs.ts`. It shows up in the Blogs menu and the footer, at `/<id>/`.
+
+## Updating the timeline
+
+Add an entry to `_data/timeline.yml`; order doesn't matter. The home page sorts entries from the present back into the past and groups jobs at the same organization into one card.
+
+```yaml
+- kind: work            # work, education or project
+  title: Software Engineer
+  organization: ASRC Federal
+  start: 2025-12        # YYYY-MM or YYYY; leave out end while it's ongoing
+  description:
+    - One line per bullet
+  skills:
+    - C++
+```
+
+`type`, `location`, `workplace`, `end` and `link` (`label` and `href`) are optional; the comments at the top of the file list them.
 
 ## Deploying
 

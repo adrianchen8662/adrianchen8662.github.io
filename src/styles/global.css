@@ -361,45 +361,14 @@ h2 strong {
   }
 }
 
-.feature {
-  padding: 100px 0 0;
-}
-
-.feature:last-child {
-  padding-bottom: 100px;
-}
-
-.feature .container {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-}
-
-@media (min-width: 768px) {
-  .feature .container {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .feature:nth-child(even) .container {
-    flex-direction: row-reverse;
-  }
-
-  .feature-text,
-  .feature-image {
-    flex: 1;
-    min-width: 0;
-  }
-}
-
-.feature h2 {
-  margin: 0 0 30px;
+.section-title {
+  margin: 0 0 50px;
   font-size: 2.2em;
   font-weight: 300;
+  text-align: center;
 }
 
 .lead,
-.feature p,
 .page-description {
   font-size: 1.38em;
   font-weight: 300;
@@ -407,32 +376,203 @@ h2 strong {
   color: var(--text-muted);
 }
 
-/* screenshot in a plain browser frame */
-.screenshot {
-  position: relative;
-  margin: 0;
-  padding-top: 20px;
-  background: #ddd;
-  border-radius: 3px;
-  box-shadow: 0 1px 0 #ccc, 0 1px 0 1px #eee;
+/* ---------- timeline: years down the left, one line from now into the past ---------- */
+
+.timeline-section {
+  padding: 80px 0 100px;
 }
 
-.screenshot::before {
+.timeline {
+  --year-width: 90px;
+  --gap: 40px;
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+/* the line, halfway across the gap between the years and the cards */
+.timeline::before {
   content: "";
   position: absolute;
-  top: 6px;
-  left: 8px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #eee;
-  box-shadow: 16px 0 #eee, 32px 0 #eee;
+  top: 10px;
+  bottom: 0;
+  left: calc(var(--year-width) + var(--gap) / 2 - 1px);
+  width: 2px;
+  background: linear-gradient(to bottom, var(--rosewood), var(--terra-cotta) 25%, var(--rule));
 }
 
-.screenshot img {
-  display: block;
-  width: 100%;
-  height: auto;
+.timeline-year {
+  display: grid;
+  grid-template-columns: var(--year-width) minmax(0, 1fr);
+  column-gap: var(--gap);
+}
+
+.timeline-year-label {
+  position: sticky;
+  top: 20px;
+  align-self: start;
+  margin: 12px 0 0;
+  font-size: 1.5em;
+  font-weight: 300;
+  text-align: right;
+  color: var(--rosewood);
+}
+
+.timeline-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 32px;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: calc(var(--gap) / -2 - 7px);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--kind-color);
+  box-shadow: 0 0 0 4px var(--background);
+}
+
+.kind-work {
+  --kind-color: var(--rosewood);
+  --kind-text: var(--rosewood);
+}
+
+.kind-education {
+  --kind-color: var(--golden-olive);
+  --kind-text: var(--golden-olive);
+}
+
+.kind-project {
+  --kind-color: var(--moss-green);
+  --kind-text: var(--green-gray);
+}
+
+.timeline-card {
+  padding: 20px 24px;
+  background: #fdfbf6;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+.timeline-kind {
+  margin: 0 0 6px;
+  font-size: .75em;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--kind-text);
+}
+
+.timeline-title {
+  margin: 0;
+  font-size: 1.3em;
+}
+
+.timeline-subtitle {
+  margin: 2px 0 0;
+  font-size: 1.05em;
+}
+
+.timeline-meta {
+  margin: 2px 0 0;
+  font-size: .95em;
+  color: var(--text-muted);
+}
+
+.timeline-description {
+  margin: 12px 0 0;
+  padding-left: 1.2em;
+  line-height: 1.5;
+}
+
+.timeline-description li + li {
+  margin-top: 4px;
+}
+
+.timeline-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 0;
+}
+
+.timeline-link {
+  margin: 12px 0 0;
+  font-weight: 600;
+}
+
+/* several jobs at one organization */
+.timeline-roles {
+  display: grid;
+  gap: 18px;
+  margin: 16px 0 0;
+  padding: 0 0 0 20px;
+  list-style: none;
+  border-left: 2px solid var(--rule);
+}
+
+.timeline-roles > li {
+  position: relative;
+}
+
+.timeline-roles > li::before {
+  content: "";
+  position: absolute;
+  top: 7px;
+  left: -26px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--chip-background);
+  box-shadow: inset 0 0 0 2px var(--kind-color);
+}
+
+.timeline-role {
+  margin: 0;
+  font-size: 1.1em;
+}
+
+@media (max-width: 619px) {
+  .timeline {
+    --gap: 32px;
+  }
+
+  .timeline::before {
+    left: 6px;
+  }
+
+  .timeline-year {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .timeline-year-label {
+    position: static;
+    margin: 0 0 12px var(--gap);
+    text-align: left;
+  }
+
+  .timeline-items {
+    padding-left: var(--gap);
+  }
+
+  .timeline-item::before {
+    left: calc(7px - var(--gap) - 7px);
+  }
+
+  .timeline-card {
+    padding: 16px 18px;
+  }
 }
 
 /* ---------- pages ---------- */

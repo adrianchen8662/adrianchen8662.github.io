@@ -1,0 +1,97 @@
+---
+import TimelineDetails from './TimelineDetails.astro';
+import { currentMonth, formatDuration, formatRange } from '../lib/dates';
+import { getTimeline, type TimelineEntry, type TimelineItem } from '../lib/timeline';
+
+const years = await getTimeline();
+const now = currentMonth();
+const kindLabel = { work: 'Work', education: 'Education', project: 'Project' };
+
+const joined = (...parts: (string | undefined)[]) => parts.filter(Boolean).join(' · ');
+
+/** How long a job has lasted; still-running ones are recounted in the browser (see the script below) */
+function length(start: string, end?: string) {
+  return { text: formatDuration(start, end ?? now), since: end ? undefined : start };
+}
+
+/** The lines at the top of a card. LinkedIn leads with the school for degrees and the title otherwise. */
+function header(item: TimelineItem) {
+  const [entry] = item.entries;
+  if (item.entries.length > 1) {
+    return { title: item.organization, subtitle: item.type, place: item.location };
+  }
+  return {
+    title: entry.kind === 'education' ? entry.organization : entry.title,
+    subtitle: entry.kind === 'education' ? entry.title : joined(entry.organization, entry.type),
+    range: formatRange(entry.start, entry.end),
+    place: joined(entry.location, entry.workplace),
+  };
+}
+
+const isWork = (entry: TimelineEntry) => entry.kind === 'work';
+---
+<ol class="timeline">
+  {years.map((year) => (
+    <li class="timeline-year">
+      <h3 class="timeline-year-label">{year.label}</h3>
+      <ol class="timeline-items">
+        {year.items.map((item) => {
+          const head = header(item);
+          const grouped = item.entries.length > 1;
+          const total = item.kind === 'work' ? length(item.start, item.end) : undefined;
+          return (
+            <li class={`timeline-item kind-${item.kind}`}>
+              <article class="timeline-card">
+                <p class="timeline-kind">{kindLabel[item.kind]}</p>
+                <h4 class="timeline-title">{head.title}</h4>
+                {grouped ? (
+                  <p class="timeline-subtitle">
+                    {head.subtitle}{head.subtitle && total?.text && ' · '}<span data-since={total?.since}>{total?.text}</span>
+                  </p>
+                ) : (
+                  <>
+                    {head.subtitle && <p class="timeline-subtitle">{head.subtitle}</p>}
+                    <p class="timeline-meta">
+                      {head.range}{total?.text && ' · '}<span data-since={total?.since}>{total?.text}</span>
+                    </p>
+                  </>
+                )}
+                {head.place && <p class="timeline-meta">{head.place}</p>}
+
+                {grouped ? (
+                  <ol class="timeline-roles">
+                    {item.entries.map((entry) => {
+                      const roleLength = isWork(entry) ? length(entry.start, entry.end) : undefined;
+                      return (
+                        <li>
+                          <h5 class="timeline-role">{entry.title}</h5>
+                          <p class="timeline-meta">
+                            {formatRange(entry.start, entry.end)}{roleLength?.text && ' · '}
+                            <span data-since={roleLength?.since}>{roleLength?.text}</span>
+                          </p>
+                          {entry.workplace && <p class="timeline-meta">{entry.workplace}</p>}
+                          <TimelineDetails entry={entry} />
+                        </li>
+                      );
+                    })}
+                  </ol>
+                ) : (
+                  <TimelineDetails entry={item.entries[0]} />
+                )}
+              </article>
+            </li>
+          );
+        })}
+      </ol>
+    </li>
+  ))}
+</ol>
+
+<script>
+  import { currentMonth, formatDuration } from '../lib/dates';
+
+  // Lengths of jobs still going on were counted when the site was built; bring them up to today
+  for (const el of document.querySelectorAll<HTMLElement>('.timeline [data-since]')) {
+    el.textContent = formatDuration(el.dataset.since!, currentMonth());
+  }
+</script>

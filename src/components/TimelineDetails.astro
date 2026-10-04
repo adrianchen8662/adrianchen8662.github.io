@@ -1,0 +1,16 @@
+---
+import type { TimelineEntry } from '../lib/timeline';
+
+interface Props {
+  entry: TimelineEntry;
+}
+
+const { description, skills, link } = Astro.props.entry;
+---
+{description.length > 0 && (
+  <ul class="timeline-description">{description.map((line) => <li>{line}</li>)}</ul>
+)}
+{skills.length > 0 && (
+  <p class="timeline-skills">{skills.map((skill) => <span class="chip">{skill}</span>)}</p>
+)}
+{link && <p class="timeline-link"><a href={link.href}>{link.label} &rarr;</a></p>}
