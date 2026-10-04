@@ -30,6 +30,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name}'s blog posts`} href="/feed.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <script is:inline>
+      // Apply a theme picked with the header switch before the page paints
+      try {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
   </head>
   <body>
     <header class="site-header">

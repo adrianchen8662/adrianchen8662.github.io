@@ -5,7 +5,7 @@ import { BLOGS, type Blog } from '../../blogs';
 import { getPosts } from '../../lib/posts';
 
 export function getStaticPaths() {
-  return BLOGS.map((blog) => ({ params: { blog: blog.id }, props: { blog } }));
+  return BLOGS.map((blog) => ({ params: { blog: blog.slug }, props: { blog } }));
 }
 
 const { blog } = Astro.props as { blog: Blog };

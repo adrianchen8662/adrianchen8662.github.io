@@ -1,4 +1,4 @@
-import { BLOGS } from './blogs';
+import { BLOGS, blogUrl } from './blogs';
 
 export const SITE = {
   name: 'Adrian Chen',
@@ -22,7 +22,7 @@ export type NavItem = NavLink | NavMenu;
 
 export const NAV: NavItem[] = [
   { name: 'Resume', href: '/resume/', highlight: true },
-  { name: 'Blogs', items: BLOGS.map((blog) => ({ name: blog.name, href: `/${blog.id}/` })) },
+  { name: 'Blogs', items: BLOGS.map((blog) => ({ name: blog.name, href: blogUrl(blog) })) },
   { name: 'About', href: '/about/' },
   { name: 'Contact', href: '/contact/' },
 ];
