@@ -707,14 +707,64 @@ h2 strong {
 
 /* ---------- about, contact, resume, projects ---------- */
 
+.about {
+  display: grid;
+  gap: 48px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+@media (min-width: 900px) {
+  .about {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 64px;
+  }
+}
+
 .about-text p {
-  margin: 0 0 1.2em;
-  font-size: 1.17em;
-  font-weight: 700;
+  margin: 0 0 1em;
+  font-size: 1.15em;
+  line-height: 1.6;
+}
+
+.about-text .about-lead {
+  font-size: 1.38em;
+  font-weight: 300;
+  line-height: 1.45;
+}
+
+.about-profiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0 0;
+  padding: 24px 0 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.about-profiles a {
+  display: inline-block;
+  padding: 6px 14px;
+  color: var(--green-gray);
+  background: var(--chip-background);
+  border-radius: 999px;
+}
+
+.about-profiles a:hover {
+  color: #fff;
+  background: var(--rosewood);
+  text-decoration: none;
+}
+
+.about-listening {
+  padding-top: 6px;
 }
 
 .about-more {
-  margin: 12px 0 0;
+  margin: 14px 0 0;
+  font-size: .95em;
 }
 
 .profiles {
