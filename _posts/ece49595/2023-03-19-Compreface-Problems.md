@@ -30,7 +30,7 @@ Here's the performance of compreface-core when storing a face, now running Mobil
 
 Here's the performance of compreface-core when identifying a face on Mobilenet. The memory usage increase is negligible, and the CPU only jumps to 16% for a single measured second. 
 
-![MobileNet Performance - Facial Recognition](https://i.imgur.com/5d6SgVr.png)
+![MobileNet Performance - Facial Recognition](./images/compreface-problems/mobilenet-recognition.png)
 
 Because of the evidence that proves that MobileNet uses a lot less resources for almost the same performance, that is the build we will be using in our project. 
 

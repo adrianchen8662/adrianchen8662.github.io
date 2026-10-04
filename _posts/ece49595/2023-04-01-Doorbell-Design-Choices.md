@@ -13,15 +13,15 @@ In the current implementation of Argus, the image is encoded using AES on the do
 Why do this instead of HTTPS? The benefits of HTTPS lie in that the password doesn't have to be set on both the server and doorbell. 
 
 ### Here's proof that encrypting the packet content using AES is just as secure as using HTTPS. Here's a packet the doorbell sent to the server, captured using Wireshark.  
-![Wireshark to the server, header packet](https://i.imgur.com/Az17pws.png)
+![Wireshark to the server, header packet](./images/doorbell-design-choices/wireshark-server-header.png)
 In the header, we get local ip address that my computer uses, and the destination ip address of where its headed. The header is not encoded, so we also see some information about the size of the image and a separator, which you can see in the code as plaintext. 
 
 ### Here's where the image is being sent
-![Wireshark to the server, content packet](https://i.imgur.com/h5YRVxg.png)
+![Wireshark to the server, content packet](./images/doorbell-design-choices/wireshark-server-content.png)
 The packet was captured by Wireshark, but it cannot be decoded as the image is encrypted. 
 
 ### Here's a packet for my computer connecting to Google using an HTTPS get request. 
-![Wireshark to Google](https://i.imgur.com/9mff5E8.png)
+![Wireshark to Google](./images/doorbell-design-choices/wireshark-google.png)
 The packet sent to google contains the same amount of information as encrypting the payload ourselves. The packet has an initial ack that also has information about the source and destination IP, and the subsequent payload is protected. The only extra information I divulge is the size of the image, but that doesn't help in decoding the image as the key and iv are not sent. 
 
 Later, if live video and audio is implemented, then there would have to be changes, since having AES encrypt a stream would be needlessly difficult. For more information about the possible live video implementation, check out [this blog post](/purdue-ece-49595-open-source-software-senior-design-projects/argus-overview/) in the what's next section. 
