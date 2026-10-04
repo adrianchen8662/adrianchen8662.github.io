@@ -29,7 +29,7 @@
 }
 
 button {
-	--c:  #229091; /* the color*/
+	--c: #{$moss-green}; /* the color*/
 	
 	box-shadow: 0 0 0 .1em inset var(--c); 
 	--_g: linear-gradient(var(--c) 0 0) no-repeat;

@@ -59,6 +59,14 @@ Hydra is already optimised for adding, updating and removing pages, staff, advic
 * Documentation pages are organised in the navigation by category, with URLs based on the path inside the `_docs` folder.
 * Change the defaults when new posts are created in `_posts/_defaults.md`.
 
+### Blogs
+
+Each blog lists the posts whose `blog` field matches its own. To add a blog (e.g. `work`):
+
+1. Create `work/index.html` with `layout: blog`, `blog: work`, a `title` and a `description` in its front matter.
+2. Set `blog: work` on that blog's posts in `_posts/`.
+3. Add it under the *Blogs* dropdown in `_data/navigation.yml`.
+
 ### Contact Form
 
 * Preconfigured to work with CloudCannon, but easily changed to another provider (e.g. [FormSpree](https://formspree.io/)).
