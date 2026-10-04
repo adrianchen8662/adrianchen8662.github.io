@@ -32,9 +32,10 @@
   color-scheme: light;
 }
 
-/* Dark theme: the palette's dark green gray as the ground, lighter rosewood and golden olive for text */
+/* Dark theme: the palette's dark green gray as the ground, lighter rosewood and golden olive for text.
+   It follows the device unless the header switch picked a theme (data-theme on <html>). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --background: #1c1a0e;
     --surface: #26231a;
     --chip-background: #3a3520;
@@ -53,6 +54,27 @@
     --project-text: #c9be56;
     color-scheme: dark;
   }
+}
+
+/* Same values as above, for when the switch picks dark */
+:root[data-theme="dark"] {
+  --background: #1c1a0e;
+  --surface: #26231a;
+  --chip-background: #3a3520;
+  --chip-text: #e4d9b8;
+  --rule: #3d3925;
+  --text: #f1ead6;
+  --text-muted: #b8af94;
+  --link: #e39a86;
+  --link-hover: #d3bb7c;
+  --accent-text: #e39a86;
+  --work-color: #e39a86;
+  --work-text: #e39a86;
+  --education-color: #d3bb7c;
+  --education-text: #d3bb7c;
+  --project-color: var(--moss-green);
+  --project-text: #c9be56;
+  color-scheme: dark;
 }
 
 html {
@@ -194,6 +216,51 @@ h2 strong {
   content: " \25BE";
 }
 
+/* light/dark switch: shows a moon in the light theme and a sun in the dark one */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: rgba(255, 255, 255, .8);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: .2s ease-in-out;
+}
+
+.theme-toggle:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, .3);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.theme-toggle .icon-sun,
+:root[data-theme="dark"] .theme-toggle .icon-moon {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-sun {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .icon-moon {
+    display: none;
+  }
+
+  :root:not([data-theme="light"]) .theme-toggle .icon-sun {
+    display: block;
+  }
+}
+
 @media (max-width: 619px) {
   .site-nav {
     flex-basis: 100%;
@@ -203,6 +270,12 @@ h2 strong {
     position: absolute;
     top: 18px;
     right: 12px;
+  }
+
+  .theme-toggle {
+    position: absolute;
+    top: 19px;
+    right: 64px;
   }
 
   .nav-links {
@@ -235,6 +308,16 @@ h2 strong {
 @media (min-width: 620px) {
   .nav-toggle {
     display: none;
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .theme-toggle {
+    order: 1;
   }
 
   .nav-links {
