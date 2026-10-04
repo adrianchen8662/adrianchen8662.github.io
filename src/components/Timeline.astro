@@ -1,6 +1,6 @@
 ---
 import TimelineDetails from './TimelineDetails.astro';
-import { currentMonth, formatDuration, formatRange } from '../lib/dates';
+import { currentMonth, formatDuration, formatRange, inProgress } from '../lib/dates';
 import { getTimeline, type TimelineEntry, type TimelineItem } from '../lib/timeline';
 
 const years = await getTimeline();
@@ -9,9 +9,10 @@ const kindLabel = { work: 'Work', education: 'Education', project: 'Project' };
 
 const joined = (...parts: (string | undefined)[]) => parts.filter(Boolean).join(' · ');
 
-/** How long a job has lasted; still-running ones are recounted in the browser (see the script below) */
+/** How long a job has lasted; ones still going on count to today and are recounted in the browser (see the script below) */
 function length(start: string, end?: string) {
-  return { text: formatDuration(start, end ?? now), since: end ? undefined : start };
+  const ongoing = inProgress(end, now);
+  return { text: formatDuration(start, ongoing ? now : end!), since: ongoing ? start : undefined };
 }
 
 /** The lines at the top of a card. LinkedIn leads with the school for degrees and the title otherwise. */

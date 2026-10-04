@@ -26,8 +26,15 @@ export function formatYearMonth(value: string) {
   return month ? `${MONTHS[month - 1]} ${year}` : String(year);
 }
 
-export function formatRange(start: string, end?: string) {
-  return `${formatYearMonth(start)} – ${end ? formatYearMonth(end) : 'Present'}`;
+/** Still going on: no end date, or one that hasn't passed yet (an expected finish) */
+export function inProgress(end: string | undefined, now = currentMonth()) {
+  return !end || monthNumber(end, 'end') >= monthNumber(now, 'end');
+}
+
+/** "Sep 2023 – Present", or "Aug 2024 – Dec 2026 (expected)" while the end date is still ahead */
+export function formatRange(start: string, end?: string, now = currentMonth()) {
+  if (!end) return `${formatYearMonth(start)} – Present`;
+  return `${formatYearMonth(start)} – ${formatYearMonth(end)}${inProgress(end, now) ? ' (expected)' : ''}`;
 }
 
 /** Length the way LinkedIn shows it ("2 yrs 4 mos"), counting both end months; empty for bare years */

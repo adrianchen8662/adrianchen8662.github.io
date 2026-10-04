@@ -6,7 +6,8 @@
 #   kind:          work, education or project
 #   title:         job title, degree or project name
 #   organization:  employer or school
-#   start, end:    YYYY-MM, or just YYYY. Leave out end while it's still going on.
+#   start, end:    YYYY-MM, or just YYYY. Leave out end while it's still going on, or give
+#                  the expected finish; it shows as "(expected)" until that month has passed.
 #   type, location, workplace, description, skills, link: optional
 
 - kind: work
@@ -36,7 +37,7 @@
   title: Master of Science - MS, Computer Science
   organization: New Jersey Institute of Technology
   start: 2024-08
-  end: 2026-08
+  end: 2026-12
 
 - kind: project
   title: Purdue Open-Source Senior Design Project - Argus

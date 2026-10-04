@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { monthNumber, yearOf } from './dates';
+import { inProgress, monthNumber, yearOf } from './dates';
 
 export type TimelineEntry = CollectionEntry<'timeline'>['data'];
 
@@ -10,14 +10,14 @@ export interface TimelineItem {
   type?: string;
   location?: string;
   start: string;
-  /** Left out while any of its entries is still going on */
+  /** The latest end date; left out while one of its entries has no end */
   end?: string;
   /** Newest first */
   entries: TimelineEntry[];
 }
 
 export interface TimelineYear {
-  /** "Now" for things still going on, otherwise the year they ended */
+  /** "Now" for things still going on (including expected finishes), otherwise the year they ended */
   label: string;
   items: TimelineItem[];
 }
@@ -54,7 +54,7 @@ export async function getTimeline(): Promise<TimelineYear[]> {
 
   const years: TimelineYear[] = [];
   for (const item of items) {
-    const label = item.end ? String(yearOf(item.end)) : 'Now';
+    const label = inProgress(item.end) ? 'Now' : String(yearOf(item.end!));
     const last = years.at(-1);
     if (last?.label === label) last.items.push(item);
     else years.push({ label, items: [item] });
