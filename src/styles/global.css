@@ -8,17 +8,51 @@
   --green-gray: #4a471d;         /* DMC 3051 Dark Green Gray */
 
   --gradient-middle: #70332d;    /* 95% rosewood, 5% terra cotta */
+  --footer-text: #f3eddc;        /* 20% very light golden olive on white */
+
+  /* Light theme */
   --background: #f8f4ea;         /* 12% very light golden olive on white */
+  --surface: #fdfbf6;            /* cards */
   --chip-background: #ebdfc2;    /* 35% very light golden olive on white */
+  --chip-text: var(--green-gray);
   --rule: #e4dac0;
   --text: #333;
   --text-muted: #666;
   --link: var(--terra-cotta);
   --link-hover: var(--golden-olive);
-  --footer-text: #f3eddc;        /* 20% very light golden olive on white */
+  --accent-text: var(--rosewood);
+  --work-color: var(--rosewood);
+  --work-text: var(--rosewood);
+  --education-color: var(--golden-olive);
+  --education-text: var(--golden-olive);
+  --project-color: var(--moss-green);
+  --project-text: var(--green-gray);
 
   --font: "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color-scheme: light;
+}
+
+/* Dark theme: the palette's dark green gray as the ground, lighter rosewood and golden olive for text */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1c1a0e;
+    --surface: #26231a;
+    --chip-background: #3a3520;
+    --chip-text: #e4d9b8;
+    --rule: #3d3925;
+    --text: #f1ead6;
+    --text-muted: #b8af94;
+    --link: #e39a86;
+    --link-hover: #d3bb7c;
+    --accent-text: #e39a86;
+    --work-color: #e39a86;
+    --work-text: #e39a86;
+    --education-color: #d3bb7c;
+    --education-text: #d3bb7c;
+    --project-color: var(--moss-green);
+    --project-text: #c9be56;
+    color-scheme: dark;
+  }
 }
 
 html {
@@ -26,10 +60,18 @@ html {
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   margin: 0;
   font-family: var(--font);
   color: var(--text);
   background: var(--background);
+}
+
+/* On short pages, fill the window so the footer sits at the bottom */
+main {
+  flex: 1;
 }
 
 a {
@@ -400,7 +442,7 @@ h2 strong {
   bottom: 0;
   left: calc(var(--year-width) + var(--gap) / 2 - 1px);
   width: 2px;
-  background: linear-gradient(to bottom, var(--rosewood), var(--terra-cotta) 25%, var(--rule));
+  background: linear-gradient(to bottom, var(--accent-text), var(--link) 25%, var(--rule));
 }
 
 .timeline-year {
@@ -417,7 +459,7 @@ h2 strong {
   font-size: 1.5em;
   font-weight: 300;
   text-align: right;
-  color: var(--rosewood);
+  color: var(--accent-text);
 }
 
 .timeline-items {
@@ -444,23 +486,23 @@ h2 strong {
 }
 
 .kind-work {
-  --kind-color: var(--rosewood);
-  --kind-text: var(--rosewood);
+  --kind-color: var(--work-color);
+  --kind-text: var(--work-text);
 }
 
 .kind-education {
-  --kind-color: var(--golden-olive);
-  --kind-text: var(--golden-olive);
+  --kind-color: var(--education-color);
+  --kind-text: var(--education-text);
 }
 
 .kind-project {
-  --kind-color: var(--moss-green);
-  --kind-text: var(--green-gray);
+  --kind-color: var(--project-color);
+  --kind-text: var(--project-text);
 }
 
 .timeline-card {
   padding: 20px 24px;
-  background: #fdfbf6;
+  background: var(--surface);
   border: 1px solid var(--rule);
   border-radius: 6px;
 }
@@ -678,7 +720,7 @@ h2 strong {
 .chip {
   padding: 3px 6px;
   font-size: .85em;
-  color: var(--green-gray);
+  color: var(--chip-text);
   background: var(--chip-background);
   border-radius: 5px;
 }
@@ -699,13 +741,12 @@ h2 strong {
 }
 
 .post,
-.blog-index,
-.projects {
+.blog-index {
   max-width: 860px;
   margin: 0 auto;
 }
 
-/* ---------- about, contact, resume, projects ---------- */
+/* ---------- about, contact, resume ---------- */
 
 .about {
   display: grid;
@@ -747,7 +788,7 @@ h2 strong {
 .about-profiles a {
   display: inline-block;
   padding: 6px 14px;
-  color: var(--green-gray);
+  color: var(--chip-text);
   background: var(--chip-background);
   border-radius: 999px;
 }
@@ -797,30 +838,4 @@ h2 strong {
   aspect-ratio: 3 / 2;
   margin: 0 auto;
   border: 0;
-}
-
-.projects section + section {
-  margin-top: 70px;
-}
-
-.projects h2 {
-  margin-top: 0;
-}
-
-.projects h3 {
-  margin: .2em 0 .8em;
-  font-size: 1.4em;
-  font-weight: 400;
-}
-
-.projects h4 {
-  margin: 1.2em 0 .3em;
-  font-size: .85em;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--rosewood);
-}
-
-.projects p {
-  margin: 0 0 .8em;
 }
