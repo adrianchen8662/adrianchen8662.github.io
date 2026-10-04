@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Timeline from '../components/Timeline.astro';
+import Typewriter from '../components/Typewriter';
+---
+<BaseLayout description="Software Engineer at ASRC Federal and Computer Science master's student at NJIT">
+  <section class="hero">
+    <Typewriter
+      client:load
+      prefix="Hi, I'm Adrian Chen. I'm a"
+      phrases={['Programmer.', 'Computer Engineer.', 'Software Engineer.', 'Purdue Graduate.']}
+    />
+    <a class="button button-light" href="/resume/">Resume</a>
+  </section>
+
+  <section id="timeline" class="timeline-section" aria-labelledby="timeline-heading">
+    <div class="container">
+      <h2 id="timeline-heading" class="section-title">Timeline</h2>
+      <Timeline />
+    </div>
+  </section>
+</BaseLayout>

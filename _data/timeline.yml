@@ -1,0 +1,97 @@
+# The timeline on the home page.
+#
+# Add an entry anywhere in this list; the page sorts everything from the present
+# back into the past, and groups jobs at the same organization the way LinkedIn does.
+#
+#   kind:          work, education or project
+#   title:         job title, degree or project name
+#   organization:  employer or school
+#   start, end:    YYYY-MM, or just YYYY. Leave out end while it's still going on, or give
+#                  the expected finish; it shows as "(expected)" until that month has passed.
+#   type, location, workplace, description, skills, link: optional
+
+- kind: work
+  title: Software Engineer
+  organization: ASRC Federal
+  type: Full-time
+  location: Moorestown, New Jersey, United States
+  start: 2025-12
+
+- kind: work
+  title: Associate Software Engineer
+  organization: ASRC Federal
+  type: Full-time
+  location: Moorestown, New Jersey, United States
+  workplace: On-site
+  start: 2023-09
+  end: 2025-12
+  description:
+    - Supporting the continued development and sustainment of the U.S. Navy's Aegis Weapons System in Moorestown, NJ.
+  skills:
+    - C++
+    - Object-Oriented Programming (OOP)
+    - Go (Programming Language)
+    - Kubernetes
+
+- kind: education
+  title: Master of Science - MS, Computer Science
+  organization: New Jersey Institute of Technology
+  start: 2024-08
+  end: 2026-12
+
+- kind: project
+  title: Purdue Open-Source Senior Design Project - Argus
+  organization: Purdue University College of Engineering
+  start: 2023-01
+  end: 2023-05
+  description:
+    - Final ECE 49595 open-source project Argus provides computer vision and face identification to a home security solution in a light package.
+  link:
+    label: Read the project blog
+    href: /final-project/
+
+- kind: education
+  title: Bachelor of Science - BS, Computer Engineering
+  organization: Purdue University College of Engineering
+  start: 2019-08
+  end: 2023-05
+  description:
+    - "Activities and societies: EPICS Living-Learning Community"
+    - EVEI project-based design course
+
+- kind: work
+  title: Security Engineer Intern
+  organization: Mavenir
+  type: Internship
+  workplace: Remote
+  start: 2022-05
+  end: 2022-08
+  description:
+    - Ported data obfuscation tool from Python to Golang, and increased speed by 200%
+    - Created static code analysis tool in Python for secret detection and obfuscation in code
+    - Collaborated on creating a tool to scan AWS ports for vulnerabilities
+    - Experience in working with FossID, Snyk and JFrog on open source license management and SBOM
+  skills:
+    - Network Security
+    - SBOM
+
+- kind: work
+  title: Swimming Instructor
+  organization: YWCA Princeton
+  location: Plainsboro, New Jersey, United States
+  workplace: On-site
+  start: 2017-06
+  end: 2019-08
+  description:
+    - Worked as a lifeguard/swimming instructor from ages 3 to adult, including special needs
+    - Certified Red Cross Lifeguard
+    - Certified Red Cross Water Safety Instructor
+  skills:
+    - Leadership
+    - Swim Instruction
+
+- kind: education
+  title: High School Diploma, General Studies
+  organization: West Windsor-Plainsboro High School South
+  start: 2015
+  end: 2019

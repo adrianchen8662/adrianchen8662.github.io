@@ -1,0 +1,30 @@
+---
+// Redirects from the addresses the old Jekyll site gave its posts, so existing links keep working
+import { getPosts, jekyllUrl, postUrl, type Post } from '../lib/posts';
+
+export async function getStaticPaths() {
+  // Every post on the Jekyll site was in this blog
+  const posts = await getPosts('final-project');
+  return posts.map((post) => ({
+    params: { legacy: jekyllUrl(post).slice(1, -1) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as { post: Post };
+const to = postUrl(post);
+const absolute = new URL(to, Astro.site).href;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{post.data.title}</title>
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={absolute} />
+  </head>
+  <body>
+    <p>This post has moved to <a href={to}>{absolute}</a>.</p>
+  </body>
+</html>

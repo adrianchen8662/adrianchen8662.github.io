@@ -1,0 +1,24 @@
+---
+import PostMeta from './PostMeta.astro';
+import { excerpt, postUrl, type Post } from '../lib/posts';
+
+interface Props {
+  posts: Post[];
+}
+
+const { posts } = Astro.props;
+---
+{posts.length === 0 ? (
+  <p class="lead">No posts yet.</p>
+) : (
+  <ul class="post-list">
+    {posts.map((post) => (
+      <li>
+        <h2><a href={postUrl(post)}>{post.data.title}</a></h2>
+        <PostMeta post={post} />
+        {excerpt(post) && <p class="lead">{excerpt(post)}</p>}
+        <a class="button" href={postUrl(post)}>Read More</a>
+      </li>
+    ))}
+  </ul>
+)}

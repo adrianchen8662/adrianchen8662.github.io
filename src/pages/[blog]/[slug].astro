@@ -1,0 +1,35 @@
+---
+import { render } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import PostMeta from '../../components/PostMeta.astro';
+import { blogOf, excerpt, getPosts, postSlug, postUrl, type Post } from '../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { blog: blogOf(post).id, slug: postSlug(post) },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props as { post: Post };
+const { Content } = await render(post);
+
+// Neighbouring posts in the same blog (newest first)
+const siblings = await getPosts(blogOf(post).id);
+const index = siblings.findIndex((p) => p.id === post.id);
+const newer = siblings[index - 1];
+const older = siblings[index + 1];
+---
+<PageLayout title={post.data.title} metaDescription={excerpt(post) || undefined}>
+  <article class="post">
+    <PostMeta post={post} />
+    <div class="prose">
+      <Content />
+    </div>
+    <nav class="post-nav" aria-label="More posts">
+      {older && <a class="older" href={postUrl(older)}>&laquo; {older.data.title}</a>}
+      {newer && <a class="newer" href={postUrl(newer)}>{newer.data.title} &raquo;</a>}
+    </nav>
+  </article>
+</PageLayout>

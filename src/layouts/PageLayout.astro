@@ -1,0 +1,23 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  /** Shown under the heading; may contain links */
+  descriptionHtml?: string;
+  /** For search results and link previews, when it differs from the text under the heading */
+  metaDescription?: string;
+}
+
+const { title, descriptionHtml, metaDescription } = Astro.props;
+const description = metaDescription ?? descriptionHtml?.replace(/<[^>]+>/g, '');
+---
+<BaseLayout title={title} description={description}>
+  <section class="page">
+    <div class="container">
+      <h1 class="page-title">{title}</h1>
+      {descriptionHtml && <p class="page-description" set:html={descriptionHtml} />}
+      <slot />
+    </div>
+  </section>
+</BaseLayout>
