@@ -11,7 +11,7 @@ Argus is the capstone project for the Open-Source Senior Design course at Purdue
 ## How Argus Works
 
 [Currently being updated. ]
-![How it works](https://i.imgur.com/gMTQ2v3.png)
+![How it works](./images/argus-overview/how-it-works.webp)
 
 ## What's The Point of Argus? 
 
@@ -19,13 +19,13 @@ Current providers are able to detect movement, but cannot tell what caused that 
 
 ## Building And Installing Argus
 [To be determined. The packaging solution has not been decided yet, as there are multiple languages being used.]
-![Setup for Doorbell](https://i.imgur.com/CugkGj4.png)
+![Setup for Doorbell](./images/argus-overview/setup.png)
 
 ## Using Argus
 [To be determined. The frontend of both the server and doorbell are currently in development.]
-![Unknown](https://i.imgur.com/NgmPZWt.png)
-![Delivery](https://i.imgur.com/spJF4dg.png)
-![Family](https://i.imgur.com/h32nBNJ.png)
+![Unknown](./images/argus-overview/unknown.png)
+![Delivery](./images/argus-overview/delivery.png)
+![Family](./images/argus-overview/family.png)
 
 ## What's Next? 
 

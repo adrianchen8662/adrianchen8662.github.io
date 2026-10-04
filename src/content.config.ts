@@ -21,19 +21,25 @@ const timeline = defineCollection({
   loader: file('_data/timeline.yml', {
     parser: (text) => (parse(text) as Record<string, unknown>[]).map((entry, i) => ({ id: String(i + 1), ...entry })),
   }),
-  schema: z.object({
-    kind: z.enum(['work', 'education', 'project']),
-    title: z.string(),
-    organization: z.string(),
-    type: z.string().optional(),
-    location: z.string().optional(),
-    workplace: z.string().optional(),
-    start: yearMonth,
-    end: yearMonth.optional(),
-    description: z.array(z.string()).default([]),
-    skills: z.array(z.string()).default([]),
-    link: z.object({ label: z.string(), href: z.string() }).optional(),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      kind: z.enum(['work', 'education', 'project', 'certification']),
+      title: z.string(),
+      organization: z.string(),
+      type: z.string().optional(),
+      location: z.string().optional(),
+      workplace: z.string().optional(),
+      /** For a certification, when it was issued */
+      start: yearMonth,
+      end: yearMonth.optional(),
+      /** Certifications only */
+      expires: yearMonth.optional(),
+      description: z.array(z.string()).default([]),
+      skills: z.array(z.string()).default([]),
+      link: z.object({ label: z.string(), href: z.string() }).optional(),
+      /** A picture on the card; the path is relative to _data/timeline.yml */
+      image: z.object({ src: image(), alt: z.string() }).optional(),
+    }),
 });
 
 export const collections = { posts, timeline };

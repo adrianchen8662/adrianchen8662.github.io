@@ -14,11 +14,11 @@ In Compreface, there are different custom builds that the user can install (more
 
 Here's the performance of compreface-core, the main container running image processing. A REST API call was made to push an image to Compreface, and for it to store that image. The memory usage jumps to 900 MB, and CPU usage was pegged at 100% for 5 seconds as it processed the image. 
 
-![FaceNet Performance - Facial Storage](https://i.imgur.com/7s2sEs6.png)
+![FaceNet Performance - Facial Storage](./images/compreface-problems/facenet-storage.png)
 
 This is the performance of compreface-core when asked to identify the face of a new image, also made through a REST API call. The memory usage now jumps up to 1.7 Gigabytes, and CPU usage was pegged at 100% for 5 seconds. 
 
-![FaceNet Performance - Facial Recognition](https://i.imgur.com/7GfSbwo.png)
+![FaceNet Performance - Facial Recognition](./images/compreface-problems/facenet-recognition.png)
 
 While this might not seem like much, there are other things running at the same time as Compreface for Argus, like the webserver and ingress server. Reducing this number is important to making sure that our product is able to run on as many systems as possible. 
 
@@ -26,11 +26,11 @@ Instead of using FaceNet for our product, therefore, I decided that using Mobile
 
 Here's the performance of compreface-core when storing a face, now running Mobilenet. The CPU usage is still 100%, but only stays there for 2 seconds. Memory usage is down to 350 MB. 
 
-![MobileNet Performance - Facial Storage](https://i.imgur.com/f2nlQRy.png)
+![MobileNet Performance - Facial Storage](./images/compreface-problems/mobilenet-storage.png)
 
 Here's the performance of compreface-core when identifying a face on Mobilenet. The memory usage increase is negligible, and the CPU only jumps to 16% for a single measured second. 
 
-![MobileNet Performance - Facial Recognition](https://i.imgur.com/5d6SgVr.png)
+![MobileNet Performance - Facial Recognition](./images/compreface-problems/mobilenet-recognition.png)
 
 Because of the evidence that proves that MobileNet uses a lot less resources for almost the same performance, that is the build we will be using in our project. 
 

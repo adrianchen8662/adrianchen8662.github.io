@@ -13,6 +13,9 @@ export default defineConfig({
   site: 'https://adrianchen8662.github.io',
   // Code blocks: GitHub's dark theme, whose comments stay readable (the default's don't pass contrast)
   markdown: { shikiConfig: { theme: 'github-dark-default' } },
+  // Images next to posts and in the timeline are compressed and served in several sizes;
+  // files in public/ (full-size photos, say) are published untouched
+  image: { layout: 'constrained' },
   integrations: [
     react(),
     sitemap({ filter: (page) => !isMoved(new URL(page).pathname) }),
