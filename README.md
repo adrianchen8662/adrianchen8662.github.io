@@ -45,7 +45,7 @@ It's published at `/<blog>/title-of-post/`.
 
 ## Adding a blog
 
-1. Create `_posts/<id>/` for its posts.
+1. Create `_posts/<id>/` for its posts. Until it has one, keep an empty `.gitkeep` file in it, since git doesn't store empty folders.
 2. Add the blog to `src/blogs.ts`. It shows up in the Blogs menu and the footer, at `/<id>/`.
 
 ## Updating the timeline

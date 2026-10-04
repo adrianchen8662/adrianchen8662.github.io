@@ -12,6 +12,12 @@ export interface Blog {
 
 export const BLOGS: Blog[] = [
   {
+    id: 'cs632',
+    name: 'NJIT CS 632',
+    title: 'CS 632: Advanced Database System Design',
+    description: 'Blog posts for CS 632, Advanced Database System Design, at NJIT.',
+  },
+  {
     id: 'final-project',
     name: 'ECE Final Project',
     title: 'Final Project',
