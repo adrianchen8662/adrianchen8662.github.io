@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<!--
+  Now Playing card for ListenBrainz, embedded on the About page.
+
+  Adapted from listenbrainz-now-playing.html in https://github.com/prcutler/listenbrainz-widget
+  (restyled with this site's palette and fonts, username fixed, embed-code and setup panels removed).
+
+  MIT License
+
+  Copyright (c) 2026 Paul Cutler
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Now Playing · ListenBrainz</title>
+<style>
+  /* Colors from the site palette (_sass/variables.scss) */
+  :root{
+    --bg-0:#F8F4EA;                  /* matches the site's page background */
+    --card:#4A471D;                  /* DMC 3051 Dark Green Gray */
+    --ink:#F8F4EA;
+    --ink-soft:#DDD3B4;
+    --ink-faint:#BFB894;
+    --accent:#D3BB7C;                /* DMC 834 Very Light Golden Olive, lightened for small text */
+    --accent-2:#B2A20E;              /* DMC 166 Medium Light Moss Green */
+    --radius:8px;
+    --font:"San Francisco","Helvetica Neue","Helvetica","Arial",sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  html,body{height:100%}
+
+  body{
+    font-family:var(--font);
+    background:var(--bg-0);
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .stage{ position:relative; width:100%; max-width:440px; }
+
+  .card{
+    position:relative; z-index:1;
+    display:flex; gap:18px; align-items:center;
+    padding:18px;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:0 6px 16px -10px rgba(74,71,29,0.6);
+    opacity:0; transform:translateY(10px);
+    animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes rise{ to{opacity:1;transform:none} }
+
+  /* clickable wrapper -> ListenBrainz profile */
+  .card-link{
+    display:block; text-decoration:none; color:inherit;
+    border-radius:var(--radius); outline:none;
+    transition:transform .18s ease;
+  }
+  .card-link:hover{ transform:translateY(-2px); }
+  .card-link:hover .card{ box-shadow:0 10px 20px -10px rgba(74,71,29,0.7); }
+  .card-link:focus-visible{ box-shadow:0 0 0 2px var(--accent-2); }
+
+  /* artwork */
+  .art-wrap{ position:relative; flex:0 0 auto; }
+  .art{
+    width:104px; height:104px; border-radius:6px;
+    object-fit:cover; display:block;
+    background:#5F5B2C;
+  }
+  .art-fallback{
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink-faint); font-size:34px;
+  }
+
+  /* text block */
+  .meta{ min-width:0; flex:1; }
+  .eyebrow{
+    display:flex; align-items:center; gap:9px;
+    font-size:10.5px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:9px;
+  }
+  .eyebrow.past{ color:var(--ink-soft); }
+
+  /* equalizer */
+  .eq{ display:inline-flex; align-items:flex-end; gap:2.5px; height:13px; }
+  .eq span{
+    width:2.5px; background:linear-gradient(var(--accent),var(--accent-2));
+    border-radius:2px; height:30%;
+    animation:bounce .9s ease-in-out infinite;
+  }
+  .eq span:nth-child(2){animation-delay:.18s}
+  .eq span:nth-child(3){animation-delay:.38s}
+  .eq span:nth-child(4){animation-delay:.55s}
+  .eq span:nth-child(5){animation-delay:.27s}
+  @keyframes bounce{ 0%,100%{height:25%} 50%{height:100%} }
+  .paused-dot{ width:6px;height:6px;border-radius:50%;background:var(--ink-faint); }
+
+  .title{
+    font-weight:700; font-size:20px; line-height:1.15;
+    color:var(--ink);
+    margin-bottom:5px;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+  .artist{
+    font-size:14.5px; color:var(--ink-soft);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .album{
+    font-size:12.5px; color:var(--ink-faint);
+    margin-top:2px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .footer{
+    display:flex; align-items:center; gap:8px;
+    margin-top:12px; padding-top:11px;
+    border-top:1px solid rgba(248,244,234,0.15);
+    font-size:10.5px; color:var(--ink-faint); letter-spacing:.04em;
+  }
+  .footer .brand{ margin-left:auto; }
+  .footer .brand b{ color:var(--ink-soft); font-weight:600; }
+
+  /* states: empty / error */
+  .panel{
+    position:relative; z-index:1;
+    padding:22px; text-align:center;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:0 6px 16px -10px rgba(74,71,29,0.6);
+  }
+  .panel h2{ font-weight:700; font-size:18px; margin-bottom:6px; }
+  .panel p{ font-size:13px; color:var(--ink-soft); line-height:1.5; }
+  .panel .label{ font-size:10.5px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:10px; }
+  .panel a{ color:var(--accent); }
+
+  /* skeleton shimmer */
+  .sk{ background:linear-gradient(100deg,rgba(255,255,255,.06) 30%,rgba(255,255,255,.14) 50%,rgba(255,255,255,.06) 70%);
+       background-size:200% 100%; animation:sheen 1.3s infinite; border-radius:5px; }
+  @keyframes sheen{ to{background-position:-200% 0} }
+  .sk-art{ width:104px;height:104px;border-radius:6px; }
+  .sk-line{ height:13px; margin-bottom:9px; }
+
+  .fade{ animation:fadein .45s ease forwards; }
+  @keyframes fadein{ from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+    .card{ opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div id="root"></div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+
+  const USERNAME = "adrianchen8662";
+  const PROFILE  = "https://listenbrainz.org/user/" + USERNAME + "/";
+
+  const API = "https://api.listenbrainz.org/1";
+  const REFRESH_MS = 20000;
+  const root  = document.getElementById("root");
+  let timer = null;
+
+  // ---------- helpers ----------
+  const esc = s => String(s == null ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+
+  function coverUrl(meta){
+    const m = (meta && meta.mbid_mapping) || {};
+    if (m.caa_release_mbid && m.caa_id != null){
+      return `https://archive.org/download/mbid-${m.caa_release_mbid}/mbid-${m.caa_release_mbid}-${m.caa_id}_thumb250.jpg`;
+    }
+    const rel = m.release_mbid ||
+      (meta && meta.additional_info && meta.additional_info.release_mbid);
+    if (rel) return `https://coverartarchive.org/release/${rel}/front-250`;
+    return null;
+  }
+
+  async function fetchFallbackCover(artist, track, album){
+    if (!track || !artist) return null;
+    try {
+      let q = `recording:"${track}" AND artist:"${artist}"`;
+      if (album) q += ` AND release:"${album}"`;
+      const data = await fetchJSON(
+        `https://musicbrainz.org/ws/2/recording/?query=${encodeURIComponent(q)}&fmt=json&limit=5`
+      );
+      for (const rec of (data.recordings || [])){
+        for (const rel of (rec.releases || [])){
+          if (rel.id) return `https://coverartarchive.org/release/${rel.id}/front-250`;
+        }
+      }
+    } catch(e){}
+    return null;
+  }
+
+  function ago(ts){
+    if (!ts) return "";
+    const s = Math.max(1, Math.floor(Date.now()/1000 - ts));
+    if (s < 60)      return s + "s ago";
+    const m = Math.floor(s/60);  if (m < 60) return m + "m ago";
+    const h = Math.floor(m/60);  if (h < 24) return h + "h ago";
+    const d = Math.floor(h/24);  if (d < 7)  return d + "d ago";
+    return new Date(ts*1000).toLocaleDateString(undefined,{month:"short",day:"numeric"});
+  }
+
+  // ---------- data ----------
+  async function fetchJSON(url){
+    const r = await fetch(url, { headers:{ "Accept":"application/json" } });
+    if (!r.ok) throw new Error("http_" + r.status);
+    return r.json();
+  }
+
+  async function load(){
+    try {
+      // 1) what's playing right now
+      let data = await fetchJSON(`${API}/user/${encodeURIComponent(USERNAME)}/playing-now`);
+      let listens = (data.payload && data.payload.listens) || [];
+      if (listens.length){
+        return renderTrack(listens[0], true);
+      }
+      // 2) fall back to most recent listen
+      data = await fetchJSON(`${API}/user/${encodeURIComponent(USERNAME)}/listens?count=1`);
+      listens = (data.payload && data.payload.listens) || [];
+      if (listens.length){
+        return renderTrack(listens[0], false);
+      }
+      renderEmpty();
+    } catch (err){
+      renderError();
+    }
+  }
+
+  // ---------- renderers ----------
+  function renderTrack(listen, isLive){
+    const meta   = listen.track_metadata || {};
+    const title  = meta.track_name   || "Unknown track";
+    const artist = meta.artist_name  || "Unknown artist";
+    const album  = meta.release_name || "";
+    const when   = isLive ? "" : ago(listen.listened_at);
+    const cover  = coverUrl(meta);
+
+    const eyebrow = isLive
+      ? `<div class="eyebrow">
+           <span class="eq"><span></span><span></span><span></span><span></span><span></span></span>
+           Now Playing
+         </div>`
+      : `<div class="eyebrow past">
+           <span class="paused-dot"></span> Last Played${when ? " · " + esc(when) : ""}
+         </div>`;
+
+    const art = cover
+      ? `<img class="art" alt="" src="${esc(cover)}"
+              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'art art-fallback',textContent:'\\u266A'}))">`
+      : `<div class="art art-fallback">&#9834;</div>`;
+
+    root.innerHTML = `
+      <a class="card-link fade" href="${esc(PROFILE)}" target="_blank" rel="noopener noreferrer">
+        <div class="card">
+          <div class="art-wrap">${art}</div>
+          <div class="meta">
+            ${eyebrow}
+            <div class="title">${esc(title)}</div>
+            <div class="artist">${esc(artist)}</div>
+            ${album ? `<div class="album">${esc(album)}</div>` : ""}
+            <div class="footer">
+              <span>${esc(USERNAME)}</span>
+              <span class="brand">via <b>ListenBrainz</b></span>
+            </div>
+          </div>
+        </div>
+      </a>`;
+
+    if (!cover){
+      fetchFallbackCover(artist, title, album).then(function(url){
+        if (!url) return;
+        const fallback = root.querySelector(".art-fallback");
+        if (!fallback) return;
+        const img = document.createElement("img");
+        img.className = "art";
+        img.alt = "";
+        img.src = url;
+        img.onerror = function(){ img.replaceWith(Object.assign(document.createElement("div"), {className:"art art-fallback", textContent:"♪"})); };
+        fallback.replaceWith(img);
+      });
+    }
+  }
+
+  function renderLoading(){
+    root.innerHTML = `
+      <div class="card">
+        <div class="sk sk-art"></div>
+        <div class="meta" style="flex:1">
+          <div class="sk sk-line" style="width:40%"></div>
+          <div class="sk sk-line" style="width:85%;height:20px"></div>
+          <div class="sk sk-line" style="width:55%"></div>
+        </div>
+      </div>`;
+  }
+
+  function renderEmpty(){
+    root.innerHTML = `
+      <div class="panel fade">
+        <div class="label">Silence</div>
+        <h2>Nothing playing yet</h2>
+        <p>This updates automatically when a track is scrobbled.</p>
+      </div>`;
+  }
+
+  function renderError(){
+    root.innerHTML = `
+      <div class="panel fade">
+        <div class="label">Now Playing</div>
+        <h2>Couldn't reach ListenBrainz</h2>
+        <p>It'll keep retrying. Meanwhile, see <a href="${esc(PROFILE)}" target="_blank" rel="noopener noreferrer">my listening history</a>.</p>
+      </div>`;
+  }
+
+  // ---------- lifecycle ----------
+  function start(){
+    if (timer) clearInterval(timer);
+    renderLoading();
+    load();
+    timer = setInterval(load, REFRESH_MS);
+  }
+
+  // pause polling when the tab/iframe isn't visible
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden){ if (timer){ clearInterval(timer); timer = null; } }
+    else if (!timer){ load(); timer = setInterval(load, REFRESH_MS); }
+  });
+
+  start();
+})();
+</script>
+</body>
+</html>
