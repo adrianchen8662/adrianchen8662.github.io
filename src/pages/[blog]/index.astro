@@ -1,0 +1,18 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { BLOGS, type Blog } from '../../blogs';
+import { getPosts } from '../../lib/posts';
+
+export function getStaticPaths() {
+  return BLOGS.map((blog) => ({ params: { blog: blog.id }, props: { blog } }));
+}
+
+const { blog } = Astro.props as { blog: Blog };
+const posts = await getPosts(blog.id);
+---
+<PageLayout title={blog.title} descriptionHtml={blog.description}>
+  <div class="blog-index">
+    <PostList posts={posts} />
+  </div>
+</PageLayout>

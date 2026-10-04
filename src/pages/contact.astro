@@ -1,0 +1,16 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { PROFILES } from '../site';
+---
+<PageLayout title="Contact" descriptionHtml="Where to find me online.">
+  <ul class="profiles">
+    {PROFILES.map((profile) => (
+      <li>
+        <span class="profile-name">{profile.name}</span>
+        <a href={profile.href} target="_blank" rel="noopener noreferrer">
+          {profile.href.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, '')}
+        </a>
+      </li>
+    ))}
+  </ul>
+</PageLayout>

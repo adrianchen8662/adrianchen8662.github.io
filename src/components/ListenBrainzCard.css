@@ -1,0 +1,217 @@
+/* Styles for ListenBrainzCard.tsx (adapted from prcutler/listenbrainz-widget, MIT; see the notice there) */
+
+.listenbrainz {
+  --lb-card: var(--green-gray);
+  --lb-ink: #f8f4ea;
+  --lb-ink-soft: #ddd3b4;
+  --lb-ink-faint: #bfb894;
+  --lb-accent: #d3bb7c; /* very light golden olive, lightened for small text */
+  max-width: 440px;
+}
+
+.lb-card-link {
+  display: block;
+  color: inherit;
+  border-radius: 8px;
+  transition: transform .18s ease;
+}
+
+.lb-card-link:hover {
+  color: inherit;
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+.lb-card,
+.lb-panel {
+  color: var(--lb-ink);
+  background: var(--lb-card);
+  border-radius: 8px;
+  box-shadow: 0 6px 16px -10px rgba(74, 71, 29, .6);
+}
+
+.lb-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+}
+
+.lb-card-link:hover .lb-card {
+  box-shadow: 0 10px 20px -10px rgba(74, 71, 29, .7);
+}
+
+.lb-art {
+  flex: 0 0 auto;
+  width: 104px;
+  height: 104px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #5f5b2c;
+}
+
+.lb-art-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  color: var(--lb-ink-faint);
+}
+
+.lb-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.lb-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 9px;
+  font-size: 10.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--lb-accent);
+}
+
+.lb-past {
+  color: var(--lb-ink-soft);
+}
+
+.lb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lb-ink-faint);
+}
+
+.lb-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2.5px;
+  height: 13px;
+}
+
+.lb-eq span {
+  width: 2.5px;
+  height: 30%;
+  border-radius: 2px;
+  background: linear-gradient(var(--lb-accent), var(--moss-green));
+  animation: lb-bounce .9s ease-in-out infinite;
+}
+
+.lb-eq span:nth-child(2) { animation-delay: .18s; }
+.lb-eq span:nth-child(3) { animation-delay: .38s; }
+.lb-eq span:nth-child(4) { animation-delay: .55s; }
+.lb-eq span:nth-child(5) { animation-delay: .27s; }
+
+@keyframes lb-bounce {
+  0%, 100% { height: 25%; }
+  50% { height: 100%; }
+}
+
+.lb-title {
+  display: -webkit-box;
+  margin-bottom: 5px;
+  overflow: hidden;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.15;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.lb-artist,
+.lb-album {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.lb-artist {
+  font-size: 14.5px;
+  color: var(--lb-ink-soft);
+}
+
+.lb-album {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--lb-ink-faint);
+}
+
+.lb-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 11px;
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  color: var(--lb-ink-faint);
+  border-top: 1px solid rgba(248, 244, 234, .15);
+}
+
+.lb-brand {
+  margin-left: auto;
+}
+
+.lb-brand b {
+  font-weight: 600;
+  color: var(--lb-ink-soft);
+}
+
+.lb-panel {
+  padding: 22px;
+  text-align: center;
+}
+
+.lb-panel h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.lb-panel p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--lb-ink-soft);
+}
+
+.lb-panel a {
+  color: var(--lb-accent);
+}
+
+.lb-label {
+  margin-bottom: 10px;
+  font-size: 10.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--lb-accent);
+}
+
+.lb-skeleton {
+  border-radius: 5px;
+  background: linear-gradient(100deg, rgba(255, 255, 255, .06) 30%, rgba(255, 255, 255, .14) 50%, rgba(255, 255, 255, .06) 70%);
+  background-size: 200% 100%;
+  animation: lb-sheen 1.3s infinite;
+}
+
+.lb-line {
+  height: 13px;
+  margin-bottom: 9px;
+}
+
+@keyframes lb-sheen {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lb-eq span,
+  .lb-skeleton {
+    animation: none;
+  }
+
+  .lb-card-link {
+    transition: none;
+  }
+}

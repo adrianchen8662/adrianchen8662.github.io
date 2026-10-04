@@ -1,0 +1,18 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import ListenBrainzCard from '../components/ListenBrainzCard';
+---
+<PageLayout title="About" descriptionHtml="The man himself!">
+  <div class="about-text">
+    <p>Hi, I'm Adrian Chen. I'm a Computer Engineering senior at Purdue University.</p>
+    <p>
+      I like all things open-source, and tinkering with various little projects to expand my knowledge of computing.
+      I'm an amateur cook, and the only food I can't stand are boiled eggs.
+    </p>
+    <p>My music taste:</p>
+  </div>
+  <ListenBrainzCard client:visible username="adrianchen8662" />
+  <p class="about-more">
+    <a href="https://listenbrainz.org/user/adrianchen8662/">See my full listening history on ListenBrainz</a>
+  </p>
+</PageLayout>

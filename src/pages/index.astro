@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Typewriter from '../components/Typewriter';
+---
+<BaseLayout description="Purdue Computer Engineering Senior">
+  <section class="hero">
+    <Typewriter
+      client:load
+      prefix="Hi, I'm Adrian Chen. I'm a"
+      phrases={['Programmer.', 'Computer Engineer.', 'Computer Security Intern.', 'Purdue Graduate.']}
+    />
+    <a class="button button-light" href="/resume/">Resume</a>
+  </section>
+
+  <div class="features">
+    <section class="feature">
+      <div class="container">
+        <div class="feature-text">
+          <h2><strong>Final ECE Project</strong> - Spring 2023</h2>
+          <p>
+            Final ECE 49595 open-source project Argus provides computer vision and face identification to a home security solution in a light package.<br />
+            <a href="/final-project/">More information</a>
+          </p>
+        </div>
+        <figure class="feature-image screenshot">
+          <img src="https://i.imgur.com/k0oK4jj.png" alt="Argus screenshot" loading="lazy" />
+        </figure>
+      </div>
+    </section>
+
+    <section class="feature">
+      <div class="container">
+        <div class="feature-text">
+          <h2><strong>Security Engineering Intern at Mavenir</strong> - Summer 2022</h2>
+          <p>
+            Ported data obfuscation tool from Python to Golang, and increased speed by 200%<br />
+            Created static code analysis tool in Python for secret detection and obfuscation in code<br />
+            Collaborated on creating a Python tool to automatically scan AWS ports for vulnerabilities and compiling reports<br />
+            Experience in working with FossID, Snyk and JFrog on open-source license management and SBOM
+          </p>
+        </div>
+        <figure class="feature-image screenshot">
+          <img src="/images/Mavenir_Logo_CMYK.jpg" alt="Mavenir logo" width="1200" height="627" loading="lazy" />
+        </figure>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

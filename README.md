@@ -1,88 +1,56 @@
-# Hydra
+# adrianchen8662.github.io
 
-Marketing site template for Jekyll. Browse through a [live demo](https://proud-alligator.cloudvent.net/).
-Increase the web presence of your brand with this configurable theme.
+Adrian Chen's personal website, built with [Astro](https://astro.build), using React for the interactive parts, and hosted on GitHub Pages.
 
-![Hydra template screenshot](images/_screenshot.png)
+## Working on the site
 
-Hydra was made by [CloudCannon](http://cloudcannon.com/), the Cloud CMS for Jekyll.
+Needs Node 22.12 or newer.
 
-Find more templates, themes and step-by-step Jekyll tutorials at [CloudCannon Academy](https://learn.cloudcannon.com/).
+```sh
+npm install
+npm run dev       # local site at http://localhost:4321, reloads on save
+npm run build     # type-check, then build into dist/
+npm run preview   # serve the built site from dist/
+```
 
-[![Deploy to CloudCannon](https://buttons.cloudcannon.com/deploy.svg)](https://app.cloudcannon.com/register#sites/connect/github/CloudCannon/hydra-jekyll-template)
+## Where things are
 
-## Features
+| Path | What it holds |
+| --- | --- |
+| `_posts/<blog>/` | Blog posts, one folder per blog in the Blogs menu |
+| `src/blogs.ts` | The blogs: menu name, page heading and intro |
+| `src/site.ts` | Navigation and profile links |
+| `src/pages/` | One file per page; `[blog]/` builds each blog and its posts |
+| `src/components/` | Navigation, footer, typewriter heading, ListenBrainz card |
+| `src/styles/global.css` | The palette and site styles |
+| `public/` | Files served as they are: images, favicon, `robots.txt` |
 
-* Contact form
-* Pre-built pages
-* Pre-styled components
-* Blog with pagination
-* Post category pages
-* Disqus comments for posts
-* Staff and author system
-* Configurable footer
-* Optimised for editing in [CloudCannon](http://cloudcannon.com/)
-* RSS/Atom feed
-* SEO tags
-* Google Analytics
+## Writing a post
 
-## Setup
+Add `_posts/<blog>/YYYY-MM-DD-Title-Of-Post.md`:
 
-1. Add your site and author details in `_config.yml`.
-2. Add your Google Analytics and Disqus keys to `_config.yml`.
-3. Get a workflow going to see your site's output (with [CloudCannon](https://app.cloudcannon.com/) or Jekyll locally).
+```md
+---
+title: Title Of Post
+date: 2026-10-04
+categories:
+  - Server
+---
 
-## Develop
+The first paragraph is the excerpt in the blog's post list.
+```
 
-Hydra was built with [Jekyll](http://jekyllrb.com/) version 3.3.1, but should support newer versions as well.
+It's published at `/<blog>/title-of-post/`.
 
-Install the dependencies with [Bundler](http://bundler.io/):
+## Adding a blog
 
-~~~bash
-$ bundle install
-~~~
+1. Create `_posts/<id>/` for its posts.
+2. Add the blog to `src/blogs.ts`. It shows up in the Blogs menu and the footer, at `/<id>/`.
 
-Run `jekyll` commands through Bundler to ensure you're using the right versions:
+## Deploying
 
-~~~bash
-$ bundle exec jekyll serve
-~~~
+Every push to `main` builds the site and publishes it with `.github/workflows/deploy.yml`; pull requests get a build check. In the repository's Settings → Pages, **Source** must be set to **GitHub Actions**.
 
-## Editing
+## Credits
 
-Hydra is already optimised for adding, updating and removing pages, staff, advice, company details and footer elements in CloudCannon.
-
-### Posts
-
-* Add, update or remove a post in the *Posts* collection.
-* The **Staff Author** field links to members in the **Staff** collection.
-* Documentation pages are organised in the navigation by category, with URLs based on the path inside the `_docs` folder.
-* Change the defaults when new posts are created in `_posts/_defaults.md`.
-
-### Blogs
-
-Each blog lists the posts whose `blog` field matches its own. To add a blog (e.g. `work`):
-
-1. Create `work/index.html` with `layout: blog`, `blog: work`, a `title` and a `description` in its front matter.
-2. Set `blog: work` on that blog's posts in `_posts/`.
-3. Add it under the *Blogs* dropdown in `_data/navigation.yml`.
-
-### Contact Form
-
-* Preconfigured to work with CloudCannon, but easily changed to another provider (e.g. [FormSpree](https://formspree.io/)).
-* Sends email to the address listed in company details.
-
-### Staff
-
-* Reused around the site to save multiple editing locations.
-* Add `excluded_in_search: true` to any documentation page's front matter to exclude that page in the search results.
-
-### Navigation
-
-* Exposed as a data file to give clients better access.
-* Set in the *Data* / *Navigation* section.
-
-### Footer
-
-* Exposed as a data file to give clients better access.
-* Set in the *Data* / *Footer* section.
+The ListenBrainz card is adapted from [prcutler/listenbrainz-widget](https://github.com/prcutler/listenbrainz-widget) (MIT); its license notice is in `src/components/ListenBrainzCard.tsx`.
