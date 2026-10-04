@@ -43,6 +43,11 @@ The first paragraph is the excerpt in the blog's post list.
 
 It's published at `/<blog address>/title-of-post/`, where the blog's address is its `slug` in `src/blogs.ts`.
 
+## Images in posts
+
+- **Compressed:** put the image next to the post, for example `_posts/<blog>/images/<post>/diagram.png`, and link it relatively: `![Diagram](./images/<post>/diagram.png)`. The build turns it into WebP in several sizes, and browsers download only the size they need. Use this for screenshots and diagrams.
+- **Full size:** put the file in `public/`, for example `public/photos/trip/beach.jpg`, and link it from the site root: `![Beach](/photos/trip/beach.jpg)`. It's published exactly as it is. Use this for photos you want shown at full quality.
+
 ## Adding a blog
 
 1. Create `_posts/<id>/` for its posts. Until it has one, keep an empty `.gitkeep` file in it, since git doesn't store empty folders.
