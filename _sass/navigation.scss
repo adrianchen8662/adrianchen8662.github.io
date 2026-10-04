@@ -107,7 +107,7 @@ nav {
 	}
 
 	.dropdown-toggle {
-		// Undo the global button styles from staff.scss so this matches the nav links
+		// Reset the browser button styles so this matches the nav links
 		background: none;
 		box-shadow: none;
 		border: 0;
