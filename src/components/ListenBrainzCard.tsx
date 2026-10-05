@@ -27,7 +27,7 @@
   SOFTWARE.
 */
 import { useEffect, useState } from 'react';
-import { API, coverUrl, fetchJSON, type Listen, type TrackMetadata } from '../lib/listenbrainz';
+import { ago, API, coverUrl, fetchJSON, loadSnapshot, type Listen, type TrackMetadata } from '../lib/listenbrainz';
 import './ListenBrainzCard.css';
 
 const REFRESH_MS = 20000;
@@ -51,19 +51,6 @@ async function searchCover(artist: string, track: string, album: string) {
     }
   }
   return null;
-}
-
-function ago(timestamp?: number) {
-  if (!timestamp) return '';
-  const s = Math.max(1, Math.floor(Date.now() / 1000 - timestamp));
-  if (s < 60) return `${s}s ago`;
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  const d = Math.floor(h / 24);
-  if (d < 7) return `${d}d ago`;
-  return new Date(timestamp * 1000).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
 /** Album art for one track; the card gives each track its own Cover, so the lookup runs once per track */
@@ -95,6 +82,15 @@ function NowPlaying({ username }: { username: string }) {
   useEffect(() => {
     let timer: number | undefined;
     let cancelled = false;
+    let inFlight = false;
+
+    // Show the last track the site was built with until ListenBrainz answers
+    loadSnapshot(username).then((snapshot) => {
+      const latest = snapshot?.latest;
+      if (!cancelled && latest) {
+        setState((previous) => (previous.kind === 'track' ? previous : { kind: 'track', listen: latest, live: false }));
+      }
+    });
 
     async function load() {
       try {
@@ -115,25 +111,29 @@ function NowPlaying({ username }: { username: string }) {
       }
     }
 
-    function start() {
-      load();
-      timer = window.setInterval(load, REFRESH_MS);
-    }
-    function stop() {
-      window.clearInterval(timer);
+    // Ask again only once ListenBrainz has answered, so a slow API never gets overlapping requests
+    async function poll() {
       timer = undefined;
+      inFlight = true;
+      await load();
+      inFlight = false;
+      if (!cancelled && !document.hidden) timer = window.setTimeout(poll, REFRESH_MS);
     }
-    // Pause polling while the tab is hidden
+    // Pause while the tab is hidden
     function onVisibilityChange() {
-      if (document.hidden) stop();
-      else if (timer === undefined) start();
+      if (document.hidden) {
+        window.clearTimeout(timer);
+        timer = undefined;
+      } else if (timer === undefined && !inFlight) {
+        poll();
+      }
     }
 
-    start();
+    poll();
     document.addEventListener('visibilitychange', onVisibilityChange);
     return () => {
       cancelled = true;
-      stop();
+      window.clearTimeout(timer);
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
   }, [username]);
