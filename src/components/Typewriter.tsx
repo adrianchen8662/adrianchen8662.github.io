@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
 interface Props {
-  /** Text that stays put, e.g. "Hi, I'm Adrian Chen. I'm a" */
+  /** Text that stays put, e.g. "Hi, I'm Adrian Chen. I'm" */
   prefix: string;
-  /** Endings typed and deleted in turn */
+  /** Endings typed and deleted in turn, each with its own "a" or "an" */
   phrases: string[];
 }
 
