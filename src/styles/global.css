@@ -1103,11 +1103,25 @@ h2 strong {
   overflow-wrap: anywhere;
 }
 
+.resume-actions {
+  margin: 0 0 24px;
+  text-align: center;
+}
+
+/* The PDF is a white page whatever the theme, so it's framed like paper */
 .resume {
   display: block;
   width: 100%;
-  max-width: 1200px;
-  aspect-ratio: 3 / 2;
+  max-width: 900px;
+  aspect-ratio: 8.5 / 11;
   margin: 0 auto;
-  border: 0;
+  background: #fff;
+  border: 1px solid var(--rule);
+  box-shadow: 0 6px 24px -12px rgba(0, 0, 0, .4);
+}
+
+.resume-preview {
+  display: block;
+  width: 100%;
+  height: auto;
 }

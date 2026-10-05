@@ -63,7 +63,7 @@ Add an entry to `_data/timeline.yml`; order doesn't matter. The home page sorts 
 - kind: work            # work, education or project
   title: Software Engineer
   organization: ASRC Federal
-  start: 2025-12        # YYYY-MM or YYYY; leave out end while it's ongoing
+  start: 2025-09        # YYYY-MM or YYYY; leave out end while it's ongoing
   description:
     - One line per bullet
   skills:
@@ -71,6 +71,14 @@ Add an entry to `_data/timeline.yml`; order doesn't matter. The home page sorts 
 ```
 
 `type`, `location`, `workplace`, `end`, `link` (`label` and `href`) and `image` (`src` and `alt`) are optional; the comments at the top of the file list them. For a certification, use `kind: certification`, `start` for when it was issued and `expires` for when it runs out.
+
+## Updating the resume
+
+The Resume page embeds `public/Adrian-Chen-Resume.pdf`; phones, which can't show a PDF inline, get a preview image that links to it. To update it:
+
+1. Replace `public/Adrian-Chen-Resume.pdf` with the new PDF.
+2. Regenerate the preview: `pdftoppm -r 150 -png -singlefile public/Adrian-Chen-Resume.pdf src/assets/resume-preview` (`pdftoppm` is in the poppler package: `brew install poppler`, or `apt install poppler-utils`).
+3. Change the `updated` date at the top of `src/pages/resume.astro`.
 
 ## ListenBrainz on the About page
 
