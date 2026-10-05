@@ -13,7 +13,7 @@ crons = ["*/15 * * * *"]
 binding = "DB"
 database_name = "site-api"
 # Printed by `npx wrangler d1 create site-api`; it isn't a secret
-database_id = "REPLACE_WITH_DATABASE_ID"
+database_id = "feb6d4ac-f7f4-4aaa-9796-8b9bbe77fe8b"
 migrations_dir = "migrations"
 
 [vars]
