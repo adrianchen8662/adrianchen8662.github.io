@@ -16,11 +16,11 @@ export interface Blog {
 
 export const BLOGS: Blog[] = [
   {
-    id: 'doohickeys',
-    slug: 'doohickeys',
-    name: 'Doohickeys',
-    title: 'Doohickeys',
-    description: "Gadgets and gear I've taken apart, measured and tinkered with.",
+    id: 'bits-and-doohickeys',
+    slug: 'bits-and-doohickeys',
+    name: 'Bits & Doohickeys',
+    title: 'Bits & Doohickeys',
+    description: "Software and hardware I've built, taken apart, measured and tinkered with.",
   },
   {
     id: 'cs632',
