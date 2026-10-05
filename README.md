@@ -124,7 +124,7 @@ npm install
    npx wrangler secret put ADMIN_TOKEN     # optional: any long random string
    ```
 
-7. **Fill in the history:** `curl -X POST -H "Authorization: Bearer <ADMIN_TOKEN>" <address>/admin/sync`. Repeat it until `added` is 0 (the cron does the same every 15 minutes, so you can also just wait), then check `<address>/most-played`.
+7. **Fill in the history:** `curl -X POST -H "Authorization: Bearer <ADMIN_TOKEN>" <address>/admin/sync`. Repeat it until `added` is 0 (the cron does the same every 15 minutes, so you can also just wait), then check `<address>/most-played`. ListenBrainz can be very slow or return errors; a run that hits one keeps the listens it had already fetched and reports the problem in `error`, so just run it again. Until the history catches up to today, Now Playing's "Last Played" fallback (not the live Spotify track) shows an older listen.
 8. **Point the site at it:** in the repository's Settings → Secrets and variables → Actions → **Variables**, add `PUBLIC_API_URL` with the Worker's address. For `npm run dev`, put `PUBLIC_API_URL=<address>` in a `.env` file instead.
 9. **Deploy from GitHub from now on:** `.github/workflows/worker.yml` checks the Worker on every change and deploys it from `main`. Add two repository **secrets** (the same page, **Secrets**): `CLOUDFLARE_ACCOUNT_ID`, and `CLOUDFLARE_API_TOKEN`, made at Cloudflare → My Profile → API Tokens from the **Edit Cloudflare Workers** template (check that it includes *Account → D1 → Edit*, and add it if not: the deploy applies the database migrations).
 
@@ -134,7 +134,7 @@ Do steps 1 to 8 before merging this to `main`: until `PUBLIC_API_URL` is set, th
 
 - `npm test` runs the Worker's tests (real SQL on SQLite, fake ListenBrainz and Spotify); `npm run typecheck` checks the types.
 - `npm run dev` runs it locally with a local database (`npm run migrate:local` first, and a `.dev.vars` file with the secrets above). `curl -X POST localhost:8787/admin/sync -H "Authorization: Bearer ..."` syncs it.
-- The free plan allows 100,000 requests a day, 10 ms of processor time per request and 50 outside requests per run, which is why each sync reads a few pages (`SYNC_PAGE_SIZE`, `SYNC_MAX_PAGES`) and the Most Played counts are stored rather than worked out per visitor. If a sync ever fails with a CPU limit error in the Worker's logs, lower those two numbers.
+- The free plan allows 100,000 requests a day, 10 ms of processor time per request and 50 outside requests per run, which is why each sync reads a few pages (`SYNC_PAGE_SIZE`, `SYNC_MAX_PAGES`) for at most `SYNC_BUDGET_MS` (90 seconds), and the Most Played counts are stored rather than worked out per visitor. If a sync ever fails with a CPU limit error in the Worker's logs, lower the first two numbers.
 - A custom domain would let the Worker use Cloudflare's edge cache; on `workers.dev` it keeps answers in memory instead.
 
 ## Deploying

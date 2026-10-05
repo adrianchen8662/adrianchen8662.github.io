@@ -136,11 +136,60 @@ describe('syncListens', () => {
     assert.equal((await env.DB.prepare("SELECT COUNT(*) AS n FROM listens WHERE track IN ('Four', 'Five')").first<{ n: number }>())!.n, 2);
   });
 
-  it('keeps what it has when ListenBrainz goes down, and says so', async () => {
-    const env = createEnv({ SYNC_PAGE_SIZE: '2' });
-    const all = [1, 2, 3, 4].map((i) => listen(now - 1000 + i));
+  it('keeps the pages that arrived when ListenBrainz goes down partway, and says so', async () => {
+    const env = createEnv({ SYNC_PAGE_SIZE: '2', SYNC_MAX_PAGES: '10' });
+    const all = [1, 2, 3, 4, 5, 6].map((i) => listen(now - 1000 + i));
     fakeListenBrainz(all, { failAfter: 1 });
-    await assert.rejects(syncListens(env, now), /HTTP 503/);
+    const result = await syncListens(env, now);
+    assert.match(result.error!, /HTTP 503/);
+    assert.equal(result.added, 2);
+    assert.equal(await stored(env), 2);
+  });
+
+  it('reports an outage from the very first page without throwing', async () => {
+    const env = createEnv();
+    fakeListenBrainz([], { failAfter: 0 });
+    const result = await syncListens(env, now);
+    assert.deepEqual([result.added, await stored(env)], [0, 0]);
+    assert.match(result.error!, /HTTP 503/);
+  });
+
+  it('tries a page again after a timeout or a server error, but not after a client error', async () => {
+    const env = createEnv();
+    const all = [listen(now - 100)];
+    const answers = [new Response('bad gateway', { status: 502 }), Response.json({ payload: { listens: all } })];
+    let calls = 0;
+    globalThis.fetch = (async () => answers[calls++]) as typeof fetch;
+    assert.equal((await syncListens(env, now)).added, 1);
+    assert.equal(calls, 2);
+
+    calls = 0;
+    globalThis.fetch = (async () => {
+      calls++;
+      if (calls === 1) throw new DOMException('The operation was aborted due to timeout', 'TimeoutError');
+      return Response.json({ payload: { listens: [listen(now - 50)] } });
+    }) as typeof fetch;
+    assert.equal((await syncListens(env, now)).added, 1);
+    assert.equal(calls, 2);
+
+    calls = 0;
+    globalThis.fetch = (async () => (calls++, new Response('no such user', { status: 404 }))) as typeof fetch;
+    assert.match((await syncListens(env, now)).error!, /HTTP 404/);
+    assert.equal(calls, 1);
+  });
+
+  it('gives up for the run once its time is up, and carries on next time', async () => {
+    const env = createEnv({ SYNC_PAGE_SIZE: '2', SYNC_MAX_PAGES: '10', SYNC_BUDGET_MS: '1' });
+    const all = Array.from({ length: 8 }, (_, i) => listen(now - 1000 + i + 1));
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+      const url = new URL(String(input));
+      const min = Number(url.searchParams.get('min_ts'));
+      return Response.json({ payload: { listens: all.filter((l) => l.listened_at! > min).slice(0, 2) } });
+    }) as typeof fetch;
+    const first = await syncListens(env, now);
+    assert.equal(first.pages, 1);
+    assert.equal(first.error, null);
     assert.equal(await stored(env), 2);
   });
 });

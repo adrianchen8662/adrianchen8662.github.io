@@ -255,6 +255,26 @@ describe('the other routes', () => {
     assert.equal(status.listenbrainz.lastSuccess, null);
   });
 
+  it('recounts after a sync that failed partway, since the pages that arrived changed the counts', async () => {
+    const env = createEnv({ ADMIN_TOKEN: 't', SYNC_PAGE_SIZE: '2', SYNC_MAX_PAGES: '5' });
+    const base = Math.floor(Date.now() / 1000) - 600;
+    let calls = 0;
+    fakeNetwork(() => {
+      calls++;
+      if (calls > 1) return new Response('down', { status: 503 });
+      return Response.json({
+        payload: { listens: [1, 2].map((i) => ({ listened_at: base + i, track_metadata: { track_name: `S${i}`, artist_name: 'B' } })) },
+      });
+    });
+    const w = await freshWorker();
+    const synced = await w.fetch(new Request('https://api.test/admin/sync', { method: 'POST', headers: { Authorization: 'Bearer t' } }), env);
+    const body = (await synced.json()) as { added: number; error: string; counted: boolean };
+    assert.deepEqual([body.added, body.counted], [2, true]);
+    assert.match(body.error, /HTTP 503/);
+    const stats = (await (await w.fetch(new Request('https://api.test/most-played'), env)).json()) as { ranges: { week: { listens: number } } };
+    assert.equal(stats.ranges.week.listens, 2);
+  });
+
   it('returns 404 for anything else', async () => {
     assert.equal((await get(createEnv(), '/nope')).status, 404);
   });

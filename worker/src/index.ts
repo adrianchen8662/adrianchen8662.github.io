@@ -103,23 +103,21 @@ async function status(env: Env): Promise<Reply> {
   });
 }
 
-/** One sync pass: new listens from ListenBrainz, then fresh counts. A ListenBrainz outage leaves D1 as it was. */
+/** One sync pass: new listens from ListenBrainz, then fresh counts. A ListenBrainz outage keeps what arrived. */
 export async function runSync(env: Env) {
-  let added = 0;
-  let error: string | null = null;
-  try {
-    ({ added } = await syncListens(env));
+  const { added, error } = await syncListens(env);
+  if (error) {
+    console.error(`ListenBrainz sync stopped early: ${error}`);
+    await setState(env.DB, 'lb_last_error', error).catch(() => {});
+  } else {
     await setState(env.DB, 'lb_last_ok', String(Math.floor(Date.now() / 1000)));
     await env.DB.prepare("DELETE FROM state WHERE key = 'lb_last_error'").run();
-  } catch (caught) {
-    error = String(caught);
-    console.error(`ListenBrainz sync failed: ${error}`);
-    await setState(env.DB, 'lb_last_error', error).catch(() => {});
   }
+  // Listens that arrived before a failure still change the counts
   const counted = await refreshStats(env, added > 0);
   // Whatever was remembered from before the sync is out of date
   memo.clear();
-  console.log(`Sync: ${added} new listens${error ? ', ListenBrainz failed' : ''}${counted ? ', counts refreshed' : ''}`);
+  console.log(`Sync: ${added} new listens${error ? ', ListenBrainz failed partway' : ''}${counted ? ', counts refreshed' : ''}`);
   return { added, error, counted };
 }
 

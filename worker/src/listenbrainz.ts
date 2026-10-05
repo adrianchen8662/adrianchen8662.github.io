@@ -86,14 +86,43 @@ export async function setState(db: D1Database, key: string, value: string) {
     .run();
 }
 
+/** ListenBrainz can take most of a minute to answer on a bad day, so this is generous */
+const PAGE_TIMEOUT_MS = 60000;
+const RETRIES = 1;
+
+/** One page of listens; a timeout, a 429 or a 5xx is tried again, anything else is not */
+async function fetchPage(url: string): Promise<LBListen[]> {
+  let failure = 'no answer';
+  for (let attempt = 0; attempt <= RETRIES; attempt++) {
+    try {
+      const response = await fetch(url, {
+        headers: { Accept: 'application/json', 'User-Agent': 'site-api (https://adrianchen8662.github.io)' },
+        signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
+      });
+      if (response.ok) {
+        const data = (await response.json()) as { payload?: { listens?: LBListen[] } };
+        return data.payload?.listens ?? [];
+      }
+      failure = `ListenBrainz answered HTTP ${response.status}`;
+      if (response.status < 500 && response.status !== 429) break;
+    } catch (error) {
+      failure = String(error);
+    }
+  }
+  throw new Error(failure);
+}
+
 /**
- * Adds the listens ListenBrainz has that D1 doesn't, oldest first, and returns how many were new. It stops
- * after a few pages so a run stays inside the free plan's limits; the first run (or one after a long outage)
- * just carries on from where the last stopped, 15 minutes later.
+ * Adds the listens ListenBrainz has that D1 doesn't, oldest first. It stops after a few pages, or when its time
+ * is up, so a run stays inside the free plan's limits and a slow ListenBrainz can't drag it out; the first runs
+ * (or one after a long outage) just carry on from where the last stopped, 15 minutes later.
+ *
+ * ListenBrainz failing doesn't throw: the pages that did arrive are kept, and `error` says what went wrong.
  */
 export async function syncListens(env: Env, now = Math.floor(Date.now() / 1000)) {
   const pageSize = number(env.SYNC_PAGE_SIZE, 200);
   const maxPages = number(env.SYNC_MAX_PAGES, 6);
+  const deadline = Date.now() + number(env.SYNC_BUDGET_MS, 90000);
   const api = env.LISTENBRAINZ_API ?? 'https://api.listenbrainz.org/1';
 
   const stored = await env.DB.prepare('SELECT MAX(listened_at) AS newest FROM listens').first<{ newest: number | null }>();
@@ -104,17 +133,17 @@ export async function syncListens(env: Env, now = Math.floor(Date.now() / 1000))
   let since = stored?.newest ? stored.newest - 1 : progress;
   let added = 0;
   let pages = 0;
+  let error: string | null = null;
 
-  while (pages < maxPages) {
+  while (pages < maxPages && Date.now() < deadline) {
     pages++;
-    const url = `${api}/user/${encodeURIComponent(env.LISTENBRAINZ_USER)}/listens?min_ts=${since}&count=${pageSize}`;
-    const response = await fetch(url, {
-      headers: { Accept: 'application/json', 'User-Agent': 'site-api (https://adrianchen8662.github.io)' },
-      signal: AbortSignal.timeout(30000),
-    });
-    if (!response.ok) throw new Error(`ListenBrainz answered HTTP ${response.status}`);
-    const data = (await response.json()) as { payload?: { listens?: LBListen[] } };
-    const listens = data.payload?.listens ?? [];
+    let listens: LBListen[];
+    try {
+      listens = await fetchPage(`${api}/user/${encodeURIComponent(env.LISTENBRAINZ_USER)}/listens?min_ts=${since}&count=${pageSize}`);
+    } catch (caught) {
+      error = String(caught);
+      break;
+    }
     const rows = listens.map(toRow).filter((row) => row !== null);
     if (!rows.length) break;
 
@@ -128,5 +157,5 @@ export async function syncListens(env: Env, now = Math.floor(Date.now() / 1000))
     since = newest > progress ? newest - 1 : newest;
     progress = Math.max(progress, newest);
   }
-  return { added, pages };
+  return { added, pages, error };
 }

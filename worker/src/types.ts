@@ -51,4 +51,6 @@ export interface Env {
   SPOTIFY_ACCOUNTS?: string;
   SYNC_PAGE_SIZE?: string;
   SYNC_MAX_PAGES?: string;
+  /** How long a sync may keep starting new pages, in milliseconds */
+  SYNC_BUDGET_MS?: string;
 }
