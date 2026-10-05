@@ -114,7 +114,8 @@ npm install
    ```
 
    Open the address it prints, approve access (it only asks to see what's playing), and it prints the refresh token.
-5. **Give the Worker its secrets:** run each of these and paste the value when asked. They're stored in Cloudflare, never in this repository or the site:
+5. **Deploy:** `npm run deploy` creates the Worker (secrets can only be added to a Worker that exists) and prints its address, like `https://site-api.<you>.workers.dev`. If it asks you to register a `workers.dev` subdomain, accept. Until the secrets are added, Now Playing just shows your latest ListenBrainz listen.
+6. **Give the Worker its secrets:** run each of these and paste the value when asked. They're stored in Cloudflare, never in this repository or the site, and take effect at once (no second deploy):
 
    ```sh
    npx wrangler secret put SPOTIFY_CLIENT_ID
@@ -123,7 +124,6 @@ npm install
    npx wrangler secret put ADMIN_TOKEN     # optional: any long random string
    ```
 
-6. **Deploy:** `npm run deploy` prints the Worker's address, like `https://site-api.<you>.workers.dev`.
 7. **Fill in the history:** `curl -X POST -H "Authorization: Bearer <ADMIN_TOKEN>" <address>/admin/sync`. Repeat it until `added` is 0 (the cron does the same every 15 minutes, so you can also just wait), then check `<address>/most-played`.
 8. **Point the site at it:** in the repository's Settings → Secrets and variables → Actions → **Variables**, add `PUBLIC_API_URL` with the Worker's address. For `npm run dev`, put `PUBLIC_API_URL=<address>` in a `.env` file instead.
 9. **Deploy from GitHub from now on:** `.github/workflows/worker.yml` checks the Worker on every change and deploys it from `main`. Add two repository **secrets** (the same page, **Secrets**): `CLOUDFLARE_ACCOUNT_ID`, and `CLOUDFLARE_API_TOKEN`, made at Cloudflare → My Profile → API Tokens from the **Edit Cloudflare Workers** template (check that it includes *Account → D1 → Edit*, and add it if not: the deploy applies the database migrations).
