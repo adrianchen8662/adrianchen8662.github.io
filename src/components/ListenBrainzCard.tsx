@@ -27,7 +27,7 @@
   SOFTWARE.
 */
 import { useEffect, useState } from 'react';
-import { ago, API, coverUrl, fetchJSON, loadSnapshot, type Listen, type TrackMetadata } from '../lib/listenbrainz';
+import { ago, API, coverUrl, fetchJSON, type Listen, type TrackMetadata } from '../lib/listenbrainz';
 import './ListenBrainzCard.css';
 
 const REFRESH_MS = 20000;
@@ -83,14 +83,6 @@ function NowPlaying({ username }: { username: string }) {
     let timer: number | undefined;
     let cancelled = false;
     let inFlight = false;
-
-    // Show the last track the site was built with until ListenBrainz answers
-    loadSnapshot(username).then((snapshot) => {
-      const latest = snapshot?.latest;
-      if (!cancelled && latest) {
-        setState((previous) => (previous.kind === 'track' ? previous : { kind: 'track', listen: latest, live: false }));
-      }
-    });
 
     async function load() {
       try {

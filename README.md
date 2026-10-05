@@ -63,7 +63,7 @@ Add an entry to `_data/timeline.yml`; order doesn't matter. The home page sorts 
 - kind: work            # work, education or project
   title: Software Engineer
   organization: ASRC Federal
-  start: 2025-12        # YYYY-MM or YYYY; leave out end while it's ongoing
+  start: 2025-09        # YYYY-MM or YYYY; leave out end while it's ongoing
   description:
     - One line per bullet
   skills:
@@ -72,13 +72,24 @@ Add an entry to `_data/timeline.yml`; order doesn't matter. The home page sorts 
 
 `type`, `location`, `workplace`, `end`, `link` (`label` and `href`) and `image` (`src` and `alt`) are optional; the comments at the top of the file list them. For a certification, use `kind: certification`, `start` for when it was issued and `expires` for when it runs out.
 
+## Updating the resume
+
+The Resume page embeds `public/Adrian-Chen-Resume.pdf`; phones, which can't show a PDF inline, get a preview image that links to it. To update it:
+
+1. Replace `public/Adrian-Chen-Resume.pdf` with the new PDF.
+2. Regenerate the preview: `pdftoppm -r 150 -png -singlefile public/Adrian-Chen-Resume.pdf src/assets/resume-preview` (`pdftoppm` is in the poppler package: `brew install poppler`, or `apt install poppler-utils`).
+3. Change the `updated` date at the top of `src/pages/resume.astro`.
+
 ## ListenBrainz on the About page
 
-Now Playing asks ListenBrainz directly. Most played reads `/listenbrainz.json`, a snapshot of the counts
-for each range that's made when the site is built, so visitors don't each fetch thousands of listens.
+Now Playing is live: every visitor's browser asks ListenBrainz directly. Most played reads `/listenbrainz.json`,
+a snapshot of the counts for each range that's made when the site is built, so visitors don't each fetch
+thousands of listens.
 
 - Only builds with `LISTENBRAINZ_SNAPSHOT=true` fetch it. The deploy workflow sets it, and rebuilds every
   6 hours to keep the counts fresh. If ListenBrainz is down, the build keeps the snapshot already on the site.
+- Each run's page in the Actions tab says what happened: a notice with the time of the counts, or a warning
+  that the old counts were kept. GitHub sometimes skips scheduled runs; **Run workflow** refreshes it by hand.
 - Other builds, including `npm run build` on your computer, publish an empty snapshot, and the page then
   counts the listens in the browser. To build with one locally, run `LISTENBRAINZ_SNAPSHOT=true npm run build`.
 

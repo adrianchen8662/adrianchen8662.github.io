@@ -1,11 +1,27 @@
 ---
+import { Image } from 'astro:assets';
 import PageLayout from '../layouts/PageLayout.astro';
+import preview from '../assets/resume-preview.png';
+
+// To update: replace public/Adrian-Chen-Resume.pdf, regenerate the preview, and change the date (see the README)
+const pdf = '/Adrian-Chen-Resume.pdf';
+const updated = 'October 5, 2026';
 ---
-<PageLayout title="Resume" descriptionHtml="Last Updated: 8/24/2023">
-  <iframe
-    class="resume"
-    src="https://drive.google.com/file/d/1nfVz3cwVIJYSP75OzwszZKE9-n3uIlY1/preview"
-    title="Adrian Chen's resume"
-    allow="autoplay"
-  ></iframe>
+<PageLayout
+  title="Resume"
+  descriptionHtml={`Last updated ${updated}`}
+  metaDescription="Adrian Chen's resume: Software Engineer at ASRC Federal Mission Solutions, B.S. in Computer Engineering from Purdue, M.S. student in Computer Science at NJIT."
+>
+  <p class="resume-actions"><a class="button" href={pdf} download>Download PDF</a></p>
+  <!-- Browsers that can't show PDFs inline, like most phones, get the preview image, which opens the PDF -->
+  <object class="resume" data={`${pdf}#toolbar=0&navpanes=0&view=FitH`} type="application/pdf" aria-label="Adrian Chen's resume, as a PDF">
+    <a href={pdf}>
+      <Image
+        class="resume-preview"
+        src={preview}
+        alt="Preview of Adrian Chen's resume. Open it to read the PDF."
+        sizes="(min-width: 940px) 900px, 100vw"
+      />
+    </a>
+  </object>
 </PageLayout>

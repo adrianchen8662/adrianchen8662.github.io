@@ -94,8 +94,6 @@ export interface Snapshot {
   user: string;
   /** When the listens were fetched, in seconds */
   fetchedAt: number;
-  /** The newest listen then, which the Now Playing card shows until ListenBrainz answers */
-  latest?: Listen;
   /** Most played, counted for each range */
   ranges: Record<RangeId, Tallies>;
 }

@@ -3,29 +3,24 @@
 //
 // Only builds run with LISTENBRAINZ_SNAPSHOT=true fetch it (the deploy workflow does, every 6 hours).
 // Other builds publish an empty file, and the page then counts the listens in the browser instead.
+import { appendFileSync } from 'node:fs';
 import type { APIRoute } from 'astro';
-import { fetchListens, playedAt, SNAPSHOT_PATH, type Listen, type Snapshot } from '../lib/listenbrainz';
+import { fetchListens, playedAt, SNAPSHOT_PATH, type Snapshot } from '../lib/listenbrainz';
 import { RANGES, tally } from '../lib/most-played';
 import { LISTENBRAINZ_USER } from '../site';
 
 const ATTEMPTS = 3;
 
-/** Just what the Now Playing card shows */
-function trim(listen?: Listen): Listen | undefined {
-  if (!listen) return undefined;
-  const meta = listen.track_metadata ?? {};
-  const mapping = meta.mbid_mapping ?? {};
-  return {
-    listened_at: listen.listened_at,
-    track_metadata: {
-      track_name: meta.track_name,
-      artist_name: meta.artist_name,
-      release_name: meta.release_name,
-      mbid_mapping: { caa_release_mbid: mapping.caa_release_mbid, caa_id: mapping.caa_id, release_mbid: mapping.release_mbid },
-      additional_info: { release_mbid: meta.additional_info?.release_mbid },
-    },
-  };
+/** Says what happened on the workflow run's page (an annotation and a summary), so a stale snapshot has an explanation */
+function report(level: 'notice' | 'warning', message: string) {
+  console.log(message);
+  if (process.env.GITHUB_ACTIONS !== 'true') return;
+  // Workflow commands only count at the start of a line, and Astro's progress output leaves the cursor mid-line
+  process.stdout.write(`\n::${level} title=ListenBrainz snapshot::${message}\n`);
+  if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `**ListenBrainz snapshot:** ${message}\n\n`);
 }
+
+const when = (seconds: number) => new Date(seconds * 1000).toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
 
 async function fresh(): Promise<Snapshot> {
   const now = Date.now() / 1000;
@@ -35,7 +30,7 @@ async function fresh(): Promise<Snapshot> {
   const ranges = Object.fromEntries(
     RANGES.map((range) => [range.id, tally(listens.filter((listen) => playedAt(listen) > range.start(now)))]),
   ) as Snapshot['ranges'];
-  return { user: LISTENBRAINZ_USER, fetchedAt: Math.floor(now), latest: trim(listens[0]), ranges };
+  return { user: LISTENBRAINZ_USER, fetchedAt: Math.floor(now), ranges };
 }
 
 /** The snapshot the live site has now, kept when ListenBrainz is down, so a deploy doesn't throw it away */
@@ -56,6 +51,7 @@ export const GET: APIRoute = async ({ site }) => {
     for (let attempt = 1; attempt <= ATTEMPTS && !snapshot; attempt++) {
       try {
         snapshot = await fresh();
+        report('notice', `Counted ${snapshot.ranges.year.listens.toLocaleString('en-US')} listens from this year, as of ${when(snapshot.fetchedAt)}.`);
       } catch (error) {
         console.warn(`ListenBrainz snapshot, attempt ${attempt} of ${ATTEMPTS} failed: ${error}`);
         if (attempt < ATTEMPTS) await new Promise((resolve) => setTimeout(resolve, attempt * 30000));
@@ -63,8 +59,15 @@ export const GET: APIRoute = async ({ site }) => {
     }
     if (!snapshot) {
       snapshot = await published(site);
-      console.warn(snapshot ? 'Keeping the snapshot already on the site' : 'Publishing no ListenBrainz snapshot');
+      report(
+        'warning',
+        snapshot
+          ? `ListenBrainz didn't answer after ${ATTEMPTS} tries, so the page keeps the counts from ${when(snapshot.fetchedAt)}.`
+          : `ListenBrainz didn't answer after ${ATTEMPTS} tries and the site has no earlier counts, so the page will count in the browser.`,
+      );
     }
+  } else {
+    console.log('Not fetching the ListenBrainz snapshot (LISTENBRAINZ_SNAPSHOT is not true); publishing an empty one.');
   }
   return new Response(JSON.stringify(snapshot ?? {}), { headers: { 'Content-Type': 'application/json' } });
 };
