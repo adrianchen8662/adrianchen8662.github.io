@@ -16,3 +16,7 @@ npm-debug.log*
 
 # macOS
 .DS_Store
+
+# Worker: local dev state and secrets for `wrangler dev`
+.wrangler/
+.dev.vars
