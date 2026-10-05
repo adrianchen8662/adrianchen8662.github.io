@@ -932,16 +932,19 @@ h2 strong {
 }
 
 .profiles li {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 4px 16px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--rule);
 }
 
+/* The name on its own line, with the link under it */
 .profile-name {
+  display: block;
+  margin-bottom: 2px;
   font-weight: 600;
+}
+
+.profiles a {
+  overflow-wrap: anywhere;
 }
 
 .resume {
