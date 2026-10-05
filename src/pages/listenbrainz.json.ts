@@ -1,7 +1,7 @@
 // /listenbrainz.json: what I've played most, counted when the site is built, so the About page can show
 // it without every visitor fetching thousands of listens from ListenBrainz.
 //
-// Only builds run with LISTENBRAINZ_SNAPSHOT=true fetch it (the deploy workflow does, every hour).
+// Only builds run with LISTENBRAINZ_SNAPSHOT=true fetch it (the deploy workflow does, every 6 hours).
 // Other builds publish an empty file, and the page then counts the listens in the browser instead.
 import { appendFileSync } from 'node:fs';
 import type { APIRoute } from 'astro';

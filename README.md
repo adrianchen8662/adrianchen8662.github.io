@@ -87,7 +87,7 @@ a snapshot of the counts for each range that's made when the site is built, so v
 thousands of listens.
 
 - Only builds with `LISTENBRAINZ_SNAPSHOT=true` fetch it. The deploy workflow sets it, and rebuilds every
-  hour to keep the counts fresh. If ListenBrainz is down, the build keeps the snapshot already on the site.
+  6 hours to keep the counts fresh. If ListenBrainz is down, the build keeps the snapshot already on the site.
 - Each run's page in the Actions tab says what happened: a notice with the time of the counts, or a warning
   that the old counts were kept. GitHub sometimes skips scheduled runs; **Run workflow** refreshes it by hand.
 - Other builds, including `npm run build` on your computer, publish an empty snapshot, and the page then

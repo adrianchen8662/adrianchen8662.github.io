@@ -4,10 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
-  # Rebuild every hour, which refreshes the ListenBrainz snapshot on the About page.
-  # GitHub runs schedules when it has capacity and sometimes skips one, so hourly keeps a skipped run cheap.
+  # Rebuild every 6 hours (00:23, 06:23, 12:23 and 18:23 UTC), which refreshes the ListenBrainz snapshot
+  # on the About page. Kept infrequent on purpose: each run fetches the year's listens from ListenBrainz.
   schedule:
-    - cron: '23 * * * *'
+    - cron: '23 */6 * * *'
   workflow_dispatch:
 
 permissions:
