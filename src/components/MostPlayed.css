@@ -1,8 +1,45 @@
 /* Styles for MostPlayed.tsx */
 
-.mp-summary {
+.mp-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
   margin: 0 0 20px;
+}
+
+.mp-summary,
+.mp-message {
+  margin: 0;
   color: var(--text-muted);
+}
+
+.mp-ranges {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--chip-background);
+  border-radius: 999px;
+}
+
+.mp-ranges button {
+  padding: 5px 14px;
+  font: inherit;
+  font-size: .9em;
+  color: var(--chip-text);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.mp-ranges button:hover {
+  background: var(--surface);
+}
+
+.mp-ranges button[aria-pressed="true"] {
+  color: #fff;
+  background: var(--rosewood);
 }
 
 .mp-grid {

@@ -1,13 +1,27 @@
-// The artists, albums and tracks played most on ListenBrainz over the last 30 days.
-// ListenBrainz's own monthly stats can lag weeks behind imported listens, so this counts the listens themselves.
-import { useEffect, useState, type ReactNode } from 'react';
+// The artists, albums and tracks played most on ListenBrainz over the last 7 or 30 days, or this year.
+// ListenBrainz's own stats can lag weeks behind imported listens, so this counts the listens themselves.
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { API, coverUrl, fetchJSON, type Listen } from '../lib/listenbrainz';
 import './MostPlayed.css';
 
-const DAYS = 30;
+const DAY = 24 * 60 * 60;
 const PAGE_SIZE = 1000; // the most listens ListenBrainz returns at once
-const MAX_PAGES = 5;
+const MAX_PAGES = 25;
 const TOP = 5;
+
+const RANGES = [
+  { id: 'week', label: '7 days', summary: 'Last 7 days', when: 'in the last 7 days', start: (now: number) => now - 7 * DAY },
+  { id: 'month', label: '30 days', summary: 'Last 30 days', when: 'in the last 30 days', start: (now: number) => now - 30 * DAY },
+  {
+    id: 'year',
+    label: 'This year',
+    summary: 'This year',
+    when: 'this year',
+    start: (now: number) => new Date(new Date(now * 1000).getFullYear(), 0, 1).getTime() / 1000,
+  },
+] as const;
+
+type Range = (typeof RANGES)[number];
 
 interface Entry {
   name: string;
@@ -25,21 +39,35 @@ interface Tallies {
   tracks: Entry[];
 }
 
-type State = { kind: 'loading' } | { kind: 'done'; tallies: Tallies } | { kind: 'error' };
+type Status = { kind: 'loading'; loaded: number } | { kind: 'error' };
 
-/** Every listen after minTs. ListenBrainz answers min_ts with the oldest listens after it, so page forward from there. */
-async function listensSince(username: string, minTs: number) {
+/** Listens loaded so far: every one after `since`, newest first */
+interface History {
+  since: number;
+  listens: Listen[];
+}
+
+const playedAt = (listen: Listen) => listen.listened_at ?? 0;
+
+/**
+ * Every listen after `after`, and up to `before` if given, newest first.
+ * ListenBrainz answers min_ts with the oldest listens after it, so this pages forward from there.
+ */
+async function fetchListens(username: string, after: number, before: number | undefined, onProgress: (count: number) => void) {
   const all: Listen[] = [];
-  let since = minTs;
+  let since = after;
   for (let page = 0; page < MAX_PAGES; page++) {
-    const data = await fetchJSON(`${API}/user/${encodeURIComponent(username)}/listens?min_ts=${since}&count=${PAGE_SIZE}`);
+    const params = new URLSearchParams({ min_ts: String(since), count: String(PAGE_SIZE) });
+    if (before !== undefined) params.set('max_ts', String(before + 1));
+    const data = await fetchJSON(`${API}/user/${encodeURIComponent(username)}/listens?${params}`);
     const listens: Listen[] = data.payload?.listens ?? [];
     all.push(...listens);
+    onProgress(all.length);
     if (listens.length < PAGE_SIZE) break;
-    since = Math.max(...listens.map((listen) => listen.listened_at ?? 0));
+    since = Math.max(...listens.map(playedAt));
   }
   // Newest first, so ties in the counts go to whatever was played more recently
-  return all.sort((a, b) => (b.listened_at ?? 0) - (a.listened_at ?? 0));
+  return all.sort((a, b) => playedAt(b) - playedAt(a));
 }
 
 /** Play counts keyed by name, ignoring case; an entry keeps the spelling and cover of its most recent listen */
@@ -137,79 +165,106 @@ function Skeleton() {
 }
 
 export default function MostPlayed({ username }: { username: string }) {
-  const [state, setState] = useState<State>({ kind: 'loading' });
-  const history = `https://listenbrainz.org/user/${username}/`;
+  const [range, setRange] = useState<Range>(RANGES[1]);
+  const [now] = useState(() => Date.now() / 1000);
+  // Kept between switches, so a shorter range shows at once and a longer one loads only the older listens
+  const [history, setHistory] = useState<History>();
+  const [status, setStatus] = useState<Status>({ kind: 'loading', loaded: 0 });
+
+  const since = range.start(now);
+  const covered = history !== undefined && history.since <= since;
+  const tallies = useMemo(
+    () => (covered ? tally(history.listens.filter((listen) => playedAt(listen) > since)) : undefined),
+    [covered, history, since],
+  );
 
   useEffect(() => {
+    if (covered) return;
     let cancelled = false;
-    const since = Math.floor(Date.now() / 1000) - DAYS * 24 * 60 * 60;
-    listensSince(username, since)
-      .then((listens) => {
-        if (!cancelled) setState({ kind: 'done', tallies: tally(listens) });
+    const have = history?.listens ?? [];
+    setStatus({ kind: 'loading', loaded: have.length });
+    fetchListens(username, since, history?.since, (count) => {
+      if (!cancelled) setStatus({ kind: 'loading', loaded: have.length + count });
+    })
+      .then((older) => {
+        if (!cancelled) setHistory({ since, listens: [...have, ...older] });
       })
       .catch(() => {
-        if (!cancelled) setState({ kind: 'error' });
+        if (!cancelled) setStatus({ kind: 'error' });
       });
     return () => {
       cancelled = true;
     };
-  }, [username]);
+  }, [username, since, covered, history]);
 
-  if (state.kind === 'error') {
-    return (
-      <p className="mp-summary">
+  let summary: string = range.summary;
+  if (tallies) summary += ` · ${plural(tallies.listens, 'listen')} · ${plural(tallies.artistCount, 'artist')}`;
+  else if (status.kind === 'loading' && status.loaded > 0) summary += ` · loading, ${plural(status.loaded, 'listen')} so far`;
+
+  let body: ReactNode;
+  if (tallies === undefined && status.kind === 'error') {
+    body = (
+      <p className="mp-message">
         Couldn't reach ListenBrainz just now. See{' '}
-        <a href={history} target="_blank" rel="noopener noreferrer">my listening history</a> there instead.
+        <a href={`https://listenbrainz.org/user/${username}/`} target="_blank" rel="noopener noreferrer">
+          my listening history
+        </a>{' '}
+        there instead.
       </p>
     );
-  }
-
-  const tallies = state.kind === 'done' ? state.tallies : undefined;
-  if (tallies?.listens === 0) {
-    return <p className="mp-summary">Nothing played in the last {DAYS} days.</p>;
+  } else if (!tallies) {
+    body = <Skeleton />;
+  } else if (tallies.listens === 0) {
+    body = <p className="mp-message">Nothing played {range.when}.</p>;
+  } else {
+    body = (
+      <div className="mp-grid">
+        <Column title="Artists" kind="artists">
+          {tallies.artists.map((artist) => (
+            <li key={artist.name} className="mp-item">
+              <span className="mp-text">
+                <span className="mp-row">
+                  <span className="mp-name">{artist.name}</span>
+                  <Plays n={artist.plays} />
+                </span>
+                <span className="mp-bar" aria-hidden="true">
+                  <span style={{ width: `${(artist.plays / tallies.artists[0].plays) * 100}%` }} />
+                </span>
+              </span>
+            </li>
+          ))}
+        </Column>
+        {(['albums', 'tracks'] as const).map((kind) => (
+          <Column key={kind} title={kind === 'albums' ? 'Albums' : 'Tracks'} kind={kind}>
+            {tallies[kind].map((entry) => (
+              <li key={`${entry.name}\n${entry.by}`} className="mp-item">
+                <Cover src={entry.cover} />
+                <span className="mp-text">
+                  <span className="mp-name">{entry.name}</span>
+                  <span className="mp-by">{entry.by}</span>
+                </span>
+                <Plays n={entry.plays} />
+              </li>
+            ))}
+          </Column>
+        ))}
+      </div>
+    );
   }
 
   return (
     <div className="most-played">
-      <p className="mp-summary">
-        Last {DAYS} days
-        {tallies && ` · ${plural(tallies.listens, 'listen')} · ${plural(tallies.artistCount, 'artist')}`}
-      </p>
-      {tallies ? (
-        <div className="mp-grid">
-          <Column title="Artists" kind="artists">
-            {tallies.artists.map((artist) => (
-              <li key={artist.name} className="mp-item">
-                <span className="mp-text">
-                  <span className="mp-row">
-                    <span className="mp-name">{artist.name}</span>
-                    <Plays n={artist.plays} />
-                  </span>
-                  <span className="mp-bar" aria-hidden="true">
-                    <span style={{ width: `${(artist.plays / tallies.artists[0].plays) * 100}%` }} />
-                  </span>
-                </span>
-              </li>
-            ))}
-          </Column>
-          {(['albums', 'tracks'] as const).map((kind) => (
-            <Column key={kind} title={kind === 'albums' ? 'Albums' : 'Tracks'} kind={kind}>
-              {tallies[kind].map((entry) => (
-                <li key={`${entry.name}\n${entry.by}`} className="mp-item">
-                  <Cover src={entry.cover} />
-                  <span className="mp-text">
-                    <span className="mp-name">{entry.name}</span>
-                    <span className="mp-by">{entry.by}</span>
-                  </span>
-                  <Plays n={entry.plays} />
-                </li>
-              ))}
-            </Column>
+      <div className="mp-toolbar">
+        <p className="mp-summary" aria-live="polite">{summary}</p>
+        <div className="mp-ranges" role="group" aria-label="Time range">
+          {RANGES.map((r) => (
+            <button key={r.id} type="button" aria-pressed={r === range} onClick={() => setRange(r)}>
+              {r.label}
+            </button>
           ))}
         </div>
-      ) : (
-        <Skeleton />
-      )}
+      </div>
+      {body}
     </div>
   );
 }

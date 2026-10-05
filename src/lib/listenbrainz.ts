@@ -21,8 +21,11 @@ export interface Listen {
   track_metadata?: TrackMetadata;
 }
 
+/** Gives up on a request after this long, so an outage shows a message instead of loading forever */
+const TIMEOUT_MS = 20000;
+
 export async function fetchJSON(url: string) {
-  const response = await fetch(url, { headers: { Accept: 'application/json' } });
+  const response = await fetch(url, { headers: { Accept: 'application/json' }, signal: AbortSignal.timeout(TIMEOUT_MS) });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   return response.json();
 }
