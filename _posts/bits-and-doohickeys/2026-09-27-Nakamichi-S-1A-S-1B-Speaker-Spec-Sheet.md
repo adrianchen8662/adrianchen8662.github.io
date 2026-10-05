@@ -1,5 +1,6 @@
 ---
-title: Nakamichi S-1A / S-1B Speaker Spec Sheet
+# \u2011 is a non-breaking hyphen, so "S-1A" and "S-1B" never split across lines
+title: "Nakamichi S\u20111A / S\u20111B Speaker Spec Sheet"
 date: 2026-09-27
 categories:
   - Audio
