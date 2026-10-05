@@ -25,17 +25,19 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Only pushes to main, the schedule and manual runs on main publish the site; pull request checks only build it.
+      # The event is checked as well as the branch: a check that starts after its PR was merged reports the ref as main.
       - run: npm run build
         env:
           # Builds that get published fetch the ListenBrainz snapshot (src/pages/listenbrainz.json.ts)
-          LISTENBRAINZ_SNAPSHOT: ${{ github.ref == 'refs/heads/main' }}
-      - if: github.ref == 'refs/heads/main'
+          LISTENBRAINZ_SNAPSHOT: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+      - if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     permissions:
