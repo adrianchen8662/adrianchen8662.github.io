@@ -1,5 +1,8 @@
 import { BLOGS, blogUrl } from './blogs';
 
+/** Whose listening the About page shows */
+export const LISTENBRAINZ_USER = 'adrianchen8662';
+
 export const SITE = {
   name: 'Adrian Chen',
   title: "Adrian Chen's Website",
@@ -37,6 +40,6 @@ export interface Profile {
 export const PROFILES: Profile[] = [
   { name: 'GitHub', href: 'https://github.com/adrianchen8662/', icon: 'github' },
   { name: 'LinkedIn', href: 'https://www.linkedin.com/in/adrian-chen-728513181/', icon: 'linkedin' },
-  { name: 'ListenBrainz', href: 'https://listenbrainz.org/user/adrianchen8662/' },
+  { name: 'ListenBrainz', href: `https://listenbrainz.org/user/${LISTENBRAINZ_USER}/` },
   { name: 'Strava', href: 'https://www.strava.com/athletes/142545549' },
 ];

@@ -1,43 +1,13 @@
 // The artists, albums and tracks played most on ListenBrainz over the last 7 or 30 days, or this year.
-// ListenBrainz's own stats can lag weeks behind imported listens, so this counts the listens themselves.
+// ListenBrainz's own stats can lag weeks behind imported listens, so these are counted from the listens.
+// The site is built with a snapshot of the counts (see src/pages/listenbrainz.json.ts); without one,
+// the listens are fetched and counted here in the browser.
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { API, coverUrl, fetchJSON, type Listen } from '../lib/listenbrainz';
+import { ago, fetchListens, loadSnapshot, playedAt, type Listen, type Snapshot } from '../lib/listenbrainz';
+import { RANGES, tally, type Range } from '../lib/most-played';
 import './MostPlayed.css';
 
-const DAY = 24 * 60 * 60;
-const PAGE_SIZE = 1000; // the most listens ListenBrainz returns at once
-const MAX_PAGES = 25;
-const TOP = 5;
-
-const RANGES = [
-  { id: 'week', label: '7 days', summary: 'Last 7 days', when: 'in the last 7 days', start: (now: number) => now - 7 * DAY },
-  { id: 'month', label: '30 days', summary: 'Last 30 days', when: 'in the last 30 days', start: (now: number) => now - 30 * DAY },
-  {
-    id: 'year',
-    label: 'This year',
-    summary: 'This year',
-    when: 'this year',
-    start: (now: number) => new Date(new Date(now * 1000).getFullYear(), 0, 1).getTime() / 1000,
-  },
-] as const;
-
-type Range = (typeof RANGES)[number];
-
-interface Entry {
-  name: string;
-  /** The artist, for albums and tracks */
-  by?: string;
-  cover?: string | null;
-  plays: number;
-}
-
-interface Tallies {
-  listens: number;
-  artistCount: number;
-  artists: Entry[];
-  albums: Entry[];
-  tracks: Entry[];
-}
+const SKELETON_ROWS = 5;
 
 type Status = { kind: 'loading'; loaded: number } | { kind: 'error' };
 
@@ -45,82 +15,6 @@ type Status = { kind: 'loading'; loaded: number } | { kind: 'error' };
 interface History {
   since: number;
   listens: Listen[];
-}
-
-const playedAt = (listen: Listen) => listen.listened_at ?? 0;
-
-/**
- * Every listen after `after`, and up to `before` if given, newest first.
- * ListenBrainz answers min_ts with the oldest listens after it, so this pages forward from there.
- */
-async function fetchListens(username: string, after: number, before: number | undefined, onProgress: (count: number) => void) {
-  const all: Listen[] = [];
-  let since = after;
-  for (let page = 0; page < MAX_PAGES; page++) {
-    const params = new URLSearchParams({ min_ts: String(since), count: String(PAGE_SIZE) });
-    if (before !== undefined) params.set('max_ts', String(before + 1));
-    const data = await fetchJSON(`${API}/user/${encodeURIComponent(username)}/listens?${params}`);
-    const listens: Listen[] = data.payload?.listens ?? [];
-    all.push(...listens);
-    onProgress(all.length);
-    if (listens.length < PAGE_SIZE) break;
-    since = Math.max(...listens.map(playedAt));
-  }
-  // Newest first, so ties in the counts go to whatever was played more recently
-  return all.sort((a, b) => playedAt(b) - playedAt(a));
-}
-
-/** Play counts keyed by name, ignoring case; an entry keeps the spelling and cover of its most recent listen */
-class Counter {
-  private entries = new Map<string, Entry>();
-
-  add(key: string, entry: Omit<Entry, 'plays'>) {
-    const k = key.toLowerCase();
-    const existing = this.entries.get(k);
-    if (existing) {
-      existing.plays++;
-      existing.cover ??= entry.cover;
-    } else {
-      this.entries.set(k, { ...entry, plays: 1 });
-    }
-  }
-
-  get size() {
-    return this.entries.size;
-  }
-
-  top(n: number) {
-    return [...this.entries.values()].sort((a, b) => b.plays - a.plays).slice(0, n);
-  }
-}
-
-function tally(listens: Listen[]): Tallies {
-  const artists = new Counter();
-  const albums = new Counter();
-  const tracks = new Counter();
-  for (const { track_metadata: meta = {} } of listens) {
-    const artist = meta.artist_name ?? 'Unknown artist';
-    // Every artist credited on a track gets the play, as in ListenBrainz's stats
-    const credited = [meta.additional_info?.artist_names, meta.mbid_mapping?.artists?.map((a) => a.artist_credit_name)]
-      .find((names) => names?.length) ?? [artist];
-    for (const name of credited) artists.add(name, { name });
-
-    const cover = coverUrl(meta);
-    if (meta.release_name) {
-      const albumArtist = meta.additional_info?.release_artist_name ?? artist;
-      albums.add(`${meta.release_name}\n${albumArtist}`, { name: meta.release_name, by: albumArtist, cover });
-    }
-    if (meta.track_name) {
-      tracks.add(`${meta.track_name}\n${artist}`, { name: meta.track_name, by: artist, cover });
-    }
-  }
-  return {
-    listens: listens.length,
-    artistCount: artists.size,
-    artists: artists.top(TOP),
-    albums: albums.top(TOP),
-    tracks: tracks.top(TOP),
-  };
 }
 
 const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word}${n === 1 ? '' : 's'}`;
@@ -149,7 +43,7 @@ function Skeleton() {
     <div className="mp-grid" aria-busy="true">
       {['Artists', 'Albums', 'Tracks'].map((title) => (
         <Column key={title} title={title} kind="loading">
-          {Array.from({ length: TOP }, (_, i) => (
+          {Array.from({ length: SKELETON_ROWS }, (_, i) => (
             <li key={i} className="mp-item">
               <span className="mp-skeleton mp-cover" />
               <span className="mp-text">
@@ -167,19 +61,34 @@ function Skeleton() {
 export default function MostPlayed({ username }: { username: string }) {
   const [range, setRange] = useState<Range>(RANGES[1]);
   const [now] = useState(() => Date.now() / 1000);
-  // Kept between switches, so a shorter range shows at once and a longer one loads only the older listens
+  // The counts the site was built with: undefined while loading, null when there are none
+  const [snapshot, setSnapshot] = useState<Snapshot | null>();
+  // Without a snapshot, the listens fetched so far. They're kept between switches, so a shorter range
+  // shows at once and a longer one loads only the older listens.
   const [history, setHistory] = useState<History>();
   const [status, setStatus] = useState<Status>({ kind: 'loading', loaded: 0 });
 
+  useEffect(() => {
+    let cancelled = false;
+    loadSnapshot(username).then((loaded) => {
+      if (!cancelled) setSnapshot(loaded);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [username]);
+
+  const live = snapshot === null;
   const since = range.start(now);
   const covered = history !== undefined && history.since <= since;
-  const tallies = useMemo(
+  const counted = useMemo(
     () => (covered ? tally(history.listens.filter((listen) => playedAt(listen) > since)) : undefined),
     [covered, history, since],
   );
+  const tallies = snapshot ? snapshot.ranges[range.id] : counted;
 
   useEffect(() => {
-    if (covered) return;
+    if (!live || covered) return;
     let cancelled = false;
     const have = history?.listens ?? [];
     setStatus({ kind: 'loading', loaded: have.length });
@@ -195,11 +104,12 @@ export default function MostPlayed({ username }: { username: string }) {
     return () => {
       cancelled = true;
     };
-  }, [username, since, covered, history]);
+  }, [live, username, since, covered, history]);
 
   let summary: string = range.summary;
   if (tallies) summary += ` · ${plural(tallies.listens, 'listen')} · ${plural(tallies.artistCount, 'artist')}`;
   else if (status.kind === 'loading' && status.loaded > 0) summary += ` · loading, ${plural(status.loaded, 'listen')} so far`;
+  if (snapshot) summary += ` · updated ${ago(snapshot.fetchedAt)}`;
 
   let body: ReactNode;
   if (tallies === undefined && status.kind === 'error') {

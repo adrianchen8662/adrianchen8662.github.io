@@ -72,6 +72,16 @@ Add an entry to `_data/timeline.yml`; order doesn't matter. The home page sorts 
 
 `type`, `location`, `workplace`, `end`, `link` (`label` and `href`) and `image` (`src` and `alt`) are optional; the comments at the top of the file list them. For a certification, use `kind: certification`, `start` for when it was issued and `expires` for when it runs out.
 
+## ListenBrainz on the About page
+
+Now Playing asks ListenBrainz directly. Most played reads `/listenbrainz.json`, a snapshot of the counts
+for each range that's made when the site is built, so visitors don't each fetch thousands of listens.
+
+- Only builds with `LISTENBRAINZ_SNAPSHOT=true` fetch it. The deploy workflow sets it, and rebuilds every
+  6 hours to keep the counts fresh. If ListenBrainz is down, the build keeps the snapshot already on the site.
+- Other builds, including `npm run build` on your computer, publish an empty snapshot, and the page then
+  counts the listens in the browser. To build with one locally, run `LISTENBRAINZ_SNAPSHOT=true npm run build`.
+
 ## Deploying
 
 Every push to `main` builds the site and publishes it with `.github/workflows/deploy.yml`; pull requests get a build check. In the repository's Settings → Pages, **Source** must be set to **GitHub Actions**.
