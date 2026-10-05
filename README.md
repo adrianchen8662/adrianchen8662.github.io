@@ -22,7 +22,7 @@ npm run preview   # serve the built site from dist/
 | `src/blogs.ts` | The blogs: menu name, page heading and intro |
 | `src/site.ts` | Navigation and profile links |
 | `src/pages/` | One file per page; `[blog]/` builds each blog and its posts |
-| `src/components/` | Navigation, footer, typewriter heading, timeline, ListenBrainz card |
+| `src/components/` | Navigation, footer, typewriter heading, timeline, ListenBrainz cards |
 | `src/styles/global.css` | The palette and site styles |
 | `public/` | Files served as they are: images, favicon, `robots.txt` |
 

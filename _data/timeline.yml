@@ -51,9 +51,6 @@
   link:
     label: Read the project blog
     href: /purdue-ece-49595-open-source-software-senior-design-projects/
-  image:
-    src: ./images/argus-timeline.png
-    alt: Argus's timeline screen, a grid of doorbell captures labeled Delivery, Family or Unknown
 
 - kind: education
   title: Bachelor of Science - BS, Computer Engineering

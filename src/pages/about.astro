@@ -1,6 +1,7 @@
 ---
 import PageLayout from '../layouts/PageLayout.astro';
 import ListenBrainzCard from '../components/ListenBrainzCard';
+import MostPlayed from '../components/MostPlayed';
 import { PROFILES } from '../site';
 ---
 <PageLayout title="About" descriptionHtml="The man himself!">
@@ -26,5 +27,10 @@ import { PROFILES } from '../site';
         <a href="https://listenbrainz.org/user/adrianchen8662/">See my full listening history on ListenBrainz</a>
       </p>
     </aside>
+
+    <section class="about-most-played" aria-labelledby="most-played">
+      <h2 id="most-played">Most played</h2>
+      <MostPlayed client:visible username="adrianchen8662" />
+    </section>
   </div>
 </PageLayout>
