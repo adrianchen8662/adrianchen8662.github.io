@@ -23,6 +23,20 @@ export const BLOGS: Blog[] = [
     description: "Software and hardware I've built, taken apart, measured and tinkered with.",
   },
   {
+    id: 'travel',
+    slug: 'travel',
+    name: 'Travel',
+    title: 'Travel',
+    description: "Places I've been.",
+  },
+  {
+    id: 'cooking',
+    slug: 'cooking',
+    name: 'Cooking',
+    title: 'Cooking',
+    description: "Things I've cooked.",
+  },
+  {
     id: 'cs632',
     slug: 'njit-cs-632-advanced-database-system-design',
     formerSlugs: ['cs632'],
