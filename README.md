@@ -97,9 +97,14 @@ Every 15 minutes a cron trigger copies new listens from ListenBrainz into a D1 d
 
 ### Setting it up
 
-You need a free Cloudflare account and Node 22 on your computer. Everything runs from the `worker/` folder (`cd worker && npm install` first).
+You need a free Cloudflare account and Node 22 on your computer. The Worker is its own project with its own `package.json`, so every command below runs from inside the `worker/` folder, not the repository root:
 
-1. **Log in:** `npx wrangler login` opens a browser tab to authorize your Cloudflare account. `npx wrangler whoami` shows the account ID.
+```sh
+cd worker
+npm install
+```
+
+1. **Log in:** `npx wrangler login` opens a browser tab to authorize your Cloudflare account. `npx wrangler whoami` shows the account ID. Over SSH the login can't reach your browser; either forward its port (`ssh -L 8976:localhost:8976 -L 8888:127.0.0.1:8888 you@host`, then `npx wrangler login --browser=false`) or skip it and export a `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` instead. The `8888` forward is for step 4.
 2. **Create the database:** `npx wrangler d1 create site-api`, then paste the `database_id` it prints into `worker/wrangler.toml`. It isn't a secret.
 3. **Create the tables:** `npm run migrate`.
 4. **Spotify:** in the [Spotify dashboard](https://developer.spotify.com/dashboard), open the app for this site and add `http://127.0.0.1:8888/callback` as a redirect URI. Then get a refresh token:
