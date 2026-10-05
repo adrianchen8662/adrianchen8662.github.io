@@ -1,21 +1,12 @@
 // The artists, albums and tracks played most on ListenBrainz over the last 7 or 30 days, or this year.
-// ListenBrainz's own stats can lag weeks behind imported listens, so these are counted from the listens.
-// The site is built with a snapshot of the counts (see src/pages/listenbrainz.json.ts); without one,
-// the listens are fetched and counted here in the browser.
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
-import { ago, fetchListens, loadSnapshot, playedAt, type Listen, type Snapshot } from '../lib/listenbrainz';
-import { RANGES, tally, type Range } from '../lib/most-played';
+// The Worker (worker/) counts them from the listens it keeps, since ListenBrainz's own stats can lag weeks
+// behind imported listens, and refreshes the counts every 15 minutes.
+import { useEffect, useState, type ReactNode } from 'react';
+import { ago, getMostPlayed, type Snapshot } from '../lib/api';
+import { RANGES, type Range } from '../lib/most-played';
 import './MostPlayed.css';
 
 const SKELETON_ROWS = 5;
-
-type Status = { kind: 'loading'; loaded: number } | { kind: 'error' };
-
-/** Listens loaded so far: every one after `since`, newest first */
-interface History {
-  since: number;
-  listens: Listen[];
-}
 
 const plural = (n: number, word: string) => `${n.toLocaleString('en-US')} ${word}${n === 1 ? '' : 's'}`;
 
@@ -60,62 +51,34 @@ function Skeleton() {
 
 export default function MostPlayed({ username }: { username: string }) {
   const [range, setRange] = useState<Range>(RANGES[1]);
-  const [now] = useState(() => Date.now() / 1000);
-  // The counts the site was built with: undefined while loading, null when there are none
-  const [snapshot, setSnapshot] = useState<Snapshot | null>();
-  // Without a snapshot, the listens fetched so far. They're kept between switches, so a shorter range
-  // shows at once and a longer one loads only the older listens.
-  const [history, setHistory] = useState<History>();
-  const [status, setStatus] = useState<Status>({ kind: 'loading', loaded: 0 });
+  // The counts: undefined while loading, null when they couldn't be loaded
+  const [stats, setStats] = useState<Snapshot | null>();
 
   useEffect(() => {
     let cancelled = false;
-    loadSnapshot(username).then((loaded) => {
-      if (!cancelled) setSnapshot(loaded);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [username]);
-
-  const live = snapshot === null;
-  const since = range.start(now);
-  const covered = history !== undefined && history.since <= since;
-  const counted = useMemo(
-    () => (covered ? tally(history.listens.filter((listen) => playedAt(listen) > since)) : undefined),
-    [covered, history, since],
-  );
-  const tallies = snapshot ? snapshot.ranges[range.id] : counted;
-
-  useEffect(() => {
-    if (!live || covered) return;
-    let cancelled = false;
-    const have = history?.listens ?? [];
-    setStatus({ kind: 'loading', loaded: have.length });
-    fetchListens(username, since, history?.since, (count) => {
-      if (!cancelled) setStatus({ kind: 'loading', loaded: have.length + count });
-    })
-      .then((older) => {
-        if (!cancelled) setHistory({ since, listens: [...have, ...older] });
+    getMostPlayed()
+      .then((loaded) => {
+        if (!cancelled) setStats(loaded);
       })
       .catch(() => {
-        if (!cancelled) setStatus({ kind: 'error' });
+        if (!cancelled) setStats(null);
       });
     return () => {
       cancelled = true;
     };
-  }, [live, username, since, covered, history]);
+  }, []);
+
+  const tallies = stats?.ranges[range.id];
 
   let summary: string = range.summary;
   if (tallies) summary += ` · ${plural(tallies.listens, 'listen')} · ${plural(tallies.artistCount, 'artist')}`;
-  else if (status.kind === 'loading' && status.loaded > 0) summary += ` · loading, ${plural(status.loaded, 'listen')} so far`;
-  if (snapshot) summary += ` · updated ${ago(snapshot.fetchedAt)}`;
+  if (stats) summary += ` · updated ${ago(stats.fetchedAt)}`;
 
   let body: ReactNode;
-  if (tallies === undefined && status.kind === 'error') {
+  if (stats === null) {
     body = (
       <p className="mp-message">
-        Couldn't reach ListenBrainz just now. See{' '}
+        Couldn't load my listening stats just now. See{' '}
         <a href={`https://listenbrainz.org/user/${username}/`} target="_blank" rel="noopener noreferrer">
           my listening history
         </a>{' '}

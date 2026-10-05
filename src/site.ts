@@ -3,6 +3,12 @@ import { BLOGS, blogUrl } from './blogs';
 /** Whose listening the About page shows */
 export const LISTENBRAINZ_USER = 'adrianchen8662';
 
+/**
+ * The Worker (worker/) that answers what's playing and what's played most. It's set when the site is built,
+ * from the PUBLIC_API_URL variable (a repository variable in GitHub, or .env when working locally).
+ */
+export const API_URL: string = import.meta.env.PUBLIC_API_URL ?? '';
+
 export const SITE = {
   name: 'Adrian Chen',
   title: "Adrian Chen's Website",

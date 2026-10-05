@@ -22,7 +22,8 @@ npm run preview   # serve the built site from dist/
 | `src/blogs.ts` | The blogs: menu name, page heading and intro |
 | `src/site.ts` | Navigation and profile links |
 | `src/pages/` | One file per page; `[blog]/` builds each blog and its posts |
-| `src/components/` | Navigation, footer, typewriter heading, timeline, ListenBrainz cards |
+| `src/components/` | Navigation, footer, typewriter heading, timeline, Now Playing and Most Played cards |
+| `worker/` | The Cloudflare Worker behind those cards (see [The Worker](#the-worker)) |
 | `src/styles/global.css` | The palette and site styles |
 | `public/` | Files served as they are: images, favicon, `robots.txt` |
 
@@ -80,23 +81,61 @@ The Resume page embeds `public/Adrian-Chen-Resume.pdf`; phones, which can't show
 2. Regenerate the preview: `pdftoppm -r 150 -png -singlefile public/Adrian-Chen-Resume.pdf src/assets/resume-preview` (`pdftoppm` is in the poppler package: `brew install poppler`, or `apt install poppler-utils`).
 3. Change the `updated` date at the top of `src/pages/resume.astro`.
 
-## ListenBrainz on the About page
+## The Worker
 
-Now Playing is live: every visitor's browser asks ListenBrainz directly. Most played reads `/listenbrainz.json`,
-a snapshot of the counts for each range that's made when the site is built, so visitors don't each fetch
-thousands of listens.
+The About page's cards don't talk to Spotify or ListenBrainz themselves. They ask a small Cloudflare Worker in `worker/`, which keeps the Spotify credentials private and my listening history in a database:
 
-- Only builds with `LISTENBRAINZ_SNAPSHOT=true` fetch it. The deploy workflow sets it, and rebuilds every
-  6 hours to keep the counts fresh. If ListenBrainz is down, the build keeps the snapshot already on the site.
-- Each run's page in the Actions tab says what happened: a notice with the time of the counts, or a warning
-  that the old counts were kept. GitHub sometimes skips scheduled runs; **Run workflow** refreshes it by hand.
-- Other builds, including `npm run build` on your computer, publish an empty snapshot, and the page then
-  counts the listens in the browser. To build with one locally, run `LISTENBRAINZ_SNAPSHOT=true npm run build`.
+| Route | What it answers |
+| --- | --- |
+| `GET /now-playing` | What Spotify says I'm playing right now (checked live, shared for 10 seconds between visitors). When nothing is playing, or Spotify can't be reached, my latest ListenBrainz listen. |
+| `GET /most-played` | The Most Played counts for 7 days, 30 days and this year. |
+| `GET /history` | My listens, newest first (`?limit=50&before=<seconds>`), for pages and apps to come. |
+| `GET /status` | When the last ListenBrainz sync worked, and what went wrong if it didn't. |
+| `POST /admin/sync` | Runs a sync by hand. Needs the `ADMIN_TOKEN` secret, and doesn't exist without it. |
+
+Every 15 minutes a cron trigger copies new listens from ListenBrainz into a D1 database (the first runs fill in this year, a few hundred at a time) and recounts Most Played. If ListenBrainz is down, nothing is lost: the Worker keeps serving what it has, and `/status` says what failed. Browsers other than my own site's can't read the API (`ALLOWED_ORIGINS` in `worker/wrangler.toml`).
+
+### Setting it up
+
+You need a free Cloudflare account and Node 22 on your computer. Everything runs from the `worker/` folder (`cd worker && npm install` first).
+
+1. **Log in:** `npx wrangler login` opens a browser tab to authorize your Cloudflare account. `npx wrangler whoami` shows the account ID.
+2. **Create the database:** `npx wrangler d1 create site-api`, then paste the `database_id` it prints into `worker/wrangler.toml`. It isn't a secret.
+3. **Create the tables:** `npm run migrate`.
+4. **Spotify:** in the [Spotify dashboard](https://developer.spotify.com/dashboard), open the app for this site and add `http://127.0.0.1:8888/callback` as a redirect URI. Then get a refresh token:
+
+   ```sh
+   SPOTIFY_CLIENT_ID=... SPOTIFY_CLIENT_SECRET=... npm run auth
+   ```
+
+   Open the address it prints, approve access (it only asks to see what's playing), and it prints the refresh token.
+5. **Give the Worker its secrets:** run each of these and paste the value when asked. They're stored in Cloudflare, never in this repository or the site:
+
+   ```sh
+   npx wrangler secret put SPOTIFY_CLIENT_ID
+   npx wrangler secret put SPOTIFY_CLIENT_SECRET
+   npx wrangler secret put SPOTIFY_REFRESH_TOKEN
+   npx wrangler secret put ADMIN_TOKEN     # optional: any long random string
+   ```
+
+6. **Deploy:** `npm run deploy` prints the Worker's address, like `https://site-api.<you>.workers.dev`.
+7. **Fill in the history:** `curl -X POST -H "Authorization: Bearer <ADMIN_TOKEN>" <address>/admin/sync`. Repeat it until `added` is 0 (the cron does the same every 15 minutes, so you can also just wait), then check `<address>/most-played`.
+8. **Point the site at it:** in the repository's Settings → Secrets and variables → Actions → **Variables**, add `PUBLIC_API_URL` with the Worker's address. For `npm run dev`, put `PUBLIC_API_URL=<address>` in a `.env` file instead.
+9. **Deploy from GitHub from now on:** `.github/workflows/worker.yml` checks the Worker on every change and deploys it from `main`. Add two repository **secrets** (the same page, **Secrets**): `CLOUDFLARE_ACCOUNT_ID`, and `CLOUDFLARE_API_TOKEN`, made at Cloudflare → My Profile → API Tokens from the **Edit Cloudflare Workers** template (check that it includes *Account → D1 → Edit*, and add it if not: the deploy applies the database migrations).
+
+Do steps 1 to 8 before merging this to `main`: until `PUBLIC_API_URL` is set, the cards say they can't load.
+
+### Working on it
+
+- `npm test` runs the Worker's tests (real SQL on SQLite, fake ListenBrainz and Spotify); `npm run typecheck` checks the types.
+- `npm run dev` runs it locally with a local database (`npm run migrate:local` first, and a `.dev.vars` file with the secrets above). `curl -X POST localhost:8787/admin/sync -H "Authorization: Bearer ..."` syncs it.
+- The free plan allows 100,000 requests a day, 10 ms of processor time per request and 50 outside requests per run, which is why each sync reads a few pages (`SYNC_PAGE_SIZE`, `SYNC_MAX_PAGES`) and the Most Played counts are stored rather than worked out per visitor. If a sync ever fails with a CPU limit error in the Worker's logs, lower those two numbers.
+- A custom domain would let the Worker use Cloudflare's edge cache; on `workers.dev` it keeps answers in memory instead.
 
 ## Deploying
 
-Every push to `main` builds the site and publishes it with `.github/workflows/deploy.yml`; pull requests get a build check. In the repository's Settings → Pages, **Source** must be set to **GitHub Actions**.
+Every push to `main` builds the site and publishes it with `.github/workflows/deploy.yml`; pull requests get a build check. The Worker deploys separately, with `.github/workflows/worker.yml`. In the repository's Settings → Pages, **Source** must be set to **GitHub Actions**.
 
 ## Credits
 
-The ListenBrainz card is adapted from [prcutler/listenbrainz-widget](https://github.com/prcutler/listenbrainz-widget) (MIT); its license notice is in `src/components/ListenBrainzCard.tsx`.
+The Now Playing card is adapted from [prcutler/listenbrainz-widget](https://github.com/prcutler/listenbrainz-widget) (MIT); its license notice is in `src/components/NowPlayingCard.tsx`.
