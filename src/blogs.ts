@@ -16,6 +16,13 @@ export interface Blog {
 
 export const BLOGS: Blog[] = [
   {
+    id: 'doohickeys',
+    slug: 'doohickeys',
+    name: 'Doohickeys',
+    title: 'Doohickeys',
+    description: "Gadgets and gear I've taken apart, measured and tinkered with.",
+  },
+  {
     id: 'cs632',
     slug: 'njit-cs-632-advanced-database-system-design',
     formerSlugs: ['cs632'],

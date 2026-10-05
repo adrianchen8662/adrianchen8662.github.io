@@ -774,8 +774,164 @@ h2 strong {
 
 .prose table {
   display: block;
+  margin: 1.2em 0;
   overflow-x: auto;
+  font-size: .9em;
+  line-height: 1.45;
   border-collapse: collapse;
+}
+
+.prose th,
+.prose td {
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid var(--rule);
+}
+
+.prose th {
+  font-weight: 600;
+  color: var(--chip-text);
+  background: var(--chip-background);
+}
+
+.prose td {
+  background: var(--surface);
+}
+
+/* Checklists: "- [x] done" and "- [ ] to do" */
+.prose .contains-task-list {
+  padding-left: 0;
+  list-style: none;
+}
+
+.prose .task-list-item input {
+  margin: 0 .6em 0 0;
+  accent-color: var(--rosewood);
+}
+
+.prose .task-list-item:has(> input:checked) {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.prose math[display="block"] {
+  margin: 1em 0;
+  overflow-x: auto;
+  font-size: 1.2em;
+}
+
+/* Diagrams drawn as inline SVG in posts, in the theme's colors */
+.diagram {
+  margin: 1.5em 0;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+.diagram figcaption {
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.diagram figcaption strong {
+  display: block;
+}
+
+.diagram figcaption span,
+.diagram-muted {
+  font-size: .9em;
+  color: var(--text-muted);
+}
+
+.diagram > svg {
+  display: block;
+  width: 100%;
+  max-width: 620px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.diagram text {
+  fill: var(--text);
+}
+
+.diagram .d-muted {
+  fill: var(--text-muted);
+}
+
+.diagram .d-bold {
+  font-weight: 600;
+}
+
+.d-outline {
+  fill: var(--surface);
+  stroke: var(--text-muted);
+}
+
+.d-dim {
+  stroke: var(--text-muted);
+}
+
+.d-ext {
+  stroke: var(--text-muted);
+  opacity: .45;
+}
+
+.d-arrow {
+  fill: var(--text-muted);
+}
+
+.d-hole {
+  fill: none;
+  stroke: var(--link);
+}
+
+.diagram-legend {
+  margin: 16px 0 0;
+  padding: 0;
+  font-size: .9em;
+  line-height: 1.4;
+  list-style: none;
+}
+
+.diagram-legend li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.diagram-swatch {
+  flex: none;
+  width: 36px;
+  height: 20px;
+}
+
+.diagram-note {
+  margin: 10px 0 0;
+  font-size: .9em;
+  line-height: 1.4;
+}
+
+@media (max-width: 619px) {
+  .diagram {
+    padding: 16px 12px;
+  }
+
+  /* Larger labels, since the drawing shrinks to the screen (sizes are in the drawing's millimetres) */
+  .diagram > svg {
+    font-size: 4px;
+  }
+
+  .diagram .d-muted {
+    font-size: 3.4px;
+  }
+
+  .prose math[display="block"] {
+    font-size: 1em;
+  }
 }
 
 /* ---------- blogs ---------- */
