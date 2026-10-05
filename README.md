@@ -82,11 +82,14 @@ The Resume page embeds `public/Adrian-Chen-Resume.pdf`; phones, which can't show
 
 ## ListenBrainz on the About page
 
-Now Playing asks ListenBrainz directly. Most played reads `/listenbrainz.json`, a snapshot of the counts
-for each range that's made when the site is built, so visitors don't each fetch thousands of listens.
+Now Playing is live: every visitor's browser asks ListenBrainz directly. Most played reads `/listenbrainz.json`,
+a snapshot of the counts for each range that's made when the site is built, so visitors don't each fetch
+thousands of listens.
 
 - Only builds with `LISTENBRAINZ_SNAPSHOT=true` fetch it. The deploy workflow sets it, and rebuilds every
-  6 hours to keep the counts fresh. If ListenBrainz is down, the build keeps the snapshot already on the site.
+  hour to keep the counts fresh. If ListenBrainz is down, the build keeps the snapshot already on the site.
+- Each run's page in the Actions tab says what happened: a notice with the time of the counts, or a warning
+  that the old counts were kept. GitHub sometimes skips scheduled runs; **Run workflow** refreshes it by hand.
 - Other builds, including `npm run build` on your computer, publish an empty snapshot, and the page then
   counts the listens in the browser. To build with one locally, run `LISTENBRAINZ_SNAPSHOT=true npm run build`.
 
