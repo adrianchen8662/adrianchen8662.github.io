@@ -27,44 +27,16 @@
   SOFTWARE.
 */
 import { useEffect, useState } from 'react';
+import { API, coverUrl, fetchJSON, type Listen, type TrackMetadata } from '../lib/listenbrainz';
 import './ListenBrainzCard.css';
 
-const API = 'https://api.listenbrainz.org/1';
 const REFRESH_MS = 20000;
-
-interface TrackMetadata {
-  track_name?: string;
-  artist_name?: string;
-  release_name?: string;
-  mbid_mapping?: { caa_release_mbid?: string; caa_id?: number; release_mbid?: string };
-  additional_info?: { release_mbid?: string };
-}
-
-interface Listen {
-  listened_at?: number;
-  track_metadata?: TrackMetadata;
-}
 
 type State =
   | { kind: 'loading' }
   | { kind: 'track'; listen: Listen; live: boolean }
   | { kind: 'empty' }
   | { kind: 'error' };
-
-async function fetchJSON(url: string) {
-  const response = await fetch(url, { headers: { Accept: 'application/json' } });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
-}
-
-function coverUrl(meta: TrackMetadata) {
-  const m = meta.mbid_mapping ?? {};
-  if (m.caa_release_mbid && m.caa_id != null) {
-    return `https://archive.org/download/mbid-${m.caa_release_mbid}/mbid-${m.caa_release_mbid}-${m.caa_id}_thumb250.jpg`;
-  }
-  const release = m.release_mbid ?? meta.additional_info?.release_mbid;
-  return release ? `https://coverartarchive.org/release/${release}/front-250` : null;
-}
 
 /** Looks the track up on MusicBrainz when ListenBrainz hasn't matched it to a release yet */
 async function searchCover(artist: string, track: string, album: string) {
