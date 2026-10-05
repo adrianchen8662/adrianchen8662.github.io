@@ -1,5 +1,5 @@
 /*
-  Now Playing card for ListenBrainz.
+  Now Playing card: live from Spotify through the Worker (worker/), or else my latest ListenBrainz listen.
 
   Ported to React from listenbrainz-now-playing.html in
   https://github.com/prcutler/listenbrainz-widget and restyled with this site's palette.
@@ -27,18 +27,18 @@
   SOFTWARE.
 */
 import { useEffect, useState } from 'react';
-import { ago, API, coverUrl, fetchJSON, type Listen, type TrackMetadata } from '../lib/listenbrainz';
-import './ListenBrainzCard.css';
+import { ago, fetchJSON, getNowPlaying, type NowPlaying } from '../lib/api';
+import './NowPlayingCard.css';
 
 const REFRESH_MS = 20000;
 
 type State =
   | { kind: 'loading' }
-  | { kind: 'track'; listen: Listen; live: boolean }
+  | { kind: 'track'; playing: NowPlaying }
   | { kind: 'empty' }
   | { kind: 'error' };
 
-/** Looks the track up on MusicBrainz when ListenBrainz hasn't matched it to a release yet */
+/** Looks the track up on MusicBrainz when the listen hasn't been matched to a release yet */
 async function searchCover(artist: string, track: string, album: string) {
   let query = `recording:"${track}" AND artist:"${artist}"`;
   if (album) query += ` AND release:"${album}"`;
@@ -54,14 +54,14 @@ async function searchCover(artist: string, track: string, album: string) {
 }
 
 /** Album art for one track; the card gives each track its own Cover, so the lookup runs once per track */
-function Cover({ meta }: { meta: TrackMetadata }) {
-  const [src, setSrc] = useState(() => coverUrl(meta));
+function Cover({ playing }: { playing: NowPlaying }) {
+  const [src, setSrc] = useState(playing.cover ?? null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
-    if (src || !meta.artist_name || !meta.track_name) return;
+    if (src || !playing.artist || !playing.track) return;
     let cancelled = false;
-    searchCover(meta.artist_name, meta.track_name, meta.release_name ?? '')
+    searchCover(playing.artist, playing.track, playing.album ?? '')
       .then((url) => {
         if (!cancelled) setSrc(url);
       })
@@ -75,7 +75,7 @@ function Cover({ meta }: { meta: TrackMetadata }) {
   return <img className="lb-art" alt="" src={src} onError={() => setFailed(true)} />;
 }
 
-function NowPlaying({ username }: { username: string }) {
+function NowPlayingView({ username }: { username: string }) {
   const [state, setState] = useState<State>({ kind: 'loading' });
   const profile = `https://listenbrainz.org/user/${username}/`;
 
@@ -86,24 +86,16 @@ function NowPlaying({ username }: { username: string }) {
 
     async function load() {
       try {
-        const user = encodeURIComponent(username);
         // What's playing right now, or else the most recent listen
-        const playing = await fetchJSON(`${API}/user/${user}/playing-now`);
-        const live: Listen[] = playing.payload?.listens ?? [];
-        if (live.length) {
-          if (!cancelled) setState({ kind: 'track', listen: live[0], live: true });
-          return;
-        }
-        const recent = await fetchJSON(`${API}/user/${user}/listens?count=1`);
-        const listens: Listen[] = recent.payload?.listens ?? [];
-        if (!cancelled) setState(listens.length ? { kind: 'track', listen: listens[0], live: false } : { kind: 'empty' });
+        const playing = await getNowPlaying();
+        if (!cancelled) setState(playing ? { kind: 'track', playing } : { kind: 'empty' });
       } catch {
         // Keep showing the last track through a brief outage
         if (!cancelled) setState((previous) => (previous.kind === 'track' ? previous : { kind: 'error' }));
       }
     }
 
-    // Ask again only once ListenBrainz has answered, so a slow API never gets overlapping requests
+    // Ask again only once the Worker has answered, so a slow connection never gets overlapping requests
     async function poll() {
       timer = undefined;
       inFlight = true;
@@ -147,9 +139,9 @@ function NowPlaying({ username }: { username: string }) {
     return (
       <div className="lb-panel">
         <div className="lb-label">{state.kind === 'empty' ? 'Silence' : 'Now Playing'}</div>
-        <h3>{state.kind === 'empty' ? 'Nothing playing yet' : "Couldn't reach ListenBrainz"}</h3>
+        <h3>{state.kind === 'empty' ? 'Nothing playing yet' : "Couldn't load what's playing"}</h3>
         <p>
-          {state.kind === 'empty' ? 'This updates automatically when a track is scrobbled. ' : "It'll keep retrying. "}
+          {state.kind === 'empty' ? 'This updates automatically when something plays. ' : "It'll keep retrying. "}
           Meanwhile, see{' '}
           <a href={profile} target="_blank" rel="noopener noreferrer">
             my listening history
@@ -160,16 +152,17 @@ function NowPlaying({ username }: { username: string }) {
     );
   }
 
-  const meta = state.listen.track_metadata ?? {};
-  const when = state.live ? '' : ago(state.listen.listened_at);
-  const track = [meta.artist_name, meta.track_name, meta.release_name, coverUrl(meta)].join('|');
+  const { playing } = state;
+  const live = playing.isPlaying;
+  const when = live ? '' : ago(playing.playedAt);
+  const track = [playing.artist, playing.track, playing.album, playing.cover].join('|');
 
   return (
-    <a className="lb-card-link" href={profile} target="_blank" rel="noopener noreferrer">
+    <a className="lb-card-link" href={playing.url ?? profile} target="_blank" rel="noopener noreferrer">
       <div className="lb-card">
-        <Cover key={track} meta={meta} />
+        <Cover key={track} playing={playing} />
         <div className="lb-meta">
-          {state.live ? (
+          {live ? (
             <div className="lb-eyebrow">
               <span className="lb-eq" aria-hidden="true">
                 <span /><span /><span /><span /><span />
@@ -181,13 +174,13 @@ function NowPlaying({ username }: { username: string }) {
               <span className="lb-dot" aria-hidden="true" /> Last Played{when && ` · ${when}`}
             </div>
           )}
-          <div className="lb-title">{meta.track_name ?? 'Unknown track'}</div>
-          <div className="lb-artist">{meta.artist_name ?? 'Unknown artist'}</div>
-          {meta.release_name && <div className="lb-album">{meta.release_name}</div>}
+          <div className="lb-title">{playing.track}</div>
+          <div className="lb-artist">{playing.artist}</div>
+          {playing.album && <div className="lb-album">{playing.album}</div>}
           <div className="lb-footer">
             <span>{username}</span>
             <span className="lb-brand">
-              via <b>ListenBrainz</b>
+              via <b>{playing.source === 'spotify' ? 'Spotify' : 'ListenBrainz'}</b>
             </span>
           </div>
         </div>
@@ -196,10 +189,10 @@ function NowPlaying({ username }: { username: string }) {
   );
 }
 
-export default function ListenBrainzCard({ username }: { username: string }) {
+export default function NowPlayingCard({ username }: { username: string }) {
   return (
-    <div className="listenbrainz">
-      <NowPlaying username={username} />
+    <div className="now-playing">
+      <NowPlayingView username={username} />
     </div>
   );
 }

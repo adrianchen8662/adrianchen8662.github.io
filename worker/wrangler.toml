@@ -1,0 +1,26 @@
+# The Worker behind the About page: live Now Playing from Spotify, and my ListenBrainz history kept in D1.
+# Setup steps are in the repository README ("The Worker").
+name = "site-api"
+main = "src/index.ts"
+compatibility_date = "2025-10-01"
+workers_dev = true
+
+# Pulls new ListenBrainz listens into D1 and refreshes the Most Played counts. The free plan allows 5 cron triggers.
+[triggers]
+crons = ["*/15 * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "site-api"
+# Printed by `npx wrangler d1 create site-api`; it isn't a secret
+database_id = "REPLACE_WITH_DATABASE_ID"
+migrations_dir = "migrations"
+
+[vars]
+LISTENBRAINZ_USER = "adrianchen8662"
+# Sites allowed to read the API from a browser (comma separated)
+ALLOWED_ORIGINS = "https://adrianchen8662.github.io,http://localhost:4321"
+
+# Secrets, set with `npx wrangler secret put <NAME>` and never committed:
+#   SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN
+#   ADMIN_TOKEN (optional; lets you run POST /admin/sync by hand)

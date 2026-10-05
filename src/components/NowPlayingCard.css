@@ -1,6 +1,6 @@
-/* Styles for ListenBrainzCard.tsx (adapted from prcutler/listenbrainz-widget, MIT; see the notice there) */
+/* Styles for NowPlayingCard.tsx (adapted from prcutler/listenbrainz-widget, MIT; see the notice there) */
 
-.listenbrainz {
+.now-playing {
   --lb-card: var(--green-gray);
   --lb-ink: #f8f4ea;
   --lb-ink-soft: #ddd3b4;
