@@ -33,6 +33,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three';
+import { badgeShapes, type UnitPoint } from '../lib/badge';
 import type { Decal, Model, Shape as ModelShape, Solid } from '../lib/exploded-view-types';
 
 export type ViewName = 'angle' | 'front' | 'side' | 'top' | 'back';
@@ -82,6 +83,7 @@ const LOOKS: Record<string, Look> = {
   clip_red: { color: 0xc42a2d, roughness: 0.5, metalness: 0 },
   clip_black: { color: 0x1b1b1b, roughness: 0.5, metalness: 0 },
   recess: { color: 0x161616, roughness: 0.7, metalness: 0 },
+  badge_inlay: { color: 0x141414, roughness: 0.3, metalness: 0.2 },
   screw_head: { color: 0x3a3a3a, roughness: 0.4, metalness: 0.5 },
   cone: { color: 0x6d695e, roughness: 0.9, metalness: 0 },
   cardboard: { color: 0xb69b72, roughness: 0.95, metalness: 0 },
@@ -133,47 +135,6 @@ function meshTexture() {
   g.fillStyle = '#6a6762';
   g.fillRect(5, 5, 18, 18);
   return canvas;
-}
-
-/**
- * The small gold badge on the grille, traced from a close-up photo of it: a rounded-shoulder
- * shape with an arch cut out of its left half, so the black grille shows through. A simplified
- * drawing of what the photo shows, not the maker's artwork.
- */
-function badgeTexture(aspect: number) {
-  const width = 600;
-  const height = Math.round(width / aspect);
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const g = canvas.getContext('2d')!;
-  const X = (x: number) => x * width;
-  const Y = (y: number) => y * height;
-  const gold = g.createLinearGradient(0, 0, width, height);
-  gold.addColorStop(0, '#d6b868');
-  gold.addColorStop(1, '#b8963f');
-  g.fillStyle = gold;
-  g.beginPath();
-  g.moveTo(0, 0);
-  g.lineTo(X(0.54), 0);
-  g.bezierCurveTo(X(0.8), 0, X(1), Y(0.4), X(1), Y(0.87));
-  g.lineTo(X(1), Y(1));
-  g.lineTo(0, Y(1));
-  g.closePath();
-  g.fill();
-  // The arch, cut out so what is behind shows through
-  g.globalCompositeOperation = 'destination-out';
-  g.beginPath();
-  g.moveTo(X(0.08), Y(1));
-  g.bezierCurveTo(X(0.1), Y(0.55), X(0.17), Y(0.133), X(0.34), Y(0.133));
-  g.lineTo(X(0.482), Y(0.133));
-  g.lineTo(X(0.482), Y(1));
-  g.closePath();
-  g.fill();
-  const texture = new CanvasTexture(canvas);
-  texture.colorSpace = SRGBColorSpace;
-  texture.anisotropy = 4;
-  return texture;
 }
 
 /** A black sticker with white printing, as on the back of the cabinet */
@@ -302,13 +263,6 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
     };
 
     const decalMaterial = (decal: Decal) => {
-      if (decal.art === 'badge' && 'rect' in decal) {
-        const texture = badgeTexture(decal.rect[0] / decal.rect[1]);
-        textures.push(texture);
-        const m = new MeshStandardMaterial({ map: texture, transparent: true, alphaTest: 0.35, roughness: 0.35, metalness: 0.8 });
-        node.materials.push(m);
-        return m;
-      }
       if (!decal.lines || !('rect' in decal)) return material(decal.material);
       const texture = labelTexture(decal.lines, decal.rect[0] / decal.rect[1]);
       textures.push(texture);
@@ -348,6 +302,36 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
       mesh.add(new LineSegments(edges, lineMaterial));
 
       for (const decal of solid.decals) {
+        // The badge is real geometry: a gold plate, and a separate black piece in its notch that stands higher
+        if (decal.art === 'badge' && 'rect' in decal) {
+          const [w, h] = decal.rect;
+          const plate = decal.height ?? 0.5;
+          const outline = (points: UnitPoint[]) => {
+            const shape = new Shape();
+            points.forEach(([u, v], i) => {
+              const x = decal.at[0] + (u - 0.5) * w;
+              const y = decal.at[1] + (0.5 - v) * h;
+              if (i === 0) shape.moveTo(x, y);
+              else shape.lineTo(x, y);
+            });
+            shape.closePath();
+            return shape;
+          };
+          const pieces: [UnitPoint[], number, string][] = [
+            [badgeShapes.gold, plate, decal.material],
+            [badgeShapes.inlay, plate + (decal.bump ?? 1), 'badge_inlay'],
+          ];
+          for (const [points, depth, look] of pieces) {
+            // Extrusion runs outward from the grille's face, toward the viewer
+            const piece = new ExtrudeGeometry(outline(points), { depth, bevelEnabled: false });
+            geometries.push(piece);
+            const badge = new Mesh(piece, material(look));
+            badge.userData.partId = part.id;
+            mesh.add(badge);
+            pickable.push(badge);
+          }
+          continue;
+        }
         const shape = 'rect' in decal ? new PlaneGeometry(decal.rect[0], decal.rect[1]) : new CircleGeometry(decal.circle / 2, 32);
         geometries.push(shape);
         const d = new Mesh(shape, decalMaterial(decal));

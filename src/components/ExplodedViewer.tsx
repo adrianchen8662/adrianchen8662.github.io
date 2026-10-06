@@ -4,6 +4,7 @@
 // WebGL or JavaScript, this projects them at a fixed angle, sorts the faces back to front and draws SVG.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Dim, Model, Part, Shape, Solid, Status } from '../lib/exploded-view-types';
+import { badgeShapes } from '../lib/badge';
 import type { SceneApi, ViewName } from './exploded-three';
 import './ExplodedViewer.css';
 
@@ -153,6 +154,27 @@ function draw(model: Model, prepared: Prepared[], t: number): Poly[] {
     if (solid.texture) make('texture', { d: [outer, ...holes].map(flat).join(''), overlay: solid.texture });
     solid.decals.forEach((decal, i) => {
       if (decal.side === 'back') return;
+      // The badge: the gold plate, then the black piece standing a little higher in its notch
+      if (decal.art === 'badge' && 'rect' in decal) {
+        const [w, h] = decal.rect;
+        const plate = decal.height ?? 0.5;
+        const pieces = [
+          { name: 'gold', points: badgeShapes.gold, lift: plate, material: decal.material },
+          // The black piece's base, level with the gold, so its raised top doesn't leave a gap at an angle
+          { name: 'inlay-base', points: badgeShapes.inlay, lift: plate, material: 'badge_inlay' },
+          { name: 'inlay', points: badgeShapes.inlay, lift: plate + (decal.bump ?? 1), material: 'badge_inlay' },
+        ];
+        for (const piece of pieces) {
+          polys.push({
+            key: `${order}-badge-${piece.name}`,
+            partId: part.id,
+            material: piece.material,
+            d: path(piece.points.map(([u, v]) => screen([decal.at[0] + (u - 0.5) * w, decal.at[1] + (0.5 - v) * h], front - piece.lift))),
+            overlay: 'decal',
+          });
+        }
+        return;
+      }
       const contour = contourOf(decal, decal.at);
       polys.push({
         key: `${order}-decal${i}`,

@@ -165,6 +165,10 @@
   --mat: #1b1b1b;
 }
 
+.ev-mat-badge_inlay {
+  fill: #151515;
+}
+
 .ev-mat-brass {
   fill: #c5a550;
 }

@@ -56,6 +56,7 @@ dims:
   tab_width:      { label: Grille tab width,           value: 43,   status: estimated, note: "Two tabs, centred on the top and bottom edges" }
   badge_w:        { label: Badge width,                value: 10,   status: estimated, note: "Scaled from a close-up of the grille photo against the grille's width" }
   badge_h:        { label: Badge height,               value: 5.3,  status: estimated }
+  badge_bump:     { label: Badge black piece height above the gold, value: 1, status: estimated, note: "A guess of about a millimetre" }
   badge_x:        { label: Badge x from centre,        value: 56.8, status: estimated, note: "Upper right when upright, about 7 mm in from the grille's right edge" }
   badge_y:        { label: Badge y from centre,        value: 95.6, status: estimated, note: "About 7.5 mm below the grille's top edge" }
   plate_size:     { label: Terminal plate size,        value: 54,   status: estimated, note: "Square, four screws, pebbled black plastic" }
@@ -73,6 +74,7 @@ dims:
 
   # ---- assumed placeholders ----
   grille_sheet:   { label: Grille sheet thickness, value: 0.8, status: assumed }
+  badge_t:        { label: Badge gold plate thickness, value: 0.5, status: assumed }
   flange_inset:   { label: Flange inset from the grille's edge, value: 3, status: assumed, note: "The flanges sit inside slots on the front, so they stand back from the edge of the face" }
   flange_len:     { label: Flange length,          value: 190,  status: assumed }
   tab_inset:      { label: Tab inset from the grille's edge, value: 3.25, status: assumed }
@@ -322,7 +324,7 @@ parts:
     material: grille
     explode: [0, 0, -210]
     show: [grille_w, grille_h, tab_depth, tab_width, grille_sheet]
-    info: A pan of fine square-perforated black steel. Flanges bent back along both long edges and two tabs at the top and bottom push into slots on the front, and felt strips grip the cabinet. A small gold badge about 10 x 5 mm sits at the upper right. It is a rounded-shoulder mark with an arch cut out of it, through which the black grille shows.
+    info: A pan of fine square-perforated black steel. Flanges bent back along both long edges and two tabs at the top and bottom push into slots on the front, and felt strips grip the cabinet. A small gold badge about 10 x 5 mm sits at the upper right. It is a gold plate with a rounded shoulder and an arch-shaped notch, filled by a separate solid black piece that stands about 1 mm proud of the gold.
     solids:
       - { outline: { rect: [grille_sheet, flange_len] }, at: ["grille_w / 2 - flange_inset", 0, grille_sheet], depth: tab_depth, paint: 35, interior: true }
       - { outline: { rect: [grille_sheet, flange_len] }, at: ["-(grille_w / 2 - flange_inset)", 0, grille_sheet], depth: tab_depth, paint: 35, interior: true }
@@ -334,7 +336,7 @@ parts:
         paint: 200
         texture: mesh
         decals:
-          - { rect: [badge_w, badge_h], at: [badge_x, badge_y], material: brass, art: badge }
+          - { rect: [badge_w, badge_h], at: [badge_x, badge_y], material: brass, art: badge, height: badge_t, bump: badge_bump }
 
 # Still to measure, by part. The assumed and estimated dims above are the quickest way
 # to see what matters; this is the longer list of things not drawn at all yet or only roughly.
@@ -361,7 +363,7 @@ todo:
     - terminal plate: bump depth and exact diameter, clip sizes, plate corner radius
     - label position (about 60 x 33 mm, below the plate; the S-1A label sits on the same side)
   grille:
-    - sheet thickness, flange length and position, perforation pitch and hole size, felt strip sizes, exact badge size (taken from a photo)
+    - sheet thickness, flange length and position, perforation pitch and hole size, felt strip sizes, exact badge size and heights (taken from a photo)
   internals:
     - damping felt thickness and exact margins
     - capacitor: it lies sideways under the bump and is held with glue; measure its size and where its leads run
