@@ -10,6 +10,8 @@ const posts = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     categories: z.array(z.string()).default([]),
+    /** Set to cc0 to dedicate the post to the public domain; left out, the post is all rights reserved */
+    license: z.enum(['cc0']).optional(),
   }),
 });
 

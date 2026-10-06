@@ -44,6 +44,8 @@ The first paragraph is the excerpt in the blog's post list.
 
 It's published at `/<blog address>/title-of-post/`, where the blog's address is its `slug` in `src/blogs.ts`.
 
+Posts are all rights reserved by default. Add `license: cc0` to a post's front matter to dedicate it to the public domain; the post then carries a CC0 notice.
+
 ## Images in posts
 
 - **Compressed:** put the image next to the post, for example `_posts/<blog>/images/<post>/diagram.png`, and link it relatively: `![Diagram](./images/<post>/diagram.png)`. The build turns it into WebP in several sizes, and browsers download only the size they need. Use this for screenshots and diagrams.
@@ -140,6 +142,10 @@ Do steps 1 to 8 before merging this to `main`: until `PUBLIC_API_URL` is set, th
 ## Deploying
 
 Every push to `main` builds the site and publishes it with `.github/workflows/deploy.yml`; pull requests get a build check. The Worker deploys separately, with `.github/workflows/worker.yml`. In the repository's Settings → Pages, **Source** must be set to **GitHub Actions**.
+
+## License
+
+The source code is open source under the [MIT License](LICENSE). The content (blog posts and their images, the timeline and other data in `_data/`, the resume, the icons, and the written text of the pages) is copyrighted, all rights reserved, except the Nakamichi spec sheet and its data, which are public domain (CC0); see [CONTENT-LICENSE.md](CONTENT-LICENSE.md) for the full list. If you reuse the code, swap in your own content.
 
 ## Credits
 

@@ -8,9 +8,13 @@ interface Props {
   /** Page name; the home page leaves it out */
   title?: string;
   description?: string;
+  /** Open Graph type; articles say so, everything else is a website */
+  ogType?: 'website' | 'article';
+  /** Structured data for search engines (schema.org), written as JSON-LD */
+  jsonLd?: Record<string, unknown>;
 }
 
-const { title, description = SITE.description } = Astro.props;
+const { title, description = SITE.description, ogType = 'website', jsonLd } = Astro.props;
 const pageTitle = title ? `${title} · ${SITE.name}` : SITE.title;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -22,7 +26,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta name="twitter:card" content="summary" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
@@ -30,6 +36,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name}'s blog posts`} href="/feed.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <script is:inline>
       // Apply a theme picked with the header switch before the page paints
       try {
