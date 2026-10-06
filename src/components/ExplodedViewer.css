@@ -312,3 +312,133 @@
 .ev-open summary {
   cursor: pointer;
 }
+
+/* Zoom */
+
+.ev-zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.ev-zoom .ev-part {
+  min-width: 2.4em;
+}
+
+.ev-part:disabled {
+  opacity: .5;
+  cursor: default;
+}
+
+.ev-zoom-level {
+  min-width: 3em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+/* Fullscreen: the browser's own, or (on a phone that can't) the viewer filling the window */
+
+.ev-filled {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  max-width: none;
+  margin: 0;
+}
+
+.ev-full {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px 20px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 14px 18px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 0;
+  border-radius: 0;
+}
+
+.ev-full > figcaption {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.ev-full .ev-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.ev-full .ev-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: none;
+  margin: 0;
+  aspect-ratio: auto;
+}
+
+.ev-full .ev-side {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* With the whole window to work in, nothing needs to scroll past the viewer, so touch is free */
+.ev-full .ev-canvas {
+  touch-action: none;
+}
+
+.ev-full .ev-detail {
+  min-height: 0;
+}
+
+/* Tall or narrow windows: the details go underneath, and the controls shrink to single rows so the model keeps the space */
+@media (max-width: 900px), (max-aspect-ratio: 1/1) {
+  .ev-full {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) minmax(0, 32%);
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .ev-full > figcaption span {
+    display: none;
+  }
+
+  .ev-full .ev-views,
+  .ev-full .ev-controls {
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin-top: 8px;
+    overflow-x: auto;
+  }
+
+  .ev-full .ev-views > *,
+  .ev-full .ev-controls > .ev-button {
+    flex: none;
+  }
+
+  .ev-full .ev-part,
+  .ev-full .ev-button {
+    padding: 6px 10px;
+    min-width: 0;
+  }
+
+  .ev-full .ev-zoom {
+    gap: 6px;
+    margin-left: 6px;
+  }
+
+  .ev-full .ev-slider {
+    flex: 1 0 90px;
+  }
+
+  .ev-full .ev-slider span {
+    display: none;
+  }
+}
