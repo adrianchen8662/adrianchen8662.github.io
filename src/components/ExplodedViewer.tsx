@@ -1,8 +1,10 @@
 // An exploded view of an object, drawn to scale from its measurements (_data/<model>.yml, read by
-// src/lib/exploded-view.ts). Each part is a few boxes and cylinders; this projects them at an angle,
-// sorts the faces back to front and draws them as SVG, so the slider is just arithmetic on the positions.
+// src/lib/exploded-view.ts). Each part is a few boxes and cylinders. In a browser with WebGL they become
+// a 3D scene you can turn (exploded-three.ts, loaded once the viewer is on screen). Until then, and without
+// WebGL or JavaScript, this projects them at a fixed angle, sorts the faces back to front and draws SVG.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Dim, Model, Part, Shape, Solid, Status } from '../lib/exploded-view-types';
+import type { SceneApi, ViewName } from './exploded-three';
 import './ExplodedViewer.css';
 
 // Looking from the front, a little to the right of it and a little above it
@@ -244,7 +246,35 @@ export default function ExplodedViewer({ model }: { model: Model }) {
     frame.current = requestAnimationFrame(step);
   };
 
-  const polys = useMemo(() => draw(model, prepared, t), [model, prepared, t]);
+  const stage = useRef<HTMLDivElement>(null);
+  const [gl, setGl] = useState<SceneApi | null>(null);
+  const [pose, setPose] = useState<ViewName>('angle');
+  // The scene calls back into these, and is made once, so they read the latest state through a ref
+  const events = useRef({ hover: (_id: string | null) => {}, select: (_id: string | null) => {} });
+
+  useEffect(() => {
+    let scene: SceneApi | undefined;
+    let cancelled = false;
+    import('./exploded-three')
+      .then(({ createScene }) => {
+        if (cancelled || !stage.current) return;
+        scene = createScene(stage.current, model, {
+          hover: (id) => events.current.hover(id),
+          select: (id) => events.current.select(id),
+        });
+        setGl(scene);
+      })
+      .catch(() => {
+        // No WebGL, or the chunk failed to load: the SVG drawing stays
+      });
+    return () => {
+      cancelled = true;
+      scene?.dispose();
+      setGl(null);
+    };
+  }, [model]);
+
+  const polys = useMemo(() => (gl ? [] : draw(model, prepared, t)), [gl, model, prepared, t]);
   const activeId = hovered ?? pinned;
   const active = model.parts.find((p) => p.id === activeId);
   const exploded = t > 0.5;
@@ -254,17 +284,22 @@ export default function ExplodedViewer({ model }: { model: Model }) {
     onPointerEnter: (e: React.PointerEvent) => e.pointerType === 'mouse' && setHovered(id),
     onPointerLeave: (e: React.PointerEvent) => e.pointerType === 'mouse' && setHovered(null),
   });
+  events.current = { hover: setHovered, select: (id) => setPinned((current) => (id === null || id === current ? null : id)) };
+  useEffect(() => gl?.setExplode(t), [gl, t]);
+  useEffect(() => gl?.setActive(activeId), [gl, activeId]);
   const { counts } = model;
 
   return (
     <figure className="diagram ev">
       <figcaption>
         <strong>{model.name}, taken apart</strong>
-        <span>Drawn to scale from measurements. Hover or tap a part for its name and sizes.</span>
+        <span>Drawn to scale from measurements. {gl ? 'Drag to turn it. ' : ''}Hover or tap a part for its name and sizes.</span>
       </figcaption>
 
+      <div className="ev-stage" ref={stage}>
       <svg
         className="ev-svg"
+        data-hidden={gl ? '' : undefined}
         viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
         role="img"
         aria-label={`Exploded view of the ${model.name}: ${model.parts.map((p) => p.name.toLowerCase()).join(', ')}.`}
@@ -300,6 +335,26 @@ export default function ExplodedViewer({ model }: { model: Model }) {
           );
         })}
       </svg>
+      </div>
+
+      {gl && (
+        <div className="ev-views" role="group" aria-label="View">
+          {(['angle', 'front', 'side', 'top', 'back'] as const).map((name) => (
+            <button
+              key={name}
+              type="button"
+              className="ev-part"
+              aria-pressed={pose === name}
+              onClick={() => {
+                setPose(name);
+                gl.setView(name, window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+              }}
+            >
+              {name === 'angle' ? 'Angled' : name[0].toUpperCase() + name.slice(1)}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="ev-controls">
         <button type="button" className="ev-button" onClick={() => animateTo(exploded ? 0 : 1)}>
