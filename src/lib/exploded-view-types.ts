@@ -27,9 +27,9 @@ export type Decal = Shape & {
   lines?: string[];
   /** Artwork drawn on it instead of a plain colour (3D view only; the fixed drawing shows a plain patch) */
   art?: 'badge';
-  /** For the badge: how far the gold plate stands off the face, and how much further the black piece stands above it */
+  /** For the badge: how far the gold plate stands off the face, and how far the black piece is sunk below the gold */
   height?: number;
-  bump?: number;
+  recess?: number;
 };
 
 /** A shape pushed back along z: a box, a cylinder, a plate with holes or a tube */
@@ -50,6 +50,9 @@ export interface Solid {
   faces: 'all' | 'inner' | 'outer';
   material: string;
   texture?: 'mesh' | 'chip';
+  /** For the grille's mesh: hole pitch and hole size, in mm */
+  texturePitch?: number;
+  textureHole?: number;
   decals: Decal[];
 }
 

@@ -119,7 +119,9 @@ export async function loadModel(id: string): Promise<Model> {
         faces: s.faces ?? 'all',
         material: s.material ?? p.material,
         texture: s.texture,
-        decals: ((s.decals ?? []) as Record<string, any>[]).map((d): Decal => ({ ...shape(d), at: at2(d.at), material: d.material, side: d.side ?? 'front', ...(d.lines ? { lines: d.lines } : {}), ...(d.art ? { art: d.art } : {}), ...(d.height !== undefined ? { height: num(d.height) } : {}), ...(d.bump !== undefined ? { bump: num(d.bump) } : {}) })),
+        ...(s.texture_pitch !== undefined ? { texturePitch: num(s.texture_pitch) } : {}),
+        ...(s.texture_hole !== undefined ? { textureHole: num(s.texture_hole) } : {}),
+        decals: ((s.decals ?? []) as Record<string, any>[]).map((d): Decal => ({ ...shape(d), at: at2(d.at), material: d.material, side: d.side ?? 'front', ...(d.lines ? { lines: d.lines } : {}), ...(d.art ? { art: d.art } : {}), ...(d.height !== undefined ? { height: num(d.height) } : {}), ...(d.recess !== undefined ? { recess: num(d.recess) } : {}) })),
       }),
     ),
   }));

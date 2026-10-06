@@ -124,16 +124,19 @@ function chipTexture() {
   return canvas;
 }
 
-/** A fine square grille: dark metal with slightly lighter holes, one cell every 1.6 mm */
-function meshTexture() {
-  const size = 32;
+/** The perforated grille: dark metal with lighter, rounded-square holes, one cell per hole pitch */
+function meshTexture(pitch: number, hole: number) {
+  const size = 64;
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = size;
   const g = canvas.getContext('2d')!;
   g.fillStyle = '#2e2d30';
   g.fillRect(0, 0, size, size);
   g.fillStyle = '#6a6762';
-  g.fillRect(5, 5, 18, 18);
+  const side = (hole / pitch) * size;
+  g.beginPath();
+  g.roundRect((size - side) / 2, (size - side) / 2, side, side, side * 0.22);
+  g.fill();
   return canvas;
 }
 
@@ -238,7 +241,9 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
 
   const textures: Texture[] = [];
   const chip = textureOf(chipTexture(), 30);
-  const grid = textureOf(meshTexture(), 1.6);
+  const meshSolid = model.parts.flatMap((p) => p.solids).find((s) => s.texture === 'mesh');
+  const pitch = meshSolid?.texturePitch ?? 1.6;
+  const grid = textureOf(meshTexture(pitch, meshSolid?.textureHole ?? 0.9), pitch);
   textures.push(chip, grid);
 
   const geometries: BufferGeometry[] = [];
@@ -319,7 +324,7 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
           };
           const pieces: [UnitPoint[], number, string][] = [
             [badgeShapes.gold, plate, decal.material],
-            [badgeShapes.inlay, plate + (decal.bump ?? 1), 'badge_inlay'],
+            [badgeShapes.inlay, Math.max(0.05, plate - (decal.recess ?? 0.4)), 'badge_inlay'],
           ];
           for (const [points, depth, look] of pieces) {
             // Extrusion runs outward from the grille's face, toward the viewer
