@@ -11,7 +11,7 @@ const formerBlogPaths = BLOGS.flatMap((blog) => (blog.formerSlugs ?? []).map((sl
 const isMoved = (path) => /\/\d{4}\/\d{2}\/\d{2}\//.test(path) || formerBlogPaths.some((prefix) => path.startsWith(prefix));
 
 export default defineConfig({
-  site: 'https://adrianchen8662.github.io',
+  site: 'https://adrianchen.fyi',
   // Code blocks: GitHub's dark theme, whose comments stay readable (the default's don't pass contrast)
   markdown: { shikiConfig: { theme: 'github-dark-default' } },
   // Images next to posts and in the timeline are compressed and served in several sizes;

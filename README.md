@@ -141,7 +141,9 @@ Do steps 1 to 8 before merging this to `main`: until `PUBLIC_API_URL` is set, th
 
 ## Deploying
 
-Every push to `main` builds the site and publishes it with `.github/workflows/deploy.yml`; pull requests get a build check. The Worker deploys separately, with `.github/workflows/worker.yml`. In the repository's Settings → Pages, **Source** must be set to **GitHub Actions**.
+The site is at https://adrianchen.fyi. Cloudflare builds it from this repository on every push to `main` (and gives each branch a preview URL), using `npm run build` and `npx wrangler deploy` with the settings in `wrangler.jsonc`. Its build variables are `NODE_VERSION` (22) and `PUBLIC_API_URL`, set in the project's Settings → Build in the Cloudflare dashboard.
+
+`.github/workflows/deploy.yml` still builds every push and pull request as a check, and publishes to GitHub Pages (Settings → Pages, **Source**: GitHub Actions) until that copy is retired. The Worker deploys separately, with `.github/workflows/worker.yml`.
 
 ## License
 

@@ -1,4 +1,4 @@
-// The API behind adrianchen8662.github.io:
+// The API behind adrianchen.fyi:
 //   GET  /now-playing  what Spotify says I'm playing, or else my latest listen
 //   GET  /most-played  the counts for the About page, made by the cron job
 //   GET  /history      my listens, newest first (?limit=50&before=<seconds>)

@@ -96,7 +96,7 @@ async function fetchPage(url: string): Promise<LBListen[]> {
   for (let attempt = 0; attempt <= RETRIES; attempt++) {
     try {
       const response = await fetch(url, {
-        headers: { Accept: 'application/json', 'User-Agent': 'site-api (https://adrianchen8662.github.io)' },
+        headers: { Accept: 'application/json', 'User-Agent': 'site-api (https://adrianchen.fyi)' },
         signal: AbortSignal.timeout(PAGE_TIMEOUT_MS),
       });
       if (response.ok) {

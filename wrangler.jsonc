@@ -1,0 +1,11 @@
+// Cloudflare builds the site from this repository and publishes dist/ with `npx wrangler deploy`.
+// The name must match the project in Workers & Pages. The Worker behind the About page is separate (worker/).
+{
+  "name": "adrianchen8662-github-io",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Unknown addresses get Astro's 404 page
+    "not_found_handling": "404-page"
+  }
+}

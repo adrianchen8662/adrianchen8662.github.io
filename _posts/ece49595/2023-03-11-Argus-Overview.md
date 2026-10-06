@@ -46,7 +46,7 @@ Current Raspberry Pi's have multiple cores and threads, while the current code o
 ## Credits
 ### Team Members
 [Ainesh Sootha](https://ainesh.co/)  
-[Adrian Chen](https://adrianchen8662.github.io/)  
+[Adrian Chen](https://adrianchen.fyi/)  
 Justin Chan  
 
 ### Professor for ECE 49595
