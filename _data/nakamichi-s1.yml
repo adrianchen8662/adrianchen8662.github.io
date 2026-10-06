@@ -25,9 +25,9 @@ overall:
 # A removable pan of perforated steel: a flat face, two side flanges bent back
 # along the long edges, and two tabs bent back at the top and bottom.
 grille:
-  width:  { value: 138.01, note: face of the grille, measured from the front }
-  height: { value: 211.33, note: face of the grille, measured from the front }
-  tab_count: { value: 2, note: one centred on the top edge, one on the bottom }
+  width:  { value: 138.01, note: "face of the grille, measured from the front" }
+  height: { value: 211.33, note: "face of the grille, measured from the front" }
+  tab_count: { value: 2, note: "one centred on the top edge, one on the bottom" }
   tab_size: { value: 10.94, note: unclear which dimension; see open questions }
   tab_width: { value: null }
   flange_depth: { value: null, note: how far the side flanges bend back from the face }
@@ -39,7 +39,7 @@ grille:
     pitch: { value: null, note: centre to centre of neighbouring holes }
     hole_size: { value: null }
   finish: matte black, painted or powder-coated
-  felt_strips: { note: soft black strips on the inside of the flanges and tabs, probably felt; size not measured }
+  felt_strips: { note: "soft black strips on the inside of the flanges and tabs, probably felt; size not measured" }
   badge:
     description: small gold Nakamichi mark on a black square
     position: upper right corner when the speaker is upright
