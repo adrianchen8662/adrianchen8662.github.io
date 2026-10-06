@@ -20,7 +20,7 @@ object:
   name: Nakamichi S-1A / S-1B
   # z of the cabinet's front edge. Parts that start inside the cabinet and come out of its front are
   # drawn in front of it once they are out, and behind its walls while they are still in.
-  front_plane: grille_sheet
+  front_plane: cabinet_front_z
 
 dims:
   # ---- measured ----
@@ -32,27 +32,45 @@ dims:
   tab_depth:      { label: Flange and tab depth, value: 10.94, status: measured, note: "Given as the grille tab size; flanges and tabs are the same depth. Confirm this reading is the depth." }
   tweeter_frame_d:      { label: Tweeter frame diameter,        value: 52,    status: measured }
   tweeter_ear_span:     { label: Tweeter width across the ears, value: 74,    status: measured }
-  tweeter_hole_d:       { label: Tweeter hole in the baffle,    value: 48,    status: measured }
   tweeter_slot_spacing: { label: Tweeter slot spacing,          value: 65.06, status: measured }
   tweeter_slot_w:       { label: Tweeter slot length,           value: 5.48,  status: measured }
   tweeter_slot_h:       { label: Tweeter slot width,            value: 3.94,  status: measured }
   tweeter_ear_len:      { label: Tweeter ear length beyond the frame, value: tweeter_ear_span / 2 - tweeter_frame_d / 2 }
   tweeter_ear_mid:      { label: Tweeter ear centre from the frame's centre, value: tweeter_frame_d / 2 + tweeter_ear_len / 2 }
   tweeter_slot_off:     { label: Tweeter slot from the ear's centre, value: tweeter_slot_spacing / 2 - tweeter_ear_mid }
+  tweeter_hole_d:       { label: Tweeter hole in the particleboard panel, value: 48, status: measured }
+  bezel_w:              { label: Bezel width,  value: 140, status: measured, note: "The black plastic front baffle, at its rear edge. It curves in slightly, so the front is a little narrower." }
+  bezel_h:              { label: Bezel height, value: 226, status: measured, note: "At its rear edge, as above" }
+  woofer_side:          { label: Woofer hole to the bezel's side edge, value: 15, status: measured, note: "The same on both sides" }
+  tweeter_side:         { label: Tweeter hole to the bezel's side edge, value: 47.5, status: measured, note: "The same on both sides" }
+  woofer_hole_d:        { label: Woofer hole in the bezel, value: bezel_w - 2 * woofer_side, note: "Worked out from the 15 mm to each side. The hole is bevelled wider at the front; the bevel is not modelled yet." }
+  tweeter_bezel_hole_d: { label: Tweeter hole in the bezel, value: bezel_w - 2 * tweeter_side, note: "Worked out from the 47.5 mm to each side. A wider step around it at the front is not modelled yet." }
+  port_bore_d:          { label: Port bore (particleboard panel and tube), value: 31.75, status: measured, note: "Given as the port's diameter, taken as the hole in the panel and the tube's inside" }
+  bezel_bore_front:     { label: Bezel port bore at its narrowest, value: 26.75, status: measured }
+  bezel_bore_rear:      { label: Bezel port bore at the back, value: 28.03, status: measured, note: "The bore widens from 26.75 to 28.03" }
+  boss_od_base:         { label: Bezel port boss outside diameter at the base, value: 34, status: measured }
+  boss_od_end:          { label: Bezel port boss outside diameter at the end, value: 33.06, status: measured }
+  port_gasket_od:       { label: Port gasket outer diameter, value: 41.73, status: measured, note: "Flat white foam ring that goes round the port boss" }
+  port_gasket_id:       { label: Port gasket inner diameter, value: 34.5,  status: measured }
+  woofer_frame:         { label: Woofer flange width side to side, value: 125.86, status: measured }
+  woofer_frame_diag:    { label: Woofer flange corner to corner,   value: 145.94, status: measured, note: "The corners are trimmed, so the flange is a rounded square" }
+  woofer_screw_head_d:  { label: Woofer screw head diameter, value: 7.23, status: measured }
+  tweeter_screw_d:      { label: Tweeter screw head diameter, value: 6.25, status: measured }
+  screw_len:            { label: Baffle screw length under the head, value: 25.25, status: measured }
+  screw_shank_d:        { label: Baffle screw shank diameter, value: 3.54, status: measured, note: "The thread size is hard to measure" }
+  screw_head_d:         { label: Baffle screw head diameter, value: 7, status: measured }
+  screw_head_h:         { label: Baffle screw head height, value: 2.5, status: measured }
+  boss_od:              { label: Bezel port boss mean outside diameter, value: (boss_od_base + boss_od_end) / 2 }
+  bezel_bore:           { label: Bezel port bore mean, value: (bezel_bore_front + bezel_bore_rear) / 2 }
 
   # ---- estimated from the photos ----
   wall:           { label: Cabinet wall thickness, value: 6.5, status: estimated, note: "The rim around the rear panel in the ruler photo is about 6.8 mm. A baffle that fits inside walls this thick is 211.44 mm tall, within 0.1 mm of the grille height (211.33), which supports it." }
   screw_x:        { label: Baffle screw x from centre, value: 53.5, status: estimated }
   screw_y:        { label: Baffle screw y from centre, value: 97,   status: estimated }
-  screw_head_d:   { label: Baffle screw head diameter, value: 5.7,  status: estimated }
   tweeter_y:      { label: Tweeter centre height,      value: 68.6, status: estimated, note: "Centred left to right" }
   port_x:         { label: Port centre x from centre,  value: -40.7, status: estimated, note: "Negative is the viewer's left. This is the S-1B; the S-1A is presumably a mirror image." }
   port_y:         { label: Port centre height,         value: 40.3, status: estimated }
-  port_hole_d:    { label: Port opening in the baffle, value: 37,   status: estimated }
-  port_tube_od:   { label: Port tube outer diameter,   value: 36,   status: estimated }
-  port_bore_d:    { label: Port tube inner diameter,   value: 29,   status: estimated }
   woofer_y:       { label: Woofer centre height,       value: -39,  status: estimated, note: "Centred left to right" }
-  woofer_hole_d:  { label: Woofer hole in the baffle,  value: 104,  status: estimated, note: "Narrowest point. The hole is bevelled out to about 125 mm at the front; the bevel is not modelled yet." }
   tab_width:      { label: Grille tab width,           value: 43,   status: estimated, note: "Two tabs, centred on the top and bottom edges" }
   badge_w:        { label: Badge width,                value: 9,    status: measured, note: "Calipers" }
   badge_h:        { label: Badge height,               value: 4,    status: measured, note: "Calipers" }
@@ -70,9 +88,13 @@ dims:
   label_w:        { label: Rear label width,  value: 60, status: estimated }
   label_h:        { label: Rear label height, value: 33, status: estimated }
   label_y:        { label: Rear label centre height, value: -65, status: estimated, note: "Centred left to right, below the terminal plate" }
-  tweeter_gasket_d:      { label: Tweeter gasket outer diameter, value: 62, status: estimated, note: "Flat white foam ring, doubled at the factory" }
-  tweeter_gasket_hole_d: { label: Tweeter gasket inner diameter, value: 44, status: estimated }
   tweeter_magnet_d:      { label: Tweeter magnet cup diameter,   value: 32, status: estimated }
+  tweeter_gasket_d:      { label: Tweeter gasket outer diameter, value: 62, status: estimated, note: "Flat white foam ring, doubled at the factory" }
+  tweeter_gasket_hole_d: { label: Tweeter gasket inner diameter, value: 47, status: estimated, note: "An earlier photo read about 42 to 44; 47 lets the frame's dish through" }
+  panel_w:        { label: Particleboard front panel width,  value: 129.5, status: estimated, note: "Scaled from the photo with the ruler in it; it sits inside the bezel" }
+  panel_h:        { label: Particleboard front panel height, value: 218,   status: estimated }
+  woofer_screw_x: { label: Woofer screw x from the woofer's centre, value: 47.5, status: estimated }
+  woofer_screw_y: { label: Woofer screw y from the woofer's centre, value: 50,   status: estimated }
   plate_y:        { label: Terminal plate centre height, value: 11.2, status: estimated, note: "Centred left to right and a little above the middle of the back" }
 
   # ---- assumed placeholders ----
@@ -80,8 +102,15 @@ dims:
   flange_inset:   { label: Flange inset from the grille's edge, value: 3, status: assumed, note: "The flanges sit inside slots on the front, so they stand back from the edge of the face" }
   flange_len:     { label: Flange length,          value: 190,  status: assumed }
   tab_inset:      { label: Tab inset from the grille's edge, value: 3.25, status: assumed }
-  baffle_t:       { label: Baffle thickness,       value: 12,   status: assumed }
-  woofer_frame:   { label: Woofer frame width,     value: 115,  status: assumed, note: "Square frame. Earlier notes say about 4.5 in." }
+  bezel_t:        { label: Bezel plate thickness,  value: 3,    status: assumed }
+  bezel_rim_t:    { label: Bezel rim wall thickness, value: 2.5, status: assumed }
+  bezel_gap:      { label: Gap between the bezel plate and the drivers' flanges, value: 10, status: assumed, note: "The collars, the port boss and the corner standoffs on the back of the bezel are about this tall; the screw heads sit in the gap" }
+  collar_wall:    { label: Bezel collar wall thickness, value: 3, status: assumed }
+  standoff_od:    { label: Bezel corner standoff diameter, value: 9, status: assumed }
+  panel_t:        { label: Particleboard front panel thickness, value: 12, status: assumed, note: "The baffle screws go about 9 mm into it" }
+  woofer_panel_hole_d: { label: Woofer hole in the particleboard panel, value: 100, status: assumed }
+  port_gasket_t:  { label: Port gasket thickness, value: 2.5, status: assumed }
+  tweeter_gasket_t: { label: Tweeter gasket thickness, value: 1, status: assumed, note: "Both layers, squeezed" }
   woofer_flange_t:     { label: Woofer frame flange thickness, value: 3,  status: assumed }
   woofer_cone_d:       { label: Woofer cone diameter,          value: 100, status: assumed }
   woofer_basket_d:     { label: Woofer basket front diameter,  value: 96,  status: assumed }
@@ -95,15 +124,10 @@ dims:
   tweeter_ear_w:       { label: Tweeter ear width,             value: 10,  status: assumed }
   tweeter_ear_t:       { label: Tweeter flange and ear thickness, value: 2, status: assumed }
   tweeter_magnet_depth: { label: Tweeter magnet cup depth,     value: 8,   status: assumed }
-  tweeter_gasket_t:    { label: Tweeter gasket thickness (both layers), value: 3, status: assumed }
   tweeter_taper:       { label: Tweeter frame, back diameter as a share of the front, value: 0.7, status: assumed, note: "The frame is a cone-shaped dish" }
-  tweeter_screw_d:     { label: Tweeter ear screw head diameter, value: 5.5, status: assumed }
   tweeter_dustcap_d:   { label: Tweeter dust cap diameter,     value: 18,  status: assumed }
   port_length:    { label: Port tube length,       value: 70,   status: assumed }
-  port_recess:    { label: Port tube set back from the baffle face, value: 3, status: assumed }
-  screw_len:      { label: Baffle screw length,    value: 20,   status: assumed, note: "Where they thread into is unknown; no cleats are drawn" }
-  screw_shank_d:  { label: Baffle screw shank diameter, value: 3.5, status: assumed }
-  screw_head_h:   { label: Baffle screw head height, value: 2.5, status: assumed }
+  port_tube_od:   { label: Port tube outside diameter, value: 35.5, status: assumed, note: "Glued to the back of the panel around the 31.75 mm hole" }
   rear_panel_t:   { label: Rear panel thickness,   value: 6,    status: assumed }
   rear_protrusion: { label: Rear panel protrusion past the housing, value: 2, status: assumed }
   bump_depth:     { label: Terminal plate bump depth behind the plate's face, value: 28, status: assumed, note: "Through the rear panel and about 20 mm into the box" }
@@ -122,13 +146,18 @@ dims:
   # ---- worked out from the above ----
   inner_w:        { label: Cabinet inside width,  value: cabinet_w - 2 * wall }
   inner_h:        { label: Cabinet inside height, value: cabinet_h - 2 * wall }
-  body_depth:     { label: Cabinet body depth,    value: overall_depth - grille_sheet }
-  baffle_setback: { label: Baffle face set back from the cabinet's front edge, value: grille_sheet + tab_depth, note: "Assumed to match the depth of the grille's flanges and tabs" }
-  baffle_z:       { label: Baffle face z,         value: grille_sheet + baffle_setback }
-  baffle_back_z:  { label: Baffle back z,         value: baffle_z + baffle_t }
+  bezel_inner_w:  { label: Bezel inside width,  value: bezel_w - 2 * bezel_rim_t }
+  bezel_inner_h:  { label: Bezel inside height, value: bezel_h - 2 * bezel_rim_t }
+  bezel_face_z:   { label: Bezel plate front z, value: grille_sheet + tab_depth, note: "Assumed to be where the grille's flanges and tabs stop" }
+  bezel_back_z:   { label: Bezel plate back z,  value: bezel_face_z + bezel_t }
+  boss_h:         { label: Height of the collars and boss behind the plate, value: bezel_gap + woofer_flange_t, note: "They reach the front of the particleboard panel" }
+  zd:             { label: Drivers' flange front z, value: bezel_back_z + bezel_gap }
+  front_panel_z:  { label: Particleboard front panel front z, value: zd + woofer_flange_t }
+  cabinet_front_z: { label: Cabinet box front z, value: front_panel_z + panel_t }
+  bezel_depth:    { label: Bezel depth, value: cabinet_front_z - grille_sheet }
+  body_depth:     { label: Cabinet box depth, value: overall_depth - cabinet_front_z }
   panel_front_z:  { label: Rear panel front z,    value: overall_depth + rear_protrusion - rear_panel_t }
   plate_z:        { label: Terminal plate face z, value: overall_depth + rear_protrusion }
-  zf:             { label: Tweeter flange z,      value: baffle_back_z + tweeter_gasket_t }
 
 parts:
   # Listed back to front. `paint` sets drawing order (lower is drawn first, so further back);
@@ -202,62 +231,86 @@ parts:
     name: Cabinet
     material: cabinet
     explode: [0, 0, 0]
-    show: [cabinet_w, cabinet_h, overall_depth, wall, body_depth]
-    info: A box with a black finish outside and smooth brown walls inside, open at the front and back. The top and bottom edges hold the grille's tabs and the side edges its flanges, in slots along the front.
+    show: [cabinet_w, cabinet_h, overall_depth, wall, body_depth, panel_w, panel_h, panel_t]
+    info: A box with a black finish outside and smooth brown walls inside, open at the back. At the front a particleboard panel carries the drivers and sits inside the plastic bezel; its holes are for the woofer, the tweeter, the port and four screws.
     solids:
       - outline: { rect: [cabinet_w, cabinet_h] }
         holes: [{ rect: [inner_w, inner_h], at: [0, 0] }]
-        at: [0, 0, grille_sheet]
+        at: [0, 0, cabinet_front_z]
         depth: body_depth
         faces: inner
         material: fiberboard
         paint: 10
       - outline: { rect: [cabinet_w, cabinet_h] }
         holes: [{ rect: [inner_w, inner_h], at: [0, 0] }]
-        at: [0, 0, grille_sheet]
+        at: [0, 0, cabinet_front_z]
         depth: body_depth
         faces: outer
         paint: 40
+      - outline: { rect: [panel_w, panel_h] }
+        holes:
+          - { circle: tweeter_hole_d, at: [0, tweeter_y] }
+          - { circle: port_bore_d, at: [port_x, port_y] }
+          - { circle: woofer_panel_hole_d, at: [0, woofer_y] }
+          - { circle: 3, at: [screw_x, screw_y] }
+          - { circle: 3, at: [-screw_x, screw_y] }
+          - { circle: 3, at: [screw_x, -screw_y] }
+          - { circle: 3, at: [-screw_x, -screw_y] }
+        at: [0, 0, front_panel_z]
+        depth: panel_t
+        paint: 12
+        material: particleboard
+        texture: chip
 
   - id: port
     name: Port tube
     material: cardboard
-    explode: [0, 0, -100]
+    explode: [0, 0, 0]
     interior: true
-    show: [port_x, port_y, port_tube_od, port_bore_d, port_length]
-    info: A round cardboard tube that vents the box through the front.
+    show: [port_x, port_y, port_bore_d, port_tube_od, port_length]
+    info: A round cardboard tube glued to the back of the panel around the port hole, venting the box through the front.
     solids:
       - outline: { circle: port_tube_od }
         holes: [{ circle: port_bore_d, at: [0, 0] }]
-        at: [port_x, port_y, "baffle_z + port_recess"]
+        at: [port_x, port_y, "front_panel_z + panel_t"]
         depth: port_length
-        paint: 25
+        paint: 11.5
+
+  - id: port_gasket
+    name: Port gasket
+    material: foam
+    explode: [0, 0, -55]
+    interior: true
+    show: [port_gasket_od, port_gasket_id, port_gasket_t]
+    info: A flat white foam ring that fits round the bezel's port boss and seals it against the panel.
+    solids:
+      - { outline: { circle: port_gasket_od }, holes: [{ circle: port_gasket_id, at: [0, 0] }], at: [port_x, port_y, "front_panel_z - port_gasket_t"], depth: port_gasket_t, paint: 25.9 }
 
   - id: tweeter
     name: Tweeter
     material: zinc
     explode: [0, 0, -100]
     interior: true
-    show: [tweeter_frame_d, tweeter_ear_span, tweeter_hole_d, tweeter_slot_spacing, tweeter_y, tweeter_depth, tweeter_gasket_d]
-    info: A 2 in cone tweeter, 8 ohm 6 W, part number 4001286138D. A yellow-zinc stamped steel frame shaped like a shallow cone, with a silver magnet cup, and two slotted ears, one each side, that take two screws into the back of the baffle. A doubled ring of white foam seals it to the baffle.
+    show: [tweeter_frame_d, tweeter_ear_span, tweeter_hole_d, tweeter_slot_spacing, tweeter_y, tweeter_depth, tweeter_screw_d]
+    info: A 2 in cone tweeter, 8 ohm 6 W, part number 4001286138D. A yellow-zinc stamped steel frame shaped like a shallow cone, with a silver magnet cup, sits on the front of the particleboard panel with its dish through the panel's hole. Two slotted ears, one each side, take two screws, and the bezel's collar holds it down.
     solids:
-      - { outline: { circle: tweeter_magnet_d }, at: [0, tweeter_y, "zf + tweeter_depth"], depth: tweeter_magnet_depth, paint: 26.1, material: silver }
-      - { outline: { circle: tweeter_frame_d }, taper: tweeter_taper, at: [0, tweeter_y, "zf + 4.5"], depth: "tweeter_depth - 4.5", paint: 26.2 }
-      - { outline: { circle: tweeter_cone_d }, at: [0, tweeter_y, "zf + 3"], depth: 1.5, paint: 26.3, material: cone }
-      - { outline: { circle: tweeter_dustcap_d }, at: [0, tweeter_y, zf], depth: 3, paint: 26.4, material: cone }
-      - { outline: { circle: tweeter_frame_d }, holes: [{ circle: tweeter_cone_d, at: [0, 0] }], at: [0, tweeter_y, zf], depth: tweeter_ear_t, paint: 26.5 }
+      - { outline: { circle: tweeter_magnet_d }, at: [0, tweeter_y, "zd + tweeter_depth"], depth: tweeter_magnet_depth, paint: 26.1, material: silver }
+      - { outline: { circle: tweeter_cone_d }, taper: tweeter_taper, at: [0, tweeter_y, "zd + 4.5"], depth: "tweeter_depth - 4.5", paint: 26.2 }
+      - { outline: { circle: tweeter_cone_d }, at: [0, tweeter_y, "zd + 3"], depth: 1.5, paint: 26.3, material: cone }
+      - { outline: { circle: tweeter_dustcap_d }, at: [0, tweeter_y, zd], depth: 3, paint: 26.4, material: cone }
+      - { outline: { circle: tweeter_frame_d }, holes: [{ circle: tweeter_cone_d, at: [0, 0] }], at: [0, tweeter_y, zd], depth: tweeter_ear_t, paint: 26.5 }
       - outline: { rect: [tweeter_ear_len, tweeter_ear_w] }
         holes: [{ rect: [tweeter_slot_w, tweeter_slot_h], at: ["tweeter_slot_off", 0] }]
-        at: ["tweeter_ear_mid", tweeter_y, zf]
+        at: ["tweeter_ear_mid", tweeter_y, zd]
         depth: tweeter_ear_t
         paint: 26.5
       - outline: { rect: [tweeter_ear_len, tweeter_ear_w] }
         holes: [{ rect: [tweeter_slot_w, tweeter_slot_h], at: ["-tweeter_slot_off", 0] }]
-        at: ["-tweeter_ear_mid", tweeter_y, zf]
+        at: ["-tweeter_ear_mid", tweeter_y, zd]
         depth: tweeter_ear_t
         paint: 26.5
-      - { outline: { circle: tweeter_screw_d }, at: ["tweeter_slot_spacing / 2", tweeter_y, "zf + tweeter_ear_t"], depth: 2, paint: 26.6, material: screw }
-      - { outline: { circle: tweeter_screw_d }, at: ["-tweeter_slot_spacing / 2", tweeter_y, "zf + tweeter_ear_t"], depth: 2, paint: 26.6, material: screw }
+      - { outline: { circle: tweeter_screw_d }, at: ["tweeter_slot_spacing / 2", tweeter_y, "zd - 2"], depth: 2, paint: 26.6, material: screw }
+      - { outline: { circle: tweeter_screw_d }, at: ["-tweeter_slot_spacing / 2", tweeter_y, "zd - 2"], depth: 2, paint: 26.6, material: screw }
 
   - id: tweeter_gasket
     name: Tweeter gasket
@@ -265,66 +318,94 @@ parts:
     explode: [0, 0, -55]
     interior: true
     show: [tweeter_gasket_d, tweeter_gasket_hole_d, tweeter_gasket_t]
-    info: A flat ring of white foam between the tweeter's frame and the back of the baffle. The factory fitted two layers.
+    info: A flat ring of white foam between the back of the tweeter's frame and the particleboard panel. The factory fitted two layers.
     solids:
-      - { outline: { circle: tweeter_gasket_d }, holes: [{ circle: tweeter_gasket_hole_d, at: [0, 0] }], at: [0, tweeter_y, baffle_back_z], depth: tweeter_gasket_t, paint: 26.0 }
+      - { outline: { circle: tweeter_gasket_d }, holes: [{ circle: tweeter_gasket_hole_d, at: [0, 0] }], at: [0, tweeter_y, "zd + tweeter_ear_t"], depth: tweeter_gasket_t, paint: 26.0 }
 
   - id: woofer
     name: Woofer
     material: zinc
     explode: [0, 0, -100]
     interior: true
-    show: [woofer_y, woofer_frame, woofer_hole_d, woofer_cone_d, woofer_basket_depth, woofer_magnet_d]
-    info: A roughly 4.5 in paper-cone woofer, 8 ohm 15 W, in a yellow-zinc stamped steel frame with a square flange and four slotted corner ears. A silver magnet cup sits at the back and a small terminal strip with two spade lugs on the frame. No gasket.
+    show: [woofer_y, woofer_frame, woofer_frame_diag, woofer_cone_d, woofer_basket_depth, woofer_magnet_d, woofer_screw_head_d]
+    info: A roughly 4.5 in paper-cone woofer, 8 ohm 15 W, in a yellow-zinc stamped steel frame whose flange is a square with its corners trimmed and slotted for four screws. It sits on the front of the particleboard panel with its basket through the panel's hole, and a silver magnet cup at the back. A small terminal strip with two spade lugs sits on the frame. No gasket.
     solids:
-      - { outline: { circle: woofer_magnet_d }, at: [0, woofer_y, "baffle_back_z + woofer_flange_t + 8 + woofer_basket_depth"], depth: woofer_magnet_depth, paint: 27.1, material: silver }
-      - { outline: { circle: woofer_basket_d }, taper: woofer_taper, at: [0, woofer_y, "baffle_back_z + woofer_flange_t + 8"], depth: woofer_basket_depth, paint: 27.2 }
-      - { outline: { circle: woofer_cone_d }, at: [0, woofer_y, "baffle_back_z + woofer_flange_t + 6"], depth: 2, paint: 27.3, material: cone }
-      - { outline: { rect: [woofer_frame, woofer_frame] }, holes: [{ circle: woofer_cone_d, at: [0, 0] }], at: [0, woofer_y, baffle_back_z], depth: woofer_flange_t, paint: 27.4 }
-      - { outline: { circle: woofer_dustcap_d }, at: [0, woofer_y, "baffle_back_z + woofer_flange_t"], depth: 6, paint: 27.5, material: cone }
+      - { outline: { circle: woofer_magnet_d }, at: [0, woofer_y, "zd + woofer_flange_t + 8 + woofer_basket_depth"], depth: woofer_magnet_depth, paint: 27.1, material: silver }
+      - { outline: { circle: woofer_basket_d }, taper: woofer_taper, at: [0, woofer_y, "zd + woofer_flange_t + 8"], depth: woofer_basket_depth, paint: 27.2 }
+      - { outline: { circle: woofer_cone_d }, at: [0, woofer_y, "zd + woofer_flange_t + 6"], depth: 2, paint: 27.3, material: cone }
+      - { outline: { rect: [woofer_frame, woofer_frame], clip: woofer_frame_diag }, holes: [{ circle: woofer_cone_d, at: [0, 0] }], at: [0, woofer_y, zd], depth: woofer_flange_t, paint: 27.4 }
+      - { outline: { circle: woofer_dustcap_d }, at: [0, woofer_y, "zd + woofer_flange_t"], depth: 6, paint: 27.5, material: cone }
+      - { outline: { circle: woofer_screw_head_d }, at: ["woofer_screw_x", "woofer_y + woofer_screw_y", "zd - screw_head_h"], depth: screw_head_h, paint: 27.6, material: screw }
+      - { outline: { circle: woofer_screw_head_d }, at: ["-woofer_screw_x", "woofer_y + woofer_screw_y", "zd - screw_head_h"], depth: screw_head_h, paint: 27.6, material: screw }
+      - { outline: { circle: woofer_screw_head_d }, at: ["woofer_screw_x", "woofer_y - woofer_screw_y", "zd - screw_head_h"], depth: screw_head_h, paint: 27.6, material: screw }
+      - { outline: { circle: woofer_screw_head_d }, at: ["-woofer_screw_x", "woofer_y - woofer_screw_y", "zd - screw_head_h"], depth: screw_head_h, paint: 27.6, material: screw }
 
-  - id: baffle
-    name: Front baffle
+  - id: bezel
+    name: Front baffle (bezel)
     material: baffle
     explode: [0, 0, -135]
     interior: true
-    show: [inner_w, inner_h, baffle_t, baffle_setback, woofer_hole_d, tweeter_hole_d, port_hole_d]
-    info: Black particleboard front panel with openings for the woofer, tweeter and port. Four screws at the corners hold it in.
+    show: [bezel_w, bezel_h, bezel_t, bezel_depth, woofer_hole_d, tweeter_bezel_hole_d, bezel_bore_front, bezel_bore_rear, boss_od_base, boss_od_end]
+    info: The black plastic front baffle, a shallow tray that curves in slightly toward the front. A plate with holes for the woofer, tweeter and port has tall collars on its back that press the drivers against the particleboard panel, a port boss that takes the foam gasket, and four corner standoffs for the screws. The grille's flanges and tabs push into slots round its edge.
     solids:
-      - outline: { rect: [inner_w, inner_h] }
+      - outline: { rect: [bezel_w, bezel_h] }
+        holes: [{ rect: [bezel_inner_w, bezel_inner_h], at: [0, 0] }]
+        at: [0, 0, grille_sheet]
+        depth: bezel_depth
+        paint: 29
+      - outline: { circle: "woofer_hole_d + 2 * collar_wall" }
+        holes: [{ circle: woofer_hole_d, at: [0, 0] }]
+        at: [0, woofer_y, bezel_back_z]
+        depth: boss_h
+        paint: 29.5
+      - outline: { circle: "tweeter_bezel_hole_d + 2 * collar_wall" }
+        holes: [{ circle: tweeter_bezel_hole_d, at: [0, 0] }]
+        at: [0, tweeter_y, bezel_back_z]
+        depth: boss_h
+        paint: 29.5
+      - outline: { circle: boss_od }
+        holes: [{ circle: bezel_bore, at: [0, 0] }]
+        at: [port_x, port_y, bezel_back_z]
+        depth: boss_h
+        paint: 29.5
+      - { outline: { circle: standoff_od }, holes: [{ circle: "screw_shank_d + 0.2", at: [0, 0] }], at: [screw_x, screw_y, bezel_back_z], depth: boss_h, paint: 29.5 }
+      - { outline: { circle: standoff_od }, holes: [{ circle: "screw_shank_d + 0.2", at: [0, 0] }], at: [-screw_x, screw_y, bezel_back_z], depth: boss_h, paint: 29.5 }
+      - { outline: { circle: standoff_od }, holes: [{ circle: "screw_shank_d + 0.2", at: [0, 0] }], at: [screw_x, -screw_y, bezel_back_z], depth: boss_h, paint: 29.5 }
+      - { outline: { circle: standoff_od }, holes: [{ circle: "screw_shank_d + 0.2", at: [0, 0] }], at: [-screw_x, -screw_y, bezel_back_z], depth: boss_h, paint: 29.5 }
+      - outline: { rect: [bezel_inner_w, bezel_inner_h] }
         holes:
-          - { circle: tweeter_hole_d, at: [0, tweeter_y] }
-          - { circle: port_hole_d, at: [port_x, port_y] }
+          - { circle: tweeter_bezel_hole_d, at: [0, tweeter_y] }
+          - { circle: bezel_bore, at: [port_x, port_y] }
           - { circle: woofer_hole_d, at: [0, woofer_y] }
-          - { circle: 3.6, at: [screw_x, screw_y] }
-          - { circle: 3.6, at: [-screw_x, screw_y] }
-          - { circle: 3.6, at: [screw_x, -screw_y] }
-          - { circle: 3.6, at: [-screw_x, -screw_y] }
-        at: [0, 0, baffle_z]
-        depth: baffle_t
+          - { circle: "screw_shank_d + 0.2", at: [screw_x, screw_y] }
+          - { circle: "screw_shank_d + 0.2", at: [-screw_x, screw_y] }
+          - { circle: "screw_shank_d + 0.2", at: [screw_x, -screw_y] }
+          - { circle: "screw_shank_d + 0.2", at: [-screw_x, -screw_y] }
+        at: [0, 0, bezel_face_z]
+        depth: bezel_t
         paint: 30
 
   - id: screws
     name: Baffle screws
     material: screw
-    explode: [0, 0, -170]
+    explode: [0, 0, -180]
     interior: true
-    show: [screw_x, screw_y, screw_head_d, screw_len]
-    info: Four black Phillips pan-head wood screws; some have surface rust.
+    show: [screw_x, screw_y, screw_head_d, screw_head_h, screw_shank_d, screw_len]
+    info: Four black Phillips pan-head screws, 25.25 mm under the head, through the corners of the bezel and its standoffs into the particleboard panel. Some have surface rust.
     solids:
-      - { outline: { circle: screw_shank_d }, at: [screw_x, screw_y, baffle_z], depth: screw_len, paint: 31 }
-      - { outline: { circle: screw_head_d }, at: [screw_x, screw_y, "baffle_z - screw_head_h"], depth: screw_head_h, paint: 31.1 }
-      - { outline: { circle: screw_shank_d }, at: [-screw_x, screw_y, baffle_z], depth: screw_len, paint: 31 }
-      - { outline: { circle: screw_head_d }, at: [-screw_x, screw_y, "baffle_z - screw_head_h"], depth: screw_head_h, paint: 31.1 }
-      - { outline: { circle: screw_shank_d }, at: [screw_x, -screw_y, baffle_z], depth: screw_len, paint: 31 }
-      - { outline: { circle: screw_head_d }, at: [screw_x, -screw_y, "baffle_z - screw_head_h"], depth: screw_head_h, paint: 31.1 }
-      - { outline: { circle: screw_shank_d }, at: [-screw_x, -screw_y, baffle_z], depth: screw_len, paint: 31 }
-      - { outline: { circle: screw_head_d }, at: [-screw_x, -screw_y, "baffle_z - screw_head_h"], depth: screw_head_h, paint: 31.1 }
+      - { outline: { circle: screw_shank_d }, at: [screw_x, screw_y, bezel_face_z], depth: screw_len, paint: 31 }
+      - { outline: { circle: screw_head_d }, at: [screw_x, screw_y, "bezel_face_z - screw_head_h"], depth: screw_head_h, paint: 31.1 }
+      - { outline: { circle: screw_shank_d }, at: [-screw_x, screw_y, bezel_face_z], depth: screw_len, paint: 31 }
+      - { outline: { circle: screw_head_d }, at: [-screw_x, screw_y, "bezel_face_z - screw_head_h"], depth: screw_head_h, paint: 31.1 }
+      - { outline: { circle: screw_shank_d }, at: [screw_x, -screw_y, bezel_face_z], depth: screw_len, paint: 31 }
+      - { outline: { circle: screw_head_d }, at: [screw_x, -screw_y, "bezel_face_z - screw_head_h"], depth: screw_head_h, paint: 31.1 }
+      - { outline: { circle: screw_shank_d }, at: [-screw_x, -screw_y, bezel_face_z], depth: screw_len, paint: 31 }
+      - { outline: { circle: screw_head_d }, at: [-screw_x, -screw_y, "bezel_face_z - screw_head_h"], depth: screw_head_h, paint: 31.1 }
 
   - id: grille
     name: Grille
     material: grille
-    explode: [0, 0, -210]
+    explode: [0, 0, -225]
     show: [grille_w, grille_h, tab_depth, tab_width, grille_sheet]
     info: A pan of fine square-perforated black steel. Flanges bent back along both long edges and two tabs at the top and bottom push into slots on the front, and felt strips grip the cabinet. A small gold badge 9 x 4 mm sits at the upper right. It is a gold plate that stands about 1 mm proud of the grille, with a rounded shoulder and an arch-shaped notch. A separate solid black piece sits in the notch, a little lower than the gold.
     solids:
@@ -349,19 +430,24 @@ todo:
     - inside dimensions (box volume), corner radius, how the top and bottom caps meet the sides
     - the front slots the grille's flanges and tabs go into (position, width, depth)
     - what the smooth brown inside is made of (it is smooth, not chipped), and whether the outside is vinyl or paint
-  baffle:
-    - baffle thickness and how far it is set back from the cabinet's front edge (the cut edge of the woofer hole in the photos suggests 10 to 15 mm)
-    - the woofer opening's bevel (about 125 mm at the front, narrowing to the cutout)
-    - tweeter counterbore (the visible ring is about 53 mm)
-    - what the four corner screws thread into
+  bezel:
+    - plate, rim and standoff thicknesses, and the real heights of the collars, port boss and standoffs on its back (assumed 10 mm gap plus the flange)
+    - how much it curves in toward the front (rear 140 x 226 is measured; the front is a little smaller)
+    - the woofer hole's bevel at the front (about 125 mm across, narrowing to 110) and the tweeter's wider step (about 53 mm, narrowing to 45)
+    - the slots round the edge for the grille's tabs and flanges, and the ribs on the back
+    - the 25.25 mm screws go through the plate and standoffs and into the panel; how deep, and what is behind the panel's corners
+  front_panel:
+    - the particleboard panel's thickness and exact size (about 129.5 x 218 from a photo), and how it is fixed to the box (staples are visible on its edges)
+    - the woofer hole in it (assumed 100 mm) and the pilot holes for the corner screws
   woofer:
-    - frame width, the four slotted corner ears (positions and slot size), flange thickness, cone and dust cap size, basket depth, magnet size
+    - the four slotted corner ears (slot size), screw positions (estimated from a photo), flange thickness, cone and dust cap size, basket depth, magnet size
     - the small terminal strip with two spade lugs on the bottom of the frame
     - the part number on the magnet is not readable in the photo (it begins 400)
   tweeter:
-    - depth behind the flange, magnet cup size and the black ring around it, ear width, gasket thickness per layer
+    - depth behind the flange, magnet cup size and the black ring around it, ear width, gasket thickness per layer and inner diameter
   port:
-    - inner and outer diameter, length, how far it stands in front of or behind the baffle
+    - tube length and outside diameter (assumed 70 and 35.5), whether 31.75 is the bore or the outside, and how it joins the panel
+    - the foam gasket's thickness (assumed 2.5), and which side of the boss it really sits on
   rear:
     - rear panel thickness, protrusion and fixing; the opening for the terminal bump
     - terminal plate: bump depth and exact diameter, clip sizes, plate corner radius

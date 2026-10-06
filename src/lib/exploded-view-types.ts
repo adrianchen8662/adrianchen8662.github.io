@@ -13,7 +13,8 @@ export interface Dim {
 }
 
 /** A flat shape in the x/y plane, centred on the origin */
-export type Shape = { rect: [number, number] } | { circle: number };
+/** `clip` trims a rectangle's corners with a circle of that diameter */
+export type Shape = { rect: [number, number]; clip?: number } | { circle: number };
 
 export type Hole = Shape & { at: [number, number] };
 

@@ -97,7 +97,9 @@ export async function loadModel(id: string): Promise<Model> {
   };
 
   const shape = (s: Record<string, any>): Shape =>
-    'circle' in s ? { circle: num(s.circle) } : { rect: [num(s.rect[0]), num(s.rect[1])] };
+    'circle' in s
+      ? { circle: num(s.circle) }
+      : { rect: [num(s.rect[0]), num(s.rect[1])], ...(s.clip !== undefined ? { clip: num(s.clip) } : {}) };
   const at2 = (at: unknown[]): [number, number] => [num(at[0]), num(at[1])];
 
   const parts: Part[] = raw.parts.map((p) => ({

@@ -5,6 +5,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Dim, Model, Part, Shape, Solid, Status } from '../lib/exploded-view-types';
 import { badgeShapes } from '../lib/badge';
+import { clippedRect } from '../lib/geometry';
 import type { SceneApi, ViewName } from './exploded-three';
 import './ExplodedViewer.css';
 
@@ -46,6 +47,9 @@ interface Contour {
 }
 
 function contourOf(shape: Shape, at: Point = [0, 0]): Contour {
+  if ('rect' in shape && shape.clip !== undefined) {
+    return { curved: false, points: clippedRect(shape.rect[0], shape.rect[1], shape.clip).map(([x, y]) => [at[0] + x, at[1] + y] as Point) };
+  }
   if ('rect' in shape) {
     const [w, h] = shape.rect;
     const [cx, cy] = at;
@@ -276,7 +280,8 @@ export default function ExplodedViewer({ model }: { model: Model }) {
   const [gl, setGl] = useState<SceneApi | null>(null);
   const [pose, setPose] = useState<ViewName>('angle');
   // The scene calls back into these, and is made once, so they read the latest state through a ref
-  const events = useRef({ hover: (_id: string | null) => {}, select: (_id: string | null) => {} });
+  const events = useRef({ hover: (_id: string | null) => {}, select: (_id: string | null) => {}, zoom: (_z: number) => {} });
+  const [zoom, setZoom] = useState(1);
 
   useEffect(() => {
     let scene: SceneApi | undefined;
@@ -287,6 +292,7 @@ export default function ExplodedViewer({ model }: { model: Model }) {
         scene = createScene(stage.current, model, {
           hover: (id) => events.current.hover(id),
           select: (id) => events.current.select(id),
+          zoom: (z) => events.current.zoom(z),
         });
         setGl(scene);
       })
@@ -310,18 +316,72 @@ export default function ExplodedViewer({ model }: { model: Model }) {
     onPointerEnter: (e: React.PointerEvent) => e.pointerType === 'mouse' && setHovered(id),
     onPointerLeave: (e: React.PointerEvent) => e.pointerType === 'mouse' && setHovered(null),
   });
-  events.current = { hover: setHovered, select: (id) => setPinned((current) => (id === null || id === current ? null : id)) };
+  events.current = {
+    hover: setHovered,
+    select: (id) => setPinned((current) => (id === null || id === current ? null : id)),
+    zoom: setZoom,
+  };
+
+  // Fullscreen: the browser's own where it can do that for an element, otherwise the viewer
+  // fills the window (an iPhone can't fullscreen anything but video)
+  const figure = useRef<HTMLElement>(null);
+  const [full, setFull] = useState(false);
+  const [filled, setFilled] = useState(false);
+  useEffect(() => {
+    const changed = () => {
+      if (!document.fullscreenElement) setFull((current) => (filled ? current : false));
+    };
+    document.addEventListener('fullscreenchange', changed);
+    return () => document.removeEventListener('fullscreenchange', changed);
+  }, [filled]);
+  useEffect(() => {
+    if (!full || !filled) return;
+    const close = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setFull(false);
+        setFilled(false);
+      }
+    };
+    document.addEventListener('keydown', close);
+    const scroll = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', close);
+      document.documentElement.style.overflow = scroll;
+    };
+  }, [full, filled]);
+  useEffect(() => gl?.setFull(full), [gl, full]);
+
+  const toggleFull = async () => {
+    const el = figure.current;
+    if (!el) return;
+    if (full) {
+      if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
+      setFilled(false);
+      setFull(false);
+      return;
+    }
+    try {
+      if (!el.requestFullscreen) throw new Error('no fullscreen');
+      await el.requestFullscreen();
+      setFilled(false);
+    } catch {
+      setFilled(true);
+    }
+    setFull(true);
+  };
   useEffect(() => gl?.setExplode(t), [gl, t]);
   useEffect(() => gl?.setActive(activeId), [gl, activeId]);
   const { counts } = model;
 
   return (
-    <figure className="diagram ev">
+    <figure ref={figure} className={`diagram ev${full ? ' ev-full' : ''}${filled ? ' ev-filled' : ''}`}>
       <figcaption>
         <strong>{model.name}, taken apart</strong>
-        <span>Drawn to scale from measurements. {gl ? 'Drag to turn it. ' : ''}Hover or tap a part for its name and sizes.</span>
+        <span>Drawn to scale from measurements. {gl ? 'Drag to turn it; zoom with the buttons, or Ctrl or ⌘ and scroll; Shift and drag to move it. ' : ''}Hover or tap a part for its name and sizes.</span>
       </figcaption>
 
+      <div className="ev-main">
       <div className="ev-stage" ref={stage}>
       <svg
         className="ev-svg"
@@ -386,6 +446,20 @@ export default function ExplodedViewer({ model }: { model: Model }) {
               {name === 'angle' ? 'Angled' : name[0].toUpperCase() + name.slice(1)}
             </button>
           ))}
+          <span className="ev-zoom" role="group" aria-label="Zoom">
+            <button type="button" className="ev-part" aria-label="Zoom out" onClick={() => gl.zoomBy(1 / 1.5)}>
+              &minus;
+            </button>
+            <button type="button" className="ev-part" aria-label="Zoom in" onClick={() => gl.zoomBy(1.5)}>
+              +
+            </button>
+            <button type="button" className="ev-part" onClick={() => gl.resetZoom()} disabled={Math.abs(zoom - 1) < 0.01}>
+              Fit
+            </button>
+            <span className="ev-zoom-level" aria-hidden="true">
+              &times;{zoom < 10 ? zoom.toFixed(1) : Math.round(zoom)}
+            </span>
+          </span>
         </div>
       )}
 
@@ -406,8 +480,13 @@ export default function ExplodedViewer({ model }: { model: Model }) {
             }}
           />
         </label>
+        <button type="button" className="ev-button" aria-pressed={full} onClick={toggleFull}>
+          {full ? 'Exit fullscreen' : 'Fullscreen'}
+        </button>
+      </div>
       </div>
 
+      <div className="ev-side">
       <ul className="ev-parts" aria-label="Parts">
         {[...model.parts].reverse().map((part) => (
           <li key={part.id}>
@@ -445,6 +524,7 @@ export default function ExplodedViewer({ model }: { model: Model }) {
           <Dims dims={model.open} />
         </details>
       )}
+      </div>
     </figure>
   );
 }

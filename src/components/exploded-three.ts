@@ -34,7 +34,11 @@ import {
   WebGLRenderer,
 } from 'three';
 import { badgeShapes, type UnitPoint } from '../lib/badge';
+import { clippedRect } from '../lib/geometry';
 import type { Decal, Model, Shape as ModelShape, Solid } from '../lib/exploded-view-types';
+
+/** Field of view at zoom 1. Zooming narrows it, like a telephoto lens, so the camera never moves into the model. */
+const BASE_FOV = 28;
 
 export type ViewName = 'angle' | 'front' | 'side' | 'top' | 'back';
 
@@ -50,12 +54,19 @@ const VIEWS: Record<ViewName, [number, number]> = {
 export interface SceneCallbacks {
   hover: (id: string | null) => void;
   select: (id: string | null) => void;
+  /** The zoom changed: 1 is the whole model fitted to the window */
+  zoom: (zoom: number) => void;
 }
 
 export interface SceneApi {
   setExplode: (t: number) => void;
   setActive: (id: string | null) => void;
   setView: (view: ViewName, instant: boolean) => void;
+  zoomBy: (factor: number) => void;
+  /** Back to the whole model fitted to the window, keeping the angle */
+  resetZoom: () => void;
+  /** Fullscreen: the scroll wheel zooms without needing Ctrl, and touch gestures are free */
+  setFull: (full: boolean) => void;
   dispose: () => void;
 }
 
@@ -176,6 +187,11 @@ function textureOf(canvas: HTMLCanvasElement, mmPerTile: number) {
 
 function shapeOf(outline: ModelShape, at: [number, number] = [0, 0], hole = false) {
   const path = hole ? new Path() : new Shape();
+  if ('rect' in outline && outline.clip !== undefined) {
+    clippedRect(outline.rect[0], outline.rect[1], outline.clip).forEach(([x, y], i) => (i === 0 ? path.moveTo(at[0] + x, at[1] + y) : path.lineTo(at[0] + x, at[1] + y)));
+    path.closePath();
+    return path;
+  }
   if ('rect' in outline) {
     const [w, h] = outline.rect;
     const [x, y] = at;
@@ -223,12 +239,12 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
   canvas.setAttribute('role', 'img');
   canvas.setAttribute(
     'aria-label',
-    `3D view of the ${model.name}. Drag to rotate, or use the arrow keys. The parts list below does the same job without the mouse.`,
+    `3D view of the ${model.name}. Drag to rotate, or use the arrow keys. Plus and minus zoom, and shift with the arrow keys moves it. The parts list below does the same job without the mouse.`,
   );
   container.appendChild(canvas);
 
   const scene = new Scene();
-  const camera = new PerspectiveCamera(28, 1, 10, 6000);
+  const camera = new PerspectiveCamera(BASE_FOV, 1, 10, 6000);
   scene.add(camera);
   // The lights ride on the camera, so whichever way the speaker is turned its lit side stays readable
   camera.add(new HemisphereLight(0xffffff, 0x8a8478, 1.5));
@@ -376,7 +392,15 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
   let elevation = VIEWS.angle[1];
   let viewAnimation: { from: [number, number]; to: [number, number]; start: number } | null = null;
   const target = new Vector3();
+  const goal = new Vector3();
+  const pan = new Vector3();
+  let zoom = 1;
+  let wheelAlways = false;
   let distance = 900;
+  // How far back the whole model fits from the current angle, before zoom
+  let fitBase = 900;
+  /** The zoom being drawn, which catches up with the one asked for */
+  let shownZoom = 1;
   let fitted = false;
   let running = false;
   let keepAliveUntil = 0;
@@ -416,8 +440,30 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
       halfY = Math.max(halfY, Math.abs(corner.dot(up)));
       halfZ = Math.max(halfZ, Math.abs(corner.dot(forward)));
     }
-    const vertical = Math.tan(MathUtils.degToRad(camera.fov) / 2);
+    const vertical = Math.tan(MathUtils.degToRad(BASE_FOV) / 2);
     return Math.max(halfY / vertical, halfX / (vertical * camera.aspect)) * 1.08 + halfZ;
+  }
+
+  /** Put the camera where the current state says: back from the target along the view direction, its lens set by the zoom */
+  function applyCamera() {
+    // Zoom by narrowing the view rather than moving closer, which would end up inside the cabinet
+    camera.fov = MathUtils.radToDeg(2 * Math.atan(Math.tan(MathUtils.degToRad(BASE_FOV) / 2) / shownZoom));
+    camera.near = Math.max(1, distance * 0.02);
+    camera.far = distance + 4000;
+    camera.updateProjectionMatrix();
+    offset.copy(direction).multiplyScalar(distance);
+    camera.position.copy(target).add(offset);
+    camera.lookAt(target);
+    camera.updateMatrixWorld();
+  }
+
+  /** Jump to where the zoom and pan say, with no easing, so the camera is right straight away */
+  function settle() {
+    goal.copy(centre).add(pan);
+    target.copy(goal);
+    distance = fitBase;
+    shownZoom = zoom;
+    applyCamera();
   }
 
   function frame(now: number) {
@@ -441,21 +487,24 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
     direction.set(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
     box.setFromObject(root);
     box.getCenter(centre);
-    const goalDistance = fitDistance(centre, direction);
+    fitBase = fitDistance(centre, direction);
+    goal.copy(centre).add(pan);
     if (!fitted) {
-      target.copy(centre);
-      distance = goalDistance;
+      target.copy(goal);
+      distance = fitBase;
+      shownZoom = zoom;
       fitted = true;
     } else {
-      const moving = target.distanceTo(centre) > 0.2 || Math.abs(distance - goalDistance) > 0.5;
-      target.lerp(centre, 0.2);
-      distance += (goalDistance - distance) * 0.2;
+      const moving =
+        target.distanceTo(goal) > Math.max(0.02, distance * 0.0005) ||
+        Math.abs(distance - fitBase) > Math.max(0.02, distance * 0.002) ||
+        Math.abs(shownZoom - zoom) > zoom * 0.002;
+      target.lerp(goal, 0.25);
+      distance += (fitBase - distance) * 0.25;
+      shownZoom += (zoom - shownZoom) * 0.25;
       if (moving) busy = true;
     }
-
-    offset.copy(direction).multiplyScalar(distance);
-    camera.position.copy(target).add(offset);
-    camera.lookAt(target);
+    applyCamera();
     renderer.render(scene, camera);
     if (busy) requestRender(false);
   }
@@ -491,23 +540,101 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
     return (hit?.object.userData.partId as string | undefined) ?? null;
   };
 
-  let drag: { x: number; y: number; moved: number } | null = null;
+  const MIN_ZOOM = 0.5;
+  const MAX_ZOOM = 40;
+
+  /** Pointer position as -1 to 1 across the canvas, y up */
+  const normalised = (clientX: number, clientY: number): [number, number] => {
+    const rect = canvas.getBoundingClientRect();
+    return [((clientX - rect.left) / rect.width) * 2 - 1, -(((clientY - rect.top) / rect.height) * 2 - 1)];
+  };
+
+  /**
+   * Zoom, keeping whatever is under the pointer (nx, ny) where it is. Smooth zooms (the buttons) aim at the middle.
+   * A wheel or pinch moves the camera at once, so the next pointer position is worked out against the right view.
+   */
+  function setZoom(next: number, nx = 0, ny = 0, smooth = false) {
+    const clamped = MathUtils.clamp(next, MIN_ZOOM, MAX_ZOOM);
+    const ratio = clamped / zoom;
+    if (ratio === 1) return;
+    if (!smooth && (nx !== 0 || ny !== 0)) {
+      // The point under the pointer: what a ray through it hits, or failing that where it falls at the target's depth
+      raycaster.setFromCamera(pointer.set(nx, ny), camera);
+      const hit = raycaster.intersectObjects(pickable, false)[0];
+      let across: number;
+      let upward: number;
+      if (hit) {
+        const away = hit.point.clone().sub(target);
+        across = away.dot(right);
+        upward = away.dot(up);
+      } else {
+        const halfHeight = (fitBase / zoom) * Math.tan(MathUtils.degToRad(BASE_FOV) / 2);
+        across = nx * halfHeight * camera.aspect;
+        upward = ny * halfHeight;
+      }
+      const slide = 1 - 1 / ratio;
+      pan.addScaledVector(right, across * slide).addScaledVector(up, upward * slide);
+    }
+    zoom = clamped;
+    if (!smooth) settle();
+    callbacks.zoom(zoom);
+    requestRender();
+  }
+
+  /** Slide the model across the window by a number of pixels */
+  function panBy(dx: number, dy: number) {
+    const perPixel = (2 * (fitBase / zoom) * Math.tan(MathUtils.degToRad(BASE_FOV) / 2)) / height;
+    pan.addScaledVector(right, -dx * perPixel).addScaledVector(up, dy * perPixel);
+    settle();
+    requestRender();
+  }
+
+  const pointers = new Map<number, { x: number; y: number }>();
+  let pinch: { span: number; x: number; y: number } | null = null;
+  let drag: { x: number; y: number; moved: number; mode: 'turn' | 'slide' } | null = null;
   let hovering: string | null = null;
+
+  const pinchNow = () => {
+    const [a, b] = [...pointers.values()];
+    return { span: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  };
+
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
   canvas.addEventListener('pointerdown', (e) => {
-    drag = { x: e.clientX, y: e.clientY, moved: 0 };
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     canvas.setPointerCapture(e.pointerId);
     viewAnimation = null;
+    if (pointers.size === 2) {
+      // A second finger turns the drag into a pinch
+      drag = null;
+      pinch = pinchNow();
+      return;
+    }
+    drag = { x: e.clientX, y: e.clientY, moved: 0, mode: e.button === 2 || e.shiftKey ? 'slide' : 'turn' };
   });
   canvas.addEventListener('pointermove', (e) => {
+    if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && pointers.size >= 2) {
+      const now = pinchNow();
+      const [nx, ny] = normalised(now.x, now.y);
+      if (pinch.span > 0) setZoom(zoom * (now.span / pinch.span), nx, ny);
+      panBy(now.x - pinch.x, now.y - pinch.y);
+      pinch = now;
+      return;
+    }
     if (drag) {
       const dx = e.clientX - drag.x;
       const dy = e.clientY - drag.y;
       drag.x = e.clientX;
       drag.y = e.clientY;
       drag.moved += Math.abs(dx) + Math.abs(dy);
-      azimuth -= dx * 0.4;
-      elevation = MathUtils.clamp(elevation + dy * 0.4, -89, 89);
-      requestRender();
+      if (drag.mode === 'slide') {
+        panBy(dx, dy);
+      } else {
+        azimuth -= dx * 0.4;
+        elevation = MathUtils.clamp(elevation + dy * 0.4, -89, 89);
+        requestRender();
+      }
       return;
     }
     if (e.pointerType !== 'mouse') return;
@@ -519,8 +646,10 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
     }
   });
   const release = (e: PointerEvent, cancelled: boolean) => {
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) pinch = null;
     if (!drag) return;
-    const clicked = !cancelled && drag.moved < 5;
+    const clicked = !cancelled && drag.mode === 'turn' && drag.moved < 5;
     drag = null;
     if (clicked) callbacks.select(pick(e));
   };
@@ -532,9 +661,32 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
       callbacks.hover(null);
     }
   });
+  // Scrolling the page past the viewer must still work, so the wheel only zooms with Ctrl or ⌘ held
+  // (which is also how a trackpad pinch arrives), or in fullscreen where there is no page to scroll
+  canvas.addEventListener(
+    'wheel',
+    (e) => {
+      if (!(e.ctrlKey || e.metaKey || wheelAlways)) return;
+      e.preventDefault();
+      const lines = e.deltaMode === 1 ? 20 : 1;
+      const [nx, ny] = normalised(e.clientX, e.clientY);
+      // A trackpad pinch sends many small steps and a mouse wheel a few large ones, so cap each step
+      setZoom(zoom * Math.exp(MathUtils.clamp(-e.deltaY * lines * (e.ctrlKey ? 0.01 : 0.0015), -0.2, 0.2)), nx, ny);
+    },
+    { passive: false },
+  );
   canvas.addEventListener('keydown', (e) => {
     const step = 6;
-    if (e.key === 'ArrowLeft') azimuth += step;
+    if (e.key === '+' || e.key === '=') setZoom(zoom * 1.25, 0, 0, true);
+    else if (e.key === '-' || e.key === '_') setZoom(zoom / 1.25, 0, 0, true);
+    else if (e.key === '0') {
+      zoom = 1;
+      pan.set(0, 0, 0);
+      callbacks.zoom(1);
+    } else if (e.shiftKey && e.key.startsWith('Arrow')) {
+      const move = 40;
+      panBy(e.key === 'ArrowLeft' ? -move : e.key === 'ArrowRight' ? move : 0, e.key === 'ArrowUp' ? -move : e.key === 'ArrowDown' ? move : 0);
+    } else if (e.key === 'ArrowLeft') azimuth += step;
     else if (e.key === 'ArrowRight') azimuth -= step;
     else if (e.key === 'ArrowUp') elevation = MathUtils.clamp(elevation - step, -89, 89);
     else if (e.key === 'ArrowDown') elevation = MathUtils.clamp(elevation + step, -89, 89);
@@ -580,6 +732,18 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
         viewAnimation = { from: [azimuth, elevation], to: [az, el], start: performance.now() };
       }
       requestRender();
+    },
+    zoomBy(factor) {
+      setZoom(zoom * factor, 0, 0, true);
+    },
+    resetZoom() {
+      zoom = 1;
+      pan.set(0, 0, 0);
+      callbacks.zoom(1);
+      requestRender();
+    },
+    setFull(full) {
+      wheelAlways = full;
     },
     dispose() {
       disposed = true;
