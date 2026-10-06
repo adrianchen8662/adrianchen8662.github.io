@@ -7,7 +7,7 @@ under the MIT License (see [LICENSE](LICENSE)); the content described below is n
 
 ## Exception: the Nakamichi spec sheet is public domain
 
-The post [Nakamichi S‑1A / S‑1B Speaker Spec Sheet](https://adrianchen8662.github.io/bits-and-doohickeys/nakamichi-s-1a-s-1b-speaker-spec-sheet/)
+The post [Nakamichi S‑1A / S‑1B Speaker Spec Sheet](https://adrianchen.fyi/bits-and-doohickeys/nakamichi-s-1a-s-1b-speaker-spec-sheet/)
 (`_posts/bits-and-doohickeys/2026-09-27-Nakamichi-S-1A-S-1B-Speaker-Spec-Sheet.mdx`) and the measurements
 it is drawn from (`_data/nakamichi-s1.yml`) are dedicated to the public domain under
 [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Copy, adapt, republish and build on them
