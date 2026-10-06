@@ -135,6 +135,47 @@ function meshTexture() {
   return canvas;
 }
 
+/**
+ * The small gold badge on the grille, traced from a close-up photo of it: a rounded-shoulder
+ * shape with an arch cut out of its left half, so the black grille shows through. A simplified
+ * drawing of what the photo shows, not the maker's artwork.
+ */
+function badgeTexture(aspect: number) {
+  const width = 600;
+  const height = Math.round(width / aspect);
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const g = canvas.getContext('2d')!;
+  const X = (x: number) => x * width;
+  const Y = (y: number) => y * height;
+  const gold = g.createLinearGradient(0, 0, width, height);
+  gold.addColorStop(0, '#d6b868');
+  gold.addColorStop(1, '#b8963f');
+  g.fillStyle = gold;
+  g.beginPath();
+  g.moveTo(0, 0);
+  g.lineTo(X(0.54), 0);
+  g.bezierCurveTo(X(0.8), 0, X(1), Y(0.4), X(1), Y(0.87));
+  g.lineTo(X(1), Y(1));
+  g.lineTo(0, Y(1));
+  g.closePath();
+  g.fill();
+  // The arch, cut out so what is behind shows through
+  g.globalCompositeOperation = 'destination-out';
+  g.beginPath();
+  g.moveTo(X(0.08), Y(1));
+  g.bezierCurveTo(X(0.1), Y(0.55), X(0.17), Y(0.133), X(0.34), Y(0.133));
+  g.lineTo(X(0.482), Y(0.133));
+  g.lineTo(X(0.482), Y(1));
+  g.closePath();
+  g.fill();
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  texture.anisotropy = 4;
+  return texture;
+}
+
 /** A black sticker with white printing, as on the back of the cabinet */
 function labelTexture(lines: string[], aspect: number) {
   const width = 640;
@@ -261,6 +302,13 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
     };
 
     const decalMaterial = (decal: Decal) => {
+      if (decal.art === 'badge' && 'rect' in decal) {
+        const texture = badgeTexture(decal.rect[0] / decal.rect[1]);
+        textures.push(texture);
+        const m = new MeshStandardMaterial({ map: texture, transparent: true, alphaTest: 0.35, roughness: 0.35, metalness: 0.8 });
+        node.materials.push(m);
+        return m;
+      }
       if (!decal.lines || !('rect' in decal)) return material(decal.material);
       const texture = labelTexture(decal.lines, decal.rect[0] / decal.rect[1]);
       textures.push(texture);

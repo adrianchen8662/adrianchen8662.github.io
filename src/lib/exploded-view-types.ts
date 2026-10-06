@@ -25,6 +25,8 @@ export type Decal = Shape & {
   side: 'front' | 'back';
   /** Text printed on it (3D view only) */
   lines?: string[];
+  /** Artwork drawn on it instead of a plain colour (3D view only; the fixed drawing shows a plain patch) */
+  art?: 'badge';
 };
 
 /** A shape pushed back along z: a box, a cylinder, a plate with holes or a tube */
