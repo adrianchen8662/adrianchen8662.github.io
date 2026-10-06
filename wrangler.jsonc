@@ -7,5 +7,7 @@
     "directory": "./dist",
     // Unknown addresses get Astro's 404 page
     "not_found_handling": "404-page"
-  }
+  },
+  // Branch and pull request builds publish a preview with `wrangler preview`, which needs this block (it can be empty)
+  "previews": {}
 }
