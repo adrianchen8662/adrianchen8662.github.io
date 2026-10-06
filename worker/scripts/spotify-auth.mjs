@@ -74,9 +74,9 @@ const server = createServer(async (request, response) => {
     console.log('\nYour refresh token (keep it private; it lets anyone see what you are playing):\n');
     console.log(`  ${token}\n`);
     console.log('Give the Worker its three Spotify secrets, from the worker/ folder. Each command asks for the value:\n');
-    console.log('  npx wrangler secret put SPOTIFY_CLIENT_ID');
-    console.log('  npx wrangler secret put SPOTIFY_CLIENT_SECRET');
-    console.log('  npx wrangler secret put SPOTIFY_REFRESH_TOKEN\n');
+    console.log('  npx wrangler secret put SPOTIFY_CLIENT_ID -c wrangler.toml');
+    console.log('  npx wrangler secret put SPOTIFY_CLIENT_SECRET -c wrangler.toml');
+    console.log('  npx wrangler secret put SPOTIFY_REFRESH_TOKEN -c wrangler.toml\n');
   } catch (error) {
     finish(500, 'Could not finish', 'Spotify would not give a token. See the terminal.', String(error.message ?? error));
   }

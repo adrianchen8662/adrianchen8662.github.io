@@ -107,7 +107,7 @@ npm install
 ```
 
 1. **Log in:** `npx wrangler login` opens a browser tab to authorize your Cloudflare account. `npx wrangler whoami` shows the account ID. Over SSH the login can't reach your browser; either forward its port (`ssh -L 8976:localhost:8976 -L 8888:127.0.0.1:8888 you@host`, then `npx wrangler login --browser=false`) or skip it and export a `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` instead. The `8888` forward is for step 4.
-2. **Create the database:** `npx wrangler d1 create site-api`, then paste the `database_id` it prints into `worker/wrangler.toml`. It isn't a secret.
+2. **Create the database:** `npx wrangler d1 create site-api -c wrangler.toml`, then paste the `database_id` it prints into `worker/wrangler.toml`. It isn't a secret.
 3. **Create the tables:** `npm run migrate`.
 4. **Spotify:** in the [Spotify dashboard](https://developer.spotify.com/dashboard), open the app for this site and add `http://127.0.0.1:8888/callback` as a redirect URI. Then get a refresh token:
 
@@ -120,10 +120,10 @@ npm install
 6. **Give the Worker its secrets:** run each of these and paste the value when asked. They're stored in Cloudflare, never in this repository or the site, and take effect at once (no second deploy):
 
    ```sh
-   npx wrangler secret put SPOTIFY_CLIENT_ID
-   npx wrangler secret put SPOTIFY_CLIENT_SECRET
-   npx wrangler secret put SPOTIFY_REFRESH_TOKEN
-   npx wrangler secret put ADMIN_TOKEN     # optional: any long random string
+   npx wrangler secret put SPOTIFY_CLIENT_ID -c wrangler.toml
+   npx wrangler secret put SPOTIFY_CLIENT_SECRET -c wrangler.toml
+   npx wrangler secret put SPOTIFY_REFRESH_TOKEN -c wrangler.toml
+   npx wrangler secret put ADMIN_TOKEN -c wrangler.toml     # optional: any long random string
    ```
 
 7. **Fill in the history:** `curl -X POST -H "Authorization: Bearer <ADMIN_TOKEN>" <address>/admin/sync`. Repeat it until `added` is 0 (the cron does the same every 15 minutes, so you can also just wait), then check `<address>/most-played`. ListenBrainz can be very slow or return errors; a run that hits one keeps the listens it had already fetched and reports the problem in `error`, so just run it again. Until the history catches up to today, Now Playing's "Last Played" fallback (not the live Spotify track) shows an older listen.
