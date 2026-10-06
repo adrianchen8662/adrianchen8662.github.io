@@ -5,7 +5,10 @@
 // z = 50 sits at world z = -50. Everything below converts at the point of placing things.
 import {
   Box3,
+  BufferGeometry,
   CanvasTexture,
+  CircleGeometry,
+  CylinderGeometry,
   Color,
   EdgesGeometry,
   ExtrudeGeometry,
@@ -30,7 +33,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three';
-import type { Model, Shape as ModelShape, Solid } from '../lib/exploded-view-types';
+import type { Decal, Model, Shape as ModelShape, Solid } from '../lib/exploded-view-types';
 
 export type ViewName = 'angle' | 'front' | 'side' | 'top' | 'back';
 
@@ -71,6 +74,15 @@ const LOOKS: Record<string, Look> = {
   screw: { color: 0x2b2a28, roughness: 0.4, metalness: 0.6, themed: true },
   steel: { color: 0x9aa0a6, roughness: 0.45, metalness: 0.7 },
   magnet: { color: 0x3a3834, roughness: 0.6, metalness: 0.3 },
+  // Yellow-zinc plated frames, silver magnet cups, white foam and the smooth brown inside of the box
+  zinc: { color: 0xb9a85c, roughness: 0.4, metalness: 0.75 },
+  silver: { color: 0xaaa8a2, roughness: 0.4, metalness: 0.8 },
+  foam: { color: 0xe9e8e3, roughness: 1, metalness: 0 },
+  fiberboard: { color: 0x8d7658, roughness: 0.95, metalness: 0 },
+  clip_red: { color: 0xc42a2d, roughness: 0.5, metalness: 0 },
+  clip_black: { color: 0x1b1b1b, roughness: 0.5, metalness: 0 },
+  recess: { color: 0x161616, roughness: 0.7, metalness: 0 },
+  screw_head: { color: 0x3a3a3a, roughness: 0.4, metalness: 0.5 },
   cone: { color: 0x6d695e, roughness: 0.9, metalness: 0 },
   cardboard: { color: 0xb69b72, roughness: 0.95, metalness: 0 },
   particleboard: { color: 0xffffff, roughness: 0.95, metalness: 0 },
@@ -81,19 +93,31 @@ const LOOKS: Record<string, Look> = {
 
 const BLACK_DARK = 0x4a4740;
 
-/** A square of particleboard speckle, one tile every 14 mm */
+/** Particleboard speckle, one tile every 30 mm */
 function chipTexture() {
-  const size = 128;
+  const size = 256;
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = size;
   const g = canvas.getContext('2d')!;
   g.fillStyle = '#b88c52';
   g.fillRect(0, 0, size, size);
-  let seed = 7;
-  const random = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  for (let i = 0; i < 140; i++) {
-    g.fillStyle = random() > 0.5 ? 'rgba(255,240,200,.35)' : 'rgba(60,35,10,.3)';
-    g.fillRect(random() * size, random() * size, 2 + random() * 9, 2 + random() * 4);
+  // A seeded generator, so the board looks the same every time
+  let state = 0x9e3779b9;
+  const random = () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  for (let i = 0; i < 700; i++) {
+    const light = random() > 0.45;
+    g.fillStyle = light ? `rgba(255,240,200,${0.2 + random() * 0.25})` : `rgba(60,35,10,${0.15 + random() * 0.25})`;
+    const w = 2 + random() * 12;
+    const h = 1.5 + random() * 4;
+    const x = random() * size;
+    const y = random() * size;
+    // Draw across the edges too, so the tile joins up
+    for (const dx of [-size, 0, size]) for (const dy of [-size, 0, size]) g.fillRect(x + dx, y + dy, w, h);
   }
   return canvas;
 }
@@ -109,6 +133,30 @@ function meshTexture() {
   g.fillStyle = '#6a6762';
   g.fillRect(5, 5, 18, 18);
   return canvas;
+}
+
+/** A black sticker with white printing, as on the back of the cabinet */
+function labelTexture(lines: string[], aspect: number) {
+  const width = 640;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = Math.round(width / aspect);
+  const g = canvas.getContext('2d')!;
+  g.fillStyle = '#111';
+  g.fillRect(0, 0, canvas.width, canvas.height);
+  g.fillStyle = '#f2f2f2';
+  g.textBaseline = 'top';
+  const rows = lines.length + 0.6;
+  const size = Math.min(44, canvas.height / (rows * 1.5));
+  lines.forEach((line, i) => {
+    g.font = `${i === 0 ? 'bold ' : ''}${size}px "Helvetica Neue", Arial, sans-serif`;
+    g.fillText(line, width * 0.06, canvas.height * 0.1 + i * size * 1.6);
+    if (i === 0) g.fillRect(width * 0.06, canvas.height * 0.1 + size * 1.3, width * 0.88, 2);
+  });
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  texture.anisotropy = 4;
+  return texture;
 }
 
 function textureOf(canvas: HTMLCanvasElement, mmPerTile: number) {
@@ -137,7 +185,15 @@ function shapeOf(outline: ModelShape, at: [number, number] = [0, 0], hole = fals
   return path;
 }
 
-function geometryOf(solid: Solid) {
+function geometryOf(solid: Solid): BufferGeometry {
+  // A cone-shaped dish: wider at the front, narrower at the back
+  if (solid.taper !== undefined && 'circle' in solid.outline) {
+    const radius = solid.outline.circle / 2;
+    const cone = new CylinderGeometry(radius, radius * solid.taper, solid.depth, 40);
+    cone.rotateX(Math.PI / 2);
+    cone.translate(0, 0, -solid.depth / 2);
+    return cone;
+  }
   const shape = shapeOf(solid.outline) as Shape;
   for (const hole of solid.holes) shape.holes.push(shapeOf(hole, hole.at, true));
   const geometry = new ExtrudeGeometry(shape, { depth: solid.depth, bevelEnabled: false, curveSegments: 40 });
@@ -179,11 +235,11 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
   scene.add(root);
 
   const textures: Texture[] = [];
-  const chip = textureOf(chipTexture(), 14);
+  const chip = textureOf(chipTexture(), 30);
   const grid = textureOf(meshTexture(), 1.6);
   textures.push(chip, grid);
 
-  const geometries: (ExtrudeGeometry | PlaneGeometry | EdgesGeometry)[] = [];
+  const geometries: BufferGeometry[] = [];
   const themed: { material: MeshStandardMaterial; look: Look }[] = [];
   const pickable: Mesh[] = [];
   const nodes = new Map<string, PartNode>();
@@ -204,16 +260,35 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
       return m;
     };
 
-    for (const solid of part.solids) {
-      // The SVG draws a cabinet's inside walls and outside as separate passes; here one solid does both
-      if (solid.faces === 'inner') continue;
+    const decalMaterial = (decal: Decal) => {
+      if (!decal.lines || !('rect' in decal)) return material(decal.material);
+      const texture = labelTexture(decal.lines, decal.rect[0] / decal.rect[1]);
+      textures.push(texture);
+      const m = new MeshStandardMaterial({ map: texture, roughness: 0.6, metalness: 0 });
+      node.materials.push(m);
+      return m;
+    };
+
+    // The SVG draws a cabinet's inside walls as their own pass. Here they become a thin liner,
+    // so the inside of the box can be a different colour from the outside.
+    const solids = part.solids.map((solid): Solid => {
+      const opening = solid.holes[0];
+      if (solid.faces !== 'inner' || !opening || !('rect' in opening)) return solid;
+      const [w, h] = opening.rect;
+      return { ...solid, outline: { rect: [w, h] }, holes: [{ rect: [w - 0.4, h - 0.4], at: [0, 0] }], faces: 'all' };
+    });
+
+    for (const solid of solids) {
       const geometry = geometryOf(solid);
       geometries.push(geometry);
-      // Extruded shapes have two material slots: the front and back faces, then the walls
       const map = solid.texture === 'mesh' ? grid : solid.texture === 'chip' ? chip : null;
       const faces = material(solid.material, map);
-      const mesh = new Mesh(geometry, [faces, map ? faces : material(solid.material)]);
+      const walls = map ? faces : material(solid.material);
+      // Extruded shapes have two material slots (the end faces, then the walls); a cone has three (walls, front, back)
+      const mesh = new Mesh(geometry, solid.taper !== undefined ? [walls, faces, faces] : [faces, walls]);
       mesh.position.set(solid.at[0], solid.at[1], -solid.at[2]);
+      // A solid pushed along x lies on its side
+      if (solid.axis === 'x') mesh.rotation.y = -Math.PI / 2;
       mesh.userData.partId = part.id;
       node.group.add(mesh);
       pickable.push(mesh);
@@ -225,11 +300,12 @@ export function createScene(container: HTMLElement, model: Model, callbacks: Sce
       mesh.add(new LineSegments(edges, lineMaterial));
 
       for (const decal of solid.decals) {
-        const [w, h] = 'rect' in decal ? decal.rect : [decal.circle, decal.circle];
-        const plane = new PlaneGeometry(w, h);
-        geometries.push(plane);
-        const d = new Mesh(plane, material(decal.material));
-        d.position.set(decal.at[0], decal.at[1], 0.05);
+        const shape = 'rect' in decal ? new PlaneGeometry(decal.rect[0], decal.rect[1]) : new CircleGeometry(decal.circle / 2, 32);
+        geometries.push(shape);
+        const d = new Mesh(shape, decalMaterial(decal));
+        // On the front face, or on the back face turned round to face backwards
+        d.position.set(decal.at[0], decal.at[1], decal.side === 'back' ? -solid.depth - 0.05 : 0.05);
+        if (decal.side === 'back') d.rotation.y = Math.PI;
         d.userData.partId = part.id;
         mesh.add(d);
         pickable.push(d);

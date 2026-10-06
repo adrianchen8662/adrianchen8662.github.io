@@ -114,6 +114,8 @@ function draw(model: Model, prepared: Prepared[], t: number): Poly[] {
 
   const polys: Poly[] = [];
   for (const { part, solid, outer, holes, order } of sorted) {
+    // The fixed-angle drawing can't show a solid that lies sideways
+    if (solid.axis !== 'z') continue;
     const [ox, oy, oz] = [part.explode[0] * t, part.explode[1] * t, part.explode[2] * t];
     const front = solid.at[2] + oz;
     const back = front + solid.depth;
@@ -150,6 +152,7 @@ function draw(model: Model, prepared: Prepared[], t: number): Poly[] {
     make('cap', { d: [outer, ...holes].map(flat).join(''), fill: shadeOf(turn(0, 0, -1)) });
     if (solid.texture) make('texture', { d: [outer, ...holes].map(flat).join(''), overlay: solid.texture });
     solid.decals.forEach((decal, i) => {
+      if (decal.side === 'back') return;
       const contour = contourOf(decal, decal.at);
       polys.push({
         key: `${order}-decal${i}`,

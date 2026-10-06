@@ -36,6 +36,9 @@ dims:
   tweeter_slot_spacing: { label: Tweeter slot spacing,          value: 65.06, status: measured }
   tweeter_slot_w:       { label: Tweeter slot length,           value: 5.48,  status: measured }
   tweeter_slot_h:       { label: Tweeter slot width,            value: 3.94,  status: measured }
+  tweeter_ear_len:      { label: Tweeter ear length beyond the frame, value: tweeter_ear_span / 2 - tweeter_frame_d / 2 }
+  tweeter_ear_mid:      { label: Tweeter ear centre from the frame's centre, value: tweeter_frame_d / 2 + tweeter_ear_len / 2 }
+  tweeter_slot_off:     { label: Tweeter slot from the ear's centre, value: tweeter_slot_spacing / 2 - tweeter_ear_mid }
 
   # ---- estimated from the photos ----
   wall:           { label: Cabinet wall thickness, value: 6.5, status: estimated, note: "The rim around the rear panel in the ruler photo is about 6.8 mm. A baffle that fits inside walls this thick is 211.44 mm tall, within 0.1 mm of the grille height (211.33), which supports it." }
@@ -54,7 +57,17 @@ dims:
   badge_size:     { label: Badge size,                 value: 6.5,  status: estimated }
   badge_x:        { label: Badge x from centre,        value: 54,   status: estimated, note: "Upper right when upright" }
   badge_y:        { label: Badge y from centre,        value: 94,   status: estimated }
-  plate_size:     { label: Terminal plate size,        value: 54,   status: estimated, note: "Square, four screws" }
+  plate_size:     { label: Terminal plate size,        value: 54,   status: estimated, note: "Square, four screws, pebbled black plastic" }
+  plate_screw_inset: { label: Terminal plate screw inset from the corner, value: 5, status: estimated }
+  bump_d:         { label: Terminal plate bump diameter, value: 45, status: estimated, note: "The round dished recess on the outside is the back of a tapered bump that passes through the rear panel into the box" }
+  clip_x:         { label: Terminal clip x from centre, value: 11, status: estimated, note: "Seen from the back, black (minus) is on the left and red (plus) on the right; x here is as seen from the front, so the signs look swapped" }
+  clip_dy:        { label: Terminal clip below the plate's centre, value: 6, status: estimated }
+  label_w:        { label: Rear label width,  value: 60, status: estimated }
+  label_h:        { label: Rear label height, value: 33, status: estimated }
+  label_y:        { label: Rear label centre height, value: -65, status: estimated, note: "Centred left to right, below the terminal plate" }
+  tweeter_gasket_d:      { label: Tweeter gasket outer diameter, value: 62, status: estimated, note: "Flat white foam ring, doubled at the factory" }
+  tweeter_gasket_hole_d: { label: Tweeter gasket inner diameter, value: 44, status: estimated }
+  tweeter_magnet_d:      { label: Tweeter magnet cup diameter,   value: 32, status: estimated }
   plate_y:        { label: Terminal plate centre height, value: 11.2, status: estimated, note: "Centred left to right and a little above the middle of the back" }
 
   # ---- assumed placeholders ----
@@ -66,7 +79,8 @@ dims:
   woofer_frame:   { label: Woofer frame width,     value: 115,  status: assumed, note: "Square frame. Earlier notes say about 4.5 in." }
   woofer_flange_t:     { label: Woofer frame flange thickness, value: 3,  status: assumed }
   woofer_cone_d:       { label: Woofer cone diameter,          value: 100, status: assumed }
-  woofer_basket_d:     { label: Woofer basket diameter,        value: 90,  status: assumed }
+  woofer_basket_d:     { label: Woofer basket front diameter,  value: 96,  status: assumed }
+  woofer_taper:        { label: Woofer basket, back diameter as a share of the front, value: 0.75, status: assumed, note: "The basket is a cone-shaped dish with large windows" }
   woofer_basket_depth: { label: Woofer basket depth,           value: 38,  status: assumed }
   woofer_magnet_d:     { label: Woofer magnet diameter,        value: 72,  status: assumed }
   woofer_magnet_depth: { label: Woofer magnet depth,           value: 24,  status: assumed }
@@ -74,9 +88,11 @@ dims:
   tweeter_depth:       { label: Tweeter depth behind the flange, value: 22, status: assumed }
   tweeter_cone_d:      { label: Tweeter cone diameter,         value: 46,  status: assumed }
   tweeter_ear_w:       { label: Tweeter ear width,             value: 10,  status: assumed }
-  tweeter_ear_t:       { label: Tweeter ear thickness,         value: 2,   status: assumed }
-  tweeter_magnet_d:    { label: Tweeter magnet diameter,       value: 36,  status: assumed }
-  tweeter_magnet_depth: { label: Tweeter magnet depth,         value: 10,  status: assumed }
+  tweeter_ear_t:       { label: Tweeter flange and ear thickness, value: 2, status: assumed }
+  tweeter_magnet_depth: { label: Tweeter magnet cup depth,     value: 8,   status: assumed }
+  tweeter_gasket_t:    { label: Tweeter gasket thickness (both layers), value: 3, status: assumed }
+  tweeter_taper:       { label: Tweeter frame, back diameter as a share of the front, value: 0.7, status: assumed, note: "The frame is a cone-shaped dish" }
+  tweeter_screw_d:     { label: Tweeter ear screw head diameter, value: 5.5, status: assumed }
   tweeter_dustcap_d:   { label: Tweeter dust cap diameter,     value: 18,  status: assumed }
   port_length:    { label: Port tube length,       value: 70,   status: assumed }
   port_recess:    { label: Port tube set back from the baffle face, value: 3, status: assumed }
@@ -85,16 +101,18 @@ dims:
   screw_head_h:   { label: Baffle screw head height, value: 2.5, status: assumed }
   rear_panel_t:   { label: Rear panel thickness,   value: 6,    status: assumed }
   rear_protrusion: { label: Rear panel protrusion past the housing, value: 2, status: assumed }
+  bump_depth:     { label: Terminal plate bump depth behind the plate's face, value: 28, status: assumed, note: "Through the rear panel and about 20 mm into the box" }
+  panel_hole_d:   { label: Rear panel opening for the bump, value: bump_d + 3, status: assumed }
+  clip_w:         { label: Terminal clip width,  value: 12, status: assumed }
+  clip_h:         { label: Terminal clip height, value: 18, status: assumed }
+  clip_t:         { label: Terminal clip depth,  value: 5,  status: assumed }
   felt_w:         { label: Damping felt width,     value: 100,  status: assumed }
-  felt_h:         { label: Damping felt height,    value: 110,  status: assumed }
+  felt_h:         { label: Damping felt height,    value: 110,  status: assumed, note: "Grey recycled-fibre felt with coloured threads. In the photo it covers most of the rear wall, so these sizes are probably too small." }
   felt_t:         { label: Damping felt thickness, value: 8,    status: assumed }
-  felt_y:         { label: Damping felt centre height, value: -45, status: assumed, note: "Partial coverage of the rear wall; position unknown" }
+  felt_y:         { label: Damping felt centre height, value: -45, status: assumed, note: "Position unknown" }
   plate_t:        { label: Terminal plate thickness, value: 3,  status: assumed }
-  block_w:        { label: Terminal block width,   value: 34,   status: assumed }
-  block_h:        { label: Terminal block height,  value: 24,   status: assumed }
   cap_d:          { label: Crossover capacitor diameter, value: 10, status: assumed }
-  cap_len:        { label: Crossover capacitor length,   value: 17, status: assumed }
-  cap_x:          { label: Crossover capacitor x from centre, value: 26, status: assumed, note: "Soldered to the back of the terminal plate; exact position unknown" }
+  cap_len:        { label: Crossover capacitor length,   value: 17, status: assumed, note: "Lies sideways under the bump, held on with glue; leads run to the terminal tabs" }
 
   # ---- worked out from the above ----
   inner_w:        { label: Cabinet inside width,  value: cabinet_w - 2 * wall }
@@ -105,6 +123,7 @@ dims:
   baffle_back_z:  { label: Baffle back z,         value: baffle_z + baffle_t }
   panel_front_z:  { label: Rear panel front z,    value: overall_depth + rear_protrusion - rear_panel_t }
   plate_z:        { label: Terminal plate face z, value: overall_depth + rear_protrusion }
+  zf:             { label: Tweeter flange z,      value: baffle_back_z + tweeter_gasket_t }
 
 parts:
   # Listed back to front. `paint` sets drawing order (lower is drawn first, so further back);
@@ -116,36 +135,49 @@ parts:
     material: plate
     explode: [0, 0, 95]
     interior: true
-    show: [plate_size, plate_y, plate_t, block_w, block_h]
-    info: Black plastic input plate with push-clip terminals (black minus and red plus) in a round recess marked INPUT. Four screws hold it to the rear panel.
+    show: [plate_size, plate_y, bump_d, bump_depth, plate_t]
+    info: Pebbled black plastic input plate. Four screws hold it to the outside of the rear panel, and a tapered round bump on its back passes through the panel into the box. Push-clip terminals (black minus, red plus) sit in the round dished recess.
     solids:
-      - { outline: { rect: [block_w, block_h] }, at: [0, plate_y, "panel_front_z - 8"], depth: "rear_panel_t + 8", paint: 5 }
-      - { outline: { rect: [plate_size, plate_size] }, at: [0, plate_y, plate_z], depth: plate_t, paint: 6 }
+      - { outline: { circle: bump_d }, taper: 0.9, at: [0, plate_y, "plate_z - bump_depth"], depth: bump_depth, paint: 5 }
+      - outline: { rect: [plate_size, plate_size] }
+        at: [0, plate_y, plate_z]
+        depth: plate_t
+        paint: 6
+        decals:
+          - { circle: bump_d, at: [0, 0], material: recess, side: back }
+          - { circle: 6, at: ["plate_size / 2 - plate_screw_inset", "plate_size / 2 - plate_screw_inset"], material: screw_head, side: back }
+          - { circle: 6, at: ["-(plate_size / 2 - plate_screw_inset)", "plate_size / 2 - plate_screw_inset"], material: screw_head, side: back }
+          - { circle: 6, at: ["plate_size / 2 - plate_screw_inset", "-(plate_size / 2 - plate_screw_inset)"], material: screw_head, side: back }
+          - { circle: 6, at: ["-(plate_size / 2 - plate_screw_inset)", "-(plate_size / 2 - plate_screw_inset)"], material: screw_head, side: back }
+      - { outline: { rect: [clip_w, clip_h] }, at: ["-clip_x", "plate_y - clip_dy", "plate_z + plate_t"], depth: clip_t, paint: 6.1, material: clip_red }
+      - { outline: { rect: [clip_w, clip_h] }, at: ["clip_x", "plate_y - clip_dy", "plate_z + plate_t"], depth: clip_t, paint: 6.1, material: clip_black }
 
   - id: capacitor
     name: Crossover capacitor
     material: capacitor
     explode: [0, 0, 95]
     interior: true
-    show: [cap_d, cap_len, cap_x]
-    info: The whole crossover. A 3.3 µF bipolar electrolytic marked Luxon, in series with the tweeter.
+    show: [cap_d, cap_len]
+    info: The whole crossover. A 3.3 µF 50 V bipolar electrolytic marked Luxon, in series with the tweeter. It lies sideways under the terminal plate's bump, held on with glue, with its leads running to the terminal tabs.
     solids:
-      - { outline: { circle: cap_d }, at: [cap_x, plate_y, "panel_front_z - cap_len"], depth: cap_len, paint: 22 }
+      - { outline: { circle: cap_d }, axis: x, at: ["-cap_len / 2", "plate_y - bump_d / 2 - cap_d / 2", "plate_z - bump_depth + cap_d"], depth: cap_len, paint: 22 }
 
   - id: rear_panel
     name: Rear panel
     material: particleboard
     explode: [0, 0, 55]
     interior: true
-    show: [inner_w, inner_h, rear_panel_t, rear_protrusion]
-    info: Particleboard panel set into the back of the housing, standing slightly proud of it.
+    show: [inner_w, inner_h, rear_panel_t, rear_protrusion, panel_hole_d]
+    info: Particleboard panel set into the back of the housing, standing slightly proud of it. It carries the model label on the back and has a round opening for the terminal plate's bump.
     solids:
       - outline: { rect: [inner_w, inner_h] }
-        holes: [{ rect: [block_w, block_h], at: [0, plate_y] }]
+        holes: [{ circle: panel_hole_d, at: [0, plate_y] }]
         at: [0, 0, panel_front_z]
         depth: rear_panel_t
         paint: 20
         texture: chip
+        decals:
+          - { rect: [label_w, label_h], at: [0, label_y], material: label, side: back, lines: ["Nakamichi  Model No. S-1B", "Impedance: 8 Ohm", "Made in Taiwan R.O.C."] }
 
   - id: felt
     name: Damping felt
@@ -162,13 +194,14 @@ parts:
     material: cabinet
     explode: [0, 0, 0]
     show: [cabinet_w, cabinet_h, overall_depth, wall, body_depth]
-    info: A particleboard box with a black finish, open at the front and back. The top and bottom edges hold the grille's tabs and the side edges its flanges, in slots along the front.
+    info: A box with a black finish outside and smooth brown walls inside, open at the front and back. The photos show a smooth inner surface rather than visible chips; whether that is a lining or the board's own face is not yet known. The top and bottom edges hold the grille's tabs and the side edges its flanges, in slots along the front.
     solids:
       - outline: { rect: [cabinet_w, cabinet_h] }
         holes: [{ rect: [inner_w, inner_h], at: [0, 0] }]
         at: [0, 0, grille_sheet]
         depth: body_depth
         faces: inner
+        material: fiberboard
         paint: 10
       - outline: { rect: [cabinet_w, cabinet_h] }
         holes: [{ rect: [inner_w, inner_h], at: [0, 0] }]
@@ -193,37 +226,53 @@ parts:
 
   - id: tweeter
     name: Tweeter
-    material: steel
+    material: zinc
     explode: [0, 0, -100]
     interior: true
-    show: [tweeter_frame_d, tweeter_ear_span, tweeter_hole_d, tweeter_slot_spacing, tweeter_y, tweeter_depth]
-    info: A 2 in cone tweeter with a stamped steel frame and two slotted mounting ears, on a foam gasket.
+    show: [tweeter_frame_d, tweeter_ear_span, tweeter_hole_d, tweeter_slot_spacing, tweeter_y, tweeter_depth, tweeter_gasket_d]
+    info: A 2 in cone tweeter, 8 ohm 6 W, part number 4001286138D. A yellow-zinc stamped steel frame shaped like a shallow cone, with a silver magnet cup, and two slotted ears above and below it that take two screws into the back of the baffle. A doubled ring of white foam seals it to the baffle.
     solids:
-      - { outline: { circle: tweeter_magnet_d }, at: [0, tweeter_y, "baffle_back_z + tweeter_depth"], depth: tweeter_magnet_depth, paint: 26.1, material: magnet }
-      - { outline: { circle: tweeter_frame_d }, holes: [{ circle: tweeter_cone_d, at: [0, 0] }], at: [0, tweeter_y, baffle_back_z], depth: tweeter_depth, paint: 26.2 }
-      - { outline: { circle: tweeter_cone_d }, at: [0, tweeter_y, "baffle_back_z + 3"], depth: 1.5, paint: 26.3, material: cone }
-      - { outline: { circle: tweeter_dustcap_d }, at: [0, tweeter_y, baffle_back_z], depth: 3, paint: 26.4, material: cone }
-      - outline: { rect: [tweeter_ear_span, tweeter_ear_w] }
-        holes:
-          - { rect: [tweeter_slot_w, tweeter_slot_h], at: ["tweeter_slot_spacing / 2", 0] }
-          - { rect: [tweeter_slot_w, tweeter_slot_h], at: ["-tweeter_slot_spacing / 2", 0] }
-        at: [0, tweeter_y, baffle_back_z]
+      - { outline: { circle: tweeter_magnet_d }, at: [0, tweeter_y, "zf + tweeter_depth"], depth: tweeter_magnet_depth, paint: 26.1, material: silver }
+      - { outline: { circle: tweeter_frame_d }, taper: tweeter_taper, at: [0, tweeter_y, "zf + 4.5"], depth: "tweeter_depth - 4.5", paint: 26.2 }
+      - { outline: { circle: tweeter_cone_d }, at: [0, tweeter_y, "zf + 3"], depth: 1.5, paint: 26.3, material: cone }
+      - { outline: { circle: tweeter_dustcap_d }, at: [0, tweeter_y, zf], depth: 3, paint: 26.4, material: cone }
+      - { outline: { circle: tweeter_frame_d }, holes: [{ circle: tweeter_cone_d, at: [0, 0] }], at: [0, tweeter_y, zf], depth: tweeter_ear_t, paint: 26.5 }
+      - outline: { rect: [tweeter_ear_w, tweeter_ear_len] }
+        holes: [{ rect: [tweeter_slot_h, tweeter_slot_w], at: [0, tweeter_slot_off] }]
+        at: [0, "tweeter_y + tweeter_ear_mid", zf]
         depth: tweeter_ear_t
         paint: 26.5
+      - outline: { rect: [tweeter_ear_w, tweeter_ear_len] }
+        holes: [{ rect: [tweeter_slot_h, tweeter_slot_w], at: [0, "-tweeter_slot_off"] }]
+        at: [0, "tweeter_y - tweeter_ear_mid", zf]
+        depth: tweeter_ear_t
+        paint: 26.5
+      - { outline: { circle: tweeter_screw_d }, at: [0, "tweeter_y + tweeter_slot_spacing / 2", "zf + tweeter_ear_t"], depth: 2, paint: 26.6, material: screw }
+      - { outline: { circle: tweeter_screw_d }, at: [0, "tweeter_y - tweeter_slot_spacing / 2", "zf + tweeter_ear_t"], depth: 2, paint: 26.6, material: screw }
+
+  - id: tweeter_gasket
+    name: Tweeter gasket
+    material: foam
+    explode: [0, 0, -55]
+    interior: true
+    show: [tweeter_gasket_d, tweeter_gasket_hole_d, tweeter_gasket_t]
+    info: A flat ring of white foam between the tweeter's frame and the back of the baffle. The factory fitted two layers.
+    solids:
+      - { outline: { circle: tweeter_gasket_d }, holes: [{ circle: tweeter_gasket_hole_d, at: [0, 0] }], at: [0, tweeter_y, baffle_back_z], depth: tweeter_gasket_t, paint: 26.0 }
 
   - id: woofer
     name: Woofer
-    material: steel
+    material: zinc
     explode: [0, 0, -100]
     interior: true
     show: [woofer_y, woofer_frame, woofer_hole_d, woofer_cone_d, woofer_basket_depth, woofer_magnet_d]
-    info: A roughly 4.5 in paper-cone woofer in a zinc-plated stamped steel frame, four screws, no gasket.
+    info: A roughly 4.5 in paper-cone woofer, 8 ohm 15 W, in a yellow-zinc stamped steel frame with a square flange and four slotted corner ears. A silver magnet cup sits at the back and a small terminal strip with two spade lugs on the frame. No gasket.
     solids:
-      - { outline: { circle: woofer_magnet_d }, at: [0, woofer_y, "baffle_back_z + woofer_flange_t + woofer_basket_depth"], depth: woofer_magnet_depth, paint: 27.1, material: magnet }
-      - { outline: { circle: woofer_basket_d }, at: [0, woofer_y, "baffle_back_z + woofer_flange_t"], depth: woofer_basket_depth, paint: 27.2 }
-      - { outline: { circle: woofer_cone_d }, at: [0, woofer_y, "baffle_back_z + 6"], depth: 2, paint: 27.3, material: cone }
+      - { outline: { circle: woofer_magnet_d }, at: [0, woofer_y, "baffle_back_z + woofer_flange_t + 8 + woofer_basket_depth"], depth: woofer_magnet_depth, paint: 27.1, material: silver }
+      - { outline: { circle: woofer_basket_d }, taper: woofer_taper, at: [0, woofer_y, "baffle_back_z + woofer_flange_t + 8"], depth: woofer_basket_depth, paint: 27.2 }
+      - { outline: { circle: woofer_cone_d }, at: [0, woofer_y, "baffle_back_z + woofer_flange_t + 6"], depth: 2, paint: 27.3, material: cone }
       - { outline: { rect: [woofer_frame, woofer_frame] }, holes: [{ circle: woofer_cone_d, at: [0, 0] }], at: [0, woofer_y, baffle_back_z], depth: woofer_flange_t, paint: 27.4 }
-      - { outline: { circle: woofer_dustcap_d }, at: [0, woofer_y, baffle_back_z], depth: 6, paint: 27.5, material: cone }
+      - { outline: { circle: woofer_dustcap_d }, at: [0, woofer_y, "baffle_back_z + woofer_flange_t"], depth: 6, paint: 27.5, material: cone }
 
   - id: baffle
     name: Front baffle
@@ -283,25 +332,33 @@ parts:
           - { rect: [badge_size, badge_size], at: [badge_x, badge_y], material: brass }
 
 # Still to measure, by part. The assumed and estimated dims above are the quickest way
-# to see what matters; this is the longer list of things not drawn at all yet.
+# to see what matters; this is the longer list of things not drawn at all yet or only roughly.
 todo:
   cabinet:
     - inside dimensions (box volume), corner radius, how the top and bottom caps meet the sides
     - the front slots the grille's flanges and tabs go into (position, width, depth)
+    - what the smooth brown inner surface is (a lining, or the board's own face), and whether the outer wrap is vinyl or paint
   baffle:
-    - baffle thickness and how far it is set back from the cabinet's front edge
+    - baffle thickness and how far it is set back from the cabinet's front edge (the cut edge of the woofer hole in the photos suggests 10 to 15 mm)
     - the woofer opening's bevel (about 125 mm at the front, narrowing to the cutout)
     - tweeter counterbore (the visible ring is about 53 mm)
     - what the four corner screws thread into
   woofer:
-    - frame outer width, mounting hole spacing, flange thickness, cone and dust cap size, basket and magnet size
+    - frame width, the four slotted corner ears (positions and slot size), flange thickness, cone and dust cap size, basket depth, magnet size
+    - the small terminal strip with two spade lugs on the bottom of the frame
+    - the part number on the magnet is not readable in the photo (it begins 400)
   tweeter:
-    - depth behind the flange, magnet size, ear width, foam gasket thickness
+    - depth behind the flange, magnet cup size and the black ring around it, ear width, gasket thickness per layer
+    - which way the ears point (above and below the frame, judged from the photo of the baffle's back, not yet checked on the speaker)
   port:
     - inner and outer diameter, length, how far it stands in front of or behind the baffle
   rear:
-    - rear panel thickness, protrusion and fixing; terminal plate position and thickness; label (about 60 x 33 mm, below the plate)
+    - rear panel thickness, protrusion and fixing; the opening for the terminal bump
+    - terminal plate: bump depth and exact diameter, clip sizes, plate corner radius
+    - label position (about 60 x 33 mm, below the plate; the S-1A label sits on the same side)
   grille:
     - sheet thickness, flange length and position, perforation pitch and hole size, felt strip sizes, badge size and position
   internals:
-    - damping felt size, thickness and position; capacitor size and position
+    - damping felt size, thickness and position (in the photo it covers most of the rear wall)
+    - capacitor: it lies sideways under the bump and is held with glue; measure its size and where its leads run
+    - wire colours and lengths if the wiring is ever drawn (white from the capacitor to the tweeter, black, red)
