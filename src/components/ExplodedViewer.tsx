@@ -344,7 +344,7 @@ export default function ExplodedViewer({ model }: { model: Model }) {
             <Dims dims={active.dims} />
           </>
         ) : (
-          <p className="ev-hint">Pick a part below, or point at it in the drawing.</p>
+          <p className="ev-hint">Pick a part above, or point at it in the drawing.</p>
         )}
       </div>
 

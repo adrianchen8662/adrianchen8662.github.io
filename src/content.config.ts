@@ -4,8 +4,8 @@ import { z } from 'astro/zod';
 import { parse } from 'yaml';
 
 const posts = defineCollection({
-  // _posts/<blog>/YYYY-MM-DD-Title.md
-  loader: glob({ pattern: '*/*.md', base: './_posts' }),
+  // _posts/<blog>/YYYY-MM-DD-Title.md, or .mdx for a post that uses components such as <ExplodedView>
+  loader: glob({ pattern: '*/*.{md,mdx}', base: './_posts' }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),

@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import { BLOGS } from './src/blogs.ts';
@@ -18,6 +19,7 @@ export default defineConfig({
   image: { layout: 'constrained' },
   integrations: [
     react(),
+    mdx(),
     sitemap({ filter: (page) => !isMoved(new URL(page).pathname) }),
   ],
 });
