@@ -54,12 +54,12 @@ dims:
   woofer_y:       { label: Woofer centre height,       value: -39,  status: estimated, note: "Centred left to right" }
   woofer_hole_d:  { label: Woofer hole in the baffle,  value: 104,  status: estimated, note: "Narrowest point. The hole is bevelled out to about 125 mm at the front; the bevel is not modelled yet." }
   tab_width:      { label: Grille tab width,           value: 43,   status: estimated, note: "Two tabs, centred on the top and bottom edges" }
-  badge_w:        { label: Badge width,                value: 10,   status: estimated, note: "Scaled from a close-up of the grille photo against the grille's width" }
-  badge_h:        { label: Badge height,               value: 5.3,  status: estimated }
+  badge_w:        { label: Badge width,                value: 9,    status: measured, note: "Calipers" }
+  badge_h:        { label: Badge height,               value: 4,    status: measured, note: "Calipers" }
   badge_t:        { label: Badge height above the grille, value: 1, status: estimated, note: "The badge stands slightly proud of the grille; about a millimetre is a guess" }
   badge_recess:   { label: Badge black piece sunk below the gold, value: 0.4, status: assumed, note: "The black piece is a separate part set a little lower than the gold" }
-  grille_pitch:   { label: Grille hole pitch, value: 1.54, status: estimated, note: "Centre to centre, scaled from a close-up against the badge's 10 mm width. The holes are square with rounded corners and go right through." }
-  grille_hole:    { label: Grille hole size,  value: 1.0,  status: estimated }
+  grille_pitch:   { label: Grille hole pitch, value: 1.38, status: estimated, note: "Centre to centre, scaled from a close-up photo against the badge's measured 9 mm width. The holes are square with rounded corners and go right through." }
+  grille_hole:    { label: Grille hole size,  value: 0.92, status: estimated }
   badge_x:        { label: Badge x from centre,        value: 56.8, status: estimated, note: "Upper right when upright, about 7 mm in from the grille's right edge" }
   badge_y:        { label: Badge y from centre,        value: 95.6, status: estimated, note: "About 7.5 mm below the grille's top edge" }
   plate_size:     { label: Terminal plate size,        value: 54,   status: estimated, note: "Square, four screws, pebbled black plastic" }
@@ -326,7 +326,7 @@ parts:
     material: grille
     explode: [0, 0, -210]
     show: [grille_w, grille_h, tab_depth, tab_width, grille_sheet]
-    info: A pan of fine square-perforated black steel. Flanges bent back along both long edges and two tabs at the top and bottom push into slots on the front, and felt strips grip the cabinet. A small gold badge about 10 x 5 mm sits at the upper right. It is a gold plate that stands about 1 mm proud of the grille, with a rounded shoulder and an arch-shaped notch. A separate solid black piece sits in the notch, a little lower than the gold.
+    info: A pan of fine square-perforated black steel. Flanges bent back along both long edges and two tabs at the top and bottom push into slots on the front, and felt strips grip the cabinet. A small gold badge 9 x 4 mm sits at the upper right. It is a gold plate that stands about 1 mm proud of the grille, with a rounded shoulder and an arch-shaped notch. A separate solid black piece sits in the notch, a little lower than the gold.
     solids:
       - { outline: { rect: [grille_sheet, flange_len] }, at: ["grille_w / 2 - flange_inset", 0, grille_sheet], depth: tab_depth, paint: 35, interior: true }
       - { outline: { rect: [grille_sheet, flange_len] }, at: ["-(grille_w / 2 - flange_inset)", 0, grille_sheet], depth: tab_depth, paint: 35, interior: true }
