@@ -1,0 +1,66 @@
+# Measurements for the Nakamichi S-1A / S-1B exploded view.
+#
+# One file per object. The exploded view, the cross-section and any spec table
+# read from here, so fixing a number here fixes every picture of it.
+#
+# Conventions
+#   Units:      millimetres, measured with calipers unless a note says otherwise.
+#   Orientation: upright (tweeter above woofer), looking at the front.
+#   Axes:       width runs left to right, height runs bottom to top, depth runs
+#               front to back.
+#   value: null means "not measured yet". Fill it in and the build picks it up.
+#   note:       how it was measured, or anything odd about the number.
+
+object:
+  name: Nakamichi S-1A / S-1B
+  orientation: upright
+
+# The finished speaker, as it sits on a shelf.
+overall:
+  width:  { value: 138.82, note: housing width }
+  height: { value: 224.44 }
+  depth:  { value: 226.49, note: front of the grille to the rear panel face; excludes the rear panel protrusion }
+  rear_panel_protrusion: { value: null, note: how far the rear panel sticks out past the back of the housing }
+
+grille:
+  width:  { value: 138.01 }
+  height: { value: 211.33 }
+  tab_size: { value: 10.94, note: unclear which dimension; see open questions }
+  thickness: { value: null, note: front face of the grille to the back of its frame }
+  tab_count: { value: null }
+  standoff: { value: null, note: gap from the grille's front face to the baffle face }
+
+# Still to measure. Grouped by part so you can work through one at a time.
+# Each is an entry to fill in; delete the ones that turn out not to apply.
+todo:
+  cabinet:
+    - wall thickness (sides, top, bottom, back)
+    - corner radius or chamfer on the shell
+    - internal width, height and depth (also gives the box volume)
+    - shell wrap: does one sleeve wrap the top, bottom and sides, or is it separate panels?
+  baffle:
+    - baffle thickness
+    - baffle width and height (inside the shell, or flush with it?)
+    - setback from the front edge of the shell
+    - the 4 corner screws: positions, head diameter, length
+    - tweeter hole centre position (from the baffle's left and top edges)
+    - woofer hole diameter and centre position
+    - port hole diameter and centre position
+  woofer:
+    - frame outer width and height (square frame)
+    - mounting hole spacing, horizontally and vertically
+    - cone diameter, depth behind the flange, magnet diameter
+    - flange thickness
+  tweeter:
+    - depth behind the flange, cone diameter, magnet diameter
+    - ear thickness
+  port:
+    - inner diameter, outer diameter, length
+    - how far it sticks out front and into the box
+  rear:
+    - terminal plate width, height, thickness and position
+    - rear panel protrusion (see overall above)
+    - rear panel fixing screws
+  internals:
+    - damping felt size, thickness and where it sits
+    - crossover capacitor size and position on the terminal plate
