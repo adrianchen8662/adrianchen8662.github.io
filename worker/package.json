@@ -7,10 +7,10 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "wrangler dev --test-scheduled",
-    "deploy": "wrangler deploy",
-    "migrate": "wrangler d1 migrations apply DB --remote",
-    "migrate:local": "wrangler d1 migrations apply DB --local",
+    "dev": "wrangler dev -c wrangler.toml --test-scheduled",
+    "deploy": "wrangler deploy -c wrangler.toml",
+    "migrate": "wrangler d1 migrations apply DB -c wrangler.toml --remote",
+    "migrate:local": "wrangler d1 migrations apply DB -c wrangler.toml --local",
     "typecheck": "tsc -p . && tsc -p test",
     "test": "node --test \"test/*.test.ts\"",
     "auth": "node scripts/spotify-auth.mjs"

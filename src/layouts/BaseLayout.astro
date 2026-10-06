@@ -39,19 +39,17 @@ const analyticsHost = Astro.site?.hostname;
     <link rel="sitemap" href="/sitemap-index.xml" />
     {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     {GA_MEASUREMENT_ID && analyticsHost && (
-      <script is:inline define:vars={{ gaId: GA_MEASUREMENT_ID, gaHost: analyticsHost }}>
-        // Google Analytics, only on the site's own address (not previews, workers.dev or local runs)
-        if (location.hostname === gaHost) {
+      <>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+        <script is:inline define:vars={{ gaId: GA_MEASUREMENT_ID, gaHost: analyticsHost }}>
+          // Google tag. Loading it sends nothing; hits only start once it's configured, and that only happens on
+          // the site's own address, so previews, workers.dev and local runs don't count.
           window.dataLayer = window.dataLayer || [];
           function gtag() { dataLayer.push(arguments); }
           gtag('js', new Date());
-          gtag('config', gaId);
-          const tag = document.createElement('script');
-          tag.async = true;
-          tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
-          document.head.appendChild(tag);
-        }
-      </script>
+          if (location.hostname === gaHost) gtag('config', gaId);
+        </script>
+      </>
     )}
     <script is:inline>
       // Apply a theme picked with the header switch before the page paints
