@@ -10,11 +10,10 @@ export const LISTENBRAINZ_USER = 'adrianchen8662';
 export const API_URL: string = import.meta.env.PUBLIC_API_URL ?? '';
 
 /**
- * Google Analytics 4 measurement ID (the id in the tag, not a secret). Carried over from the Jekyll site's
- * google_analytics_key. Pages only send data when served from the site's own address, so previews and local
- * runs don't count. Set to '' to turn analytics off.
+ * Google Analytics 4 measurement ID (the id in the tag, not a secret). Pages only send data when served from
+ * the site's own address, so previews and local runs don't count. Set to '' to turn analytics off.
  */
-export const GA_MEASUREMENT_ID = 'G-93RXGJMV4K';
+export const GA_MEASUREMENT_ID = 'G-RWTN7FL8F6';
 
 export const SITE = {
   name: 'Adrian Chen',
