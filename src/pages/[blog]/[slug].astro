@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import PageLayout from '../../layouts/PageLayout.astro';
 import PostMeta from '../../components/PostMeta.astro';
+import { SITE } from '../../site';
 import { blogOf, excerpt, getPosts, postSlug, postUrl, type Post } from '../../lib/posts';
 
 export async function getStaticPaths() {
@@ -20,13 +21,32 @@ const siblings = await getPosts(blogOf(post).id);
 const index = siblings.findIndex((p) => p.id === post.id);
 const newer = siblings[index - 1];
 const older = siblings[index + 1];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: excerpt(post) || undefined,
+  datePublished: post.data.date.toISOString().slice(0, 10),
+  keywords: post.data.categories.join(', ') || undefined,
+  mainEntityOfPage: new URL(postUrl(post), Astro.site).href,
+  author: { '@type': 'Person', name: SITE.name, url: Astro.site?.href },
+  license: post.data.license === 'cc0' ? 'https://creativecommons.org/publicdomain/zero/1.0/' : undefined,
+};
 ---
-<PageLayout title={post.data.title} metaDescription={excerpt(post) || undefined}>
+<PageLayout title={post.data.title} metaDescription={excerpt(post) || undefined} ogType="article" jsonLd={jsonLd}>
   <article class="post">
     <PostMeta post={post} />
     <div class="prose">
       <Content />
     </div>
+    {post.data.license === 'cc0' && (
+      <p class="post-license">
+        To the extent possible under law, Adrian Chen has waived all copyright and related rights to this post
+        and its data under <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener noreferrer">CC0 1.0</a>.
+        Quotations and material from the sources it cites remain their owners'.
+      </p>
+    )}
     <nav class="post-nav" aria-label="More posts">
       {older && <a class="older" href={postUrl(older)}>&laquo; {older.data.title}</a>}
       {newer && <a class="newer" href={postUrl(newer)}>{newer.data.title} &raquo;</a>}
