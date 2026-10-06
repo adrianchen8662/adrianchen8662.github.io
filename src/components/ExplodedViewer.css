@@ -141,6 +141,34 @@
   --mat: #34609d;
 }
 
+.ev-mat-zinc {
+  --mat: #b9a85c;
+}
+
+.ev-mat-silver {
+  --mat: #aaa8a2;
+}
+
+.ev-mat-foam {
+  --mat: #e9e8e3;
+}
+
+.ev-mat-fiberboard {
+  --mat: #8d7658;
+}
+
+.ev-mat-clip_red {
+  --mat: #c42a2d;
+}
+
+.ev-mat-clip_black {
+  --mat: #1b1b1b;
+}
+
+.ev-mat-badge_inlay {
+  fill: #151515;
+}
+
 .ev-mat-brass {
   fill: #c5a550;
 }

@@ -4,6 +4,7 @@
 // WebGL or JavaScript, this projects them at a fixed angle, sorts the faces back to front and draws SVG.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Dim, Model, Part, Shape, Solid, Status } from '../lib/exploded-view-types';
+import { badgeShapes } from '../lib/badge';
 import type { SceneApi, ViewName } from './exploded-three';
 import './ExplodedViewer.css';
 
@@ -114,6 +115,8 @@ function draw(model: Model, prepared: Prepared[], t: number): Poly[] {
 
   const polys: Poly[] = [];
   for (const { part, solid, outer, holes, order } of sorted) {
+    // The fixed-angle drawing can't show a solid that lies sideways
+    if (solid.axis !== 'z') continue;
     const [ox, oy, oz] = [part.explode[0] * t, part.explode[1] * t, part.explode[2] * t];
     const front = solid.at[2] + oz;
     const back = front + solid.depth;
@@ -150,6 +153,26 @@ function draw(model: Model, prepared: Prepared[], t: number): Poly[] {
     make('cap', { d: [outer, ...holes].map(flat).join(''), fill: shadeOf(turn(0, 0, -1)) });
     if (solid.texture) make('texture', { d: [outer, ...holes].map(flat).join(''), overlay: solid.texture });
     solid.decals.forEach((decal, i) => {
+      if (decal.side === 'back') return;
+      // The badge: the black piece sunk in its notch, then the gold plate standing a little higher round it
+      if (decal.art === 'badge' && 'rect' in decal) {
+        const [w, h] = decal.rect;
+        const plate = decal.height ?? 1;
+        const pieces = [
+          { name: 'inlay', points: badgeShapes.inlay, lift: Math.max(0.05, plate - (decal.recess ?? 0.4)), material: 'badge_inlay' },
+          { name: 'gold', points: badgeShapes.gold, lift: plate, material: decal.material },
+        ];
+        for (const piece of pieces) {
+          polys.push({
+            key: `${order}-badge-${piece.name}`,
+            partId: part.id,
+            material: piece.material,
+            d: path(piece.points.map(([u, v]) => screen([decal.at[0] + (u - 0.5) * w, decal.at[1] + (0.5 - v) * h], front - piece.lift))),
+            overlay: 'decal',
+          });
+        }
+        return;
+      }
       const contour = contourOf(decal, decal.at);
       polys.push({
         key: `${order}-decal${i}`,
@@ -218,6 +241,9 @@ export default function ExplodedViewer({ model }: { model: Model }) {
     [model],
   );
   const view = useMemo(() => bounds(prepared), [prepared]);
+  const meshSolid = model.parts.flatMap((p) => p.solids).find((s) => s.texture === 'mesh');
+  const meshPitch = meshSolid?.texturePitch ?? 1.6;
+  const meshHole = meshSolid?.textureHole ?? 0.9;
 
   const [t, setT] = useState(0);
   const [hovered, setHovered] = useState<string | null>(null);
@@ -306,8 +332,15 @@ export default function ExplodedViewer({ model }: { model: Model }) {
         onClick={(e) => e.target === e.currentTarget && setPinned(null)}
       >
         <defs>
-          <pattern id="ev-mesh" width="1.6" height="1.6" patternUnits="userSpaceOnUse">
-            <rect width="0.9" height="0.9" fill="rgba(255,255,255,.22)" />
+          <pattern id="ev-mesh" width={meshPitch} height={meshPitch} patternUnits="userSpaceOnUse">
+            <rect
+              x={(meshPitch - meshHole) / 2}
+              y={(meshPitch - meshHole) / 2}
+              width={meshHole}
+              height={meshHole}
+              rx={meshHole * 0.22}
+              fill="rgba(255,255,255,.22)"
+            />
           </pattern>
           <pattern id="ev-chip" width="14" height="14" patternUnits="userSpaceOnUse">
             {[[1, 2, 1.6, 0.7], [5, 1, 0.9, 0.9], [9, 3, 1.8, 0.8], [12, 1, 0.8, 0.6], [3, 6, 1.1, 1.1], [7, 7, 1.9, 0.7], [11, 8, 1, 1], [1, 10, 1.7, 0.8], [5, 11, 0.9, 0.9], [9, 12, 1.5, 0.7], [12, 12, 1.1, 0.8]].map(([x, y, w, h], i) => (
