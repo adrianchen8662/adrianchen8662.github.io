@@ -1,0 +1,9 @@
+---
+// In a post: <ExplodedView model="nakamichi-s1" />. Reads _data/<model>.yml.
+import { loadModel } from '../lib/exploded-view';
+import ExplodedViewer from './ExplodedViewer';
+
+const { model } = Astro.props as { model: string };
+const data = await loadModel(model);
+---
+<ExplodedViewer client:visible model={data} />

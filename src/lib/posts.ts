@@ -3,11 +3,11 @@ import { BLOGS, blogUrl, type Blog } from '../blogs';
 
 export type Post = CollectionEntry<'posts'>;
 
-/** Splits _posts/<blog>/YYYY-MM-DD-Name.md into its blog folder and name */
+/** Splits _posts/<blog>/YYYY-MM-DD-Name.md (or .mdx) into its blog folder and name */
 function source(post: Post) {
-  const match = post.filePath?.match(/([^/]+)\/\d{4}-\d{2}-\d{2}-([^/]+)\.md$/);
+  const match = post.filePath?.match(/([^/]+)\/\d{4}-\d{2}-\d{2}-([^/]+)\.mdx?$/);
   if (!match) {
-    throw new Error(`Name posts _posts/<blog>/YYYY-MM-DD-Title.md (found ${post.filePath})`);
+    throw new Error(`Name posts _posts/<blog>/YYYY-MM-DD-Title.md or .mdx (found ${post.filePath})`);
   }
   return { blogId: match[1], name: match[2] };
 }
@@ -59,7 +59,7 @@ export function excerpt(post: Post) {
   const paragraph = (post.body ?? '')
     .split(/\n\s*\n/)
     .map((block) => block.trim())
-    .find((block) => block && !/^(#|!\[|```|<sub|\|)/.test(block));
+    .find((block) => block && !/^(#|!\[|```|<sub|\||import |export )/.test(block));
   if (!paragraph) return '';
   return paragraph
     .replace(/<[^>]+>/g, '')

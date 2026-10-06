@@ -1,0 +1,247 @@
+/* The exploded view. The figure itself uses the site's .diagram card. */
+
+.ev {
+  --ev-edge: rgba(0, 0, 0, .55);
+  --ev-black: #2b2a28;
+  --ev-steel: #8d9298;
+  --ev-board: #b88c52;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ev {
+    --ev-edge: rgba(241, 234, 214, .5);
+    --ev-black: #403e38;
+    --ev-steel: #9ca1a7;
+    --ev-board: #c39a60;
+  }
+}
+
+:root[data-theme="dark"] .ev {
+  --ev-edge: rgba(241, 234, 214, .5);
+  --ev-black: #403e38;
+  --ev-steel: #9ca1a7;
+  --ev-board: #c39a60;
+}
+
+.ev-svg {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  margin: 0 auto;
+  /* Stops a drag on the drawing from scrolling the page sideways on a phone */
+  touch-action: pan-y;
+}
+
+.ev-poly {
+  stroke: var(--ev-edge);
+  stroke-width: 0.8px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+
+/* Round parts are drawn as many flat facets; their stroke matches their fill so the seams don't show */
+.ev-curved {
+  stroke-width: 1px;
+}
+
+.ev-overlay {
+  pointer-events: none;
+}
+
+.ev-decal {
+  stroke: none;
+  pointer-events: none;
+}
+
+.ev-dim {
+  opacity: .22;
+}
+
+.ev-active:not(.ev-curved):not(.ev-decal) {
+  stroke: var(--link);
+  stroke-width: 1.6px;
+}
+
+/* Materials: --mat is the colour face shading starts from */
+.ev-mat-grille,
+.ev-mat-cabinet,
+.ev-mat-baffle,
+.ev-mat-plate,
+.ev-mat-screw {
+  --mat: var(--ev-black);
+}
+
+.ev-mat-steel {
+  --mat: var(--ev-steel);
+}
+
+.ev-mat-magnet {
+  --mat: #3a3834;
+}
+
+.ev-mat-cone {
+  --mat: #6d695e;
+}
+
+.ev-mat-cardboard {
+  --mat: #b69b72;
+}
+
+.ev-mat-particleboard {
+  --mat: var(--ev-board);
+}
+
+.ev-mat-felt {
+  --mat: #7a7563;
+}
+
+.ev-mat-capacitor {
+  --mat: #34609d;
+}
+
+.ev-mat-brass {
+  fill: #c5a550;
+}
+
+.ev-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: 12px;
+}
+
+.ev-button,
+.ev-part {
+  padding: 6px 14px;
+  font: inherit;
+  color: var(--text);
+  background: var(--chip-background);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ev-button {
+  min-width: 6.5em;
+}
+
+.ev-button:hover,
+.ev-part:hover {
+  border-color: var(--link);
+}
+
+.ev-part[aria-pressed="true"] {
+  color: var(--surface);
+  background: var(--link);
+  border-color: var(--link);
+}
+
+.ev-slider {
+  display: flex;
+  flex: 1 1 220px;
+  align-items: center;
+  gap: 12px;
+}
+
+.ev-slider input {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--link);
+}
+
+.ev-detail {
+  min-height: 9em;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--background);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+.ev-detail h3 {
+  margin: 0 0 4px;
+  font-size: 1.05em;
+}
+
+.ev-detail p {
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+.ev-hint {
+  color: var(--text-muted);
+}
+
+.ev-dims {
+  margin: 0;
+  font-size: .9em;
+}
+
+.ev-dims > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 12px;
+  padding: 3px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.ev-dims dt {
+  flex: 1 1 14em;
+  color: var(--text-muted);
+}
+
+.ev-dims dd {
+  flex: 1 1 14em;
+  margin: 0;
+}
+
+.ev-status {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 7px;
+  font-size: .8em;
+  border: 1px solid var(--rule);
+  border-radius: 99px;
+}
+
+.ev-status-measured {
+  border-color: var(--project-color);
+}
+
+.ev-status-estimated {
+  border-style: dashed;
+}
+
+.ev-status-assumed {
+  color: var(--text-muted);
+  border-style: dotted;
+}
+
+.ev-note {
+  display: block;
+  margin-top: 2px;
+  font-size: .9em;
+  color: var(--text-muted);
+}
+
+.ev-parts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ev-open {
+  margin-top: 10px;
+  font-size: .9em;
+}
+
+.ev-open summary {
+  cursor: pointer;
+}
