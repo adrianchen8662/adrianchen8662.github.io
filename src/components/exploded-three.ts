@@ -34,6 +34,7 @@ import {
   WebGLRenderer,
 } from 'three';
 import { badgeShapes, type UnitPoint } from '../lib/badge';
+import { clippedRect } from '../lib/geometry';
 import type { Decal, Model, Shape as ModelShape, Solid } from '../lib/exploded-view-types';
 
 /** Field of view at zoom 1. Zooming narrows it, like a telephoto lens, so the camera never moves into the model. */
@@ -186,6 +187,11 @@ function textureOf(canvas: HTMLCanvasElement, mmPerTile: number) {
 
 function shapeOf(outline: ModelShape, at: [number, number] = [0, 0], hole = false) {
   const path = hole ? new Path() : new Shape();
+  if ('rect' in outline && outline.clip !== undefined) {
+    clippedRect(outline.rect[0], outline.rect[1], outline.clip).forEach(([x, y], i) => (i === 0 ? path.moveTo(at[0] + x, at[1] + y) : path.lineTo(at[0] + x, at[1] + y)));
+    path.closePath();
+    return path;
+  }
   if ('rect' in outline) {
     const [w, h] = outline.rect;
     const [x, y] = at;

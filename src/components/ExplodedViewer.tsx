@@ -5,6 +5,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Dim, Model, Part, Shape, Solid, Status } from '../lib/exploded-view-types';
 import { badgeShapes } from '../lib/badge';
+import { clippedRect } from '../lib/geometry';
 import type { SceneApi, ViewName } from './exploded-three';
 import './ExplodedViewer.css';
 
@@ -46,6 +47,9 @@ interface Contour {
 }
 
 function contourOf(shape: Shape, at: Point = [0, 0]): Contour {
+  if ('rect' in shape && shape.clip !== undefined) {
+    return { curved: false, points: clippedRect(shape.rect[0], shape.rect[1], shape.clip).map(([x, y]) => [at[0] + x, at[1] + y] as Point) };
+  }
   if ('rect' in shape) {
     const [w, h] = shape.rect;
     const [cx, cy] = at;
