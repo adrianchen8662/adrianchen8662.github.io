@@ -19,7 +19,7 @@ migrations_dir = "migrations"
 [vars]
 LISTENBRAINZ_USER = "adrianchen8662"
 # Sites allowed to read the API from a browser (comma separated)
-ALLOWED_ORIGINS = "https://adrianchen.fyi,https://adrianchen8662.github.io,http://localhost:4321"
+ALLOWED_ORIGINS = "https://adrianchen.fyi,http://localhost:4321"
 
 # Secrets, set with `npx wrangler secret put <NAME>` and never committed:
 #   SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN

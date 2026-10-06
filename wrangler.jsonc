@@ -8,6 +8,9 @@
     // Unknown addresses get Astro's 404 page
     "not_found_handling": "404-page"
   },
+  // Keeps the domain attached on every deploy, so a deploy can't drop what was set up in the dashboard.
+  // Cloudflare creates the DNS record and certificate for it; the domain must be on this account.
+  "routes": [{ "pattern": "adrianchen.fyi", "custom_domain": true }],
   // Branch and pull request builds publish a preview with `wrangler preview`, which needs this block (it can be empty)
   "previews": {}
 }

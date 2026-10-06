@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Build and redirect old address
 
 on:
   push:
@@ -27,10 +27,13 @@ jobs:
         env:
           # The Worker the About page's cards ask (see worker/); a repository variable, not a secret: it's in the site's code
           PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
+      # adrianchen8662.github.io only forwards to adrianchen.fyi now (Cloudflare builds and serves the real site).
+      # The script runs on pull requests too, so a change that breaks it shows up before it merges.
+      - run: node scripts/github-pages-redirects.mjs dist redirect-site
       - if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v5
         with:
-          path: dist
+          path: redirect-site
 
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
