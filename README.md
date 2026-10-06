@@ -1,6 +1,6 @@
 # adrianchen8662.github.io
 
-Adrian Chen's personal website, built with [Astro](https://astro.build), using React for the interactive parts, and hosted on GitHub Pages.
+Adrian Chen's personal website, built with [Astro](https://astro.build), using React for the interactive parts, and hosted on Cloudflare.
 
 ## Working on the site
 
@@ -143,7 +143,9 @@ Do steps 1 to 8 before merging this to `main`: until `PUBLIC_API_URL` is set, th
 
 The site is at https://adrianchen.fyi. Cloudflare builds it from this repository on every push to `main` (and gives each branch a preview URL), using `npm run build` and `npx wrangler deploy` with the settings in `wrangler.jsonc`. Its build variables are `NODE_VERSION` (22) and `PUBLIC_API_URL`, set in the project's Settings → Build in the Cloudflare dashboard.
 
-`.github/workflows/deploy.yml` still builds every push and pull request as a check, and publishes to GitHub Pages (Settings → Pages, **Source**: GitHub Actions) until that copy is retired. The Worker deploys separately, with `.github/workflows/worker.yml`.
+`https://adrianchen8662.github.io` only forwards to the new address now. `.github/workflows/deploy.yml` builds every push and pull request as a check, and on `main` publishes a copy of the site where each page redirects to the same page on adrianchen.fyi (`scripts/github-pages-redirects.mjs`; Settings → Pages, **Source**: GitHub Actions). The Worker deploys separately, with `.github/workflows/worker.yml`.
+
+Google Analytics is the tag in `src/layouts/BaseLayout.astro`, with its measurement ID in `src/site.ts`; it only sends data from the site's own address.
 
 ## License
 

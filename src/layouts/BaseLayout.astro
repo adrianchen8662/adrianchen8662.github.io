@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import SiteNav from '../components/SiteNav';
 import Footer from '../components/Footer.astro';
-import { NAV, SITE } from '../site';
+import { GA_MEASUREMENT_ID, NAV, SITE } from '../site';
 
 interface Props {
   /** Page name; the home page leaves it out */
@@ -17,6 +17,7 @@ interface Props {
 const { title, description = SITE.description, ogType = 'website', jsonLd } = Astro.props;
 const pageTitle = title ? `${title} · ${SITE.name}` : SITE.title;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const analyticsHost = Astro.site?.hostname;
 ---
 <!doctype html>
 <html lang="en">
@@ -37,6 +38,21 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name}'s blog posts`} href="/feed.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    {GA_MEASUREMENT_ID && analyticsHost && (
+      <script is:inline define:vars={{ gaId: GA_MEASUREMENT_ID, gaHost: analyticsHost }}>
+        // Google Analytics, only on the site's own address (not previews, workers.dev or local runs)
+        if (location.hostname === gaHost) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+          gtag('config', gaId);
+          const tag = document.createElement('script');
+          tag.async = true;
+          tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
+          document.head.appendChild(tag);
+        }
+      </script>
+    )}
     <script is:inline>
       // Apply a theme picked with the header switch before the page paints
       try {
