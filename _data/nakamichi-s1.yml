@@ -22,13 +22,30 @@ overall:
   depth:  { value: 226.49, note: front of the grille to the rear panel face; excludes the rear panel protrusion }
   rear_panel_protrusion: { value: null, note: how far the rear panel sticks out past the back of the housing }
 
+# A removable pan of perforated steel: a flat face, two side flanges bent back
+# along the long edges, and two tabs bent back at the top and bottom.
 grille:
-  width:  { value: 138.01 }
-  height: { value: 211.33 }
+  width:  { value: 138.01, note: face of the grille, measured from the front }
+  height: { value: 211.33, note: face of the grille, measured from the front }
+  tab_count: { value: 2, note: one centred on the top edge, one on the bottom }
   tab_size: { value: 10.94, note: unclear which dimension; see open questions }
-  thickness: { value: null, note: front face of the grille to the back of its frame }
-  tab_count: { value: null }
+  tab_width: { value: null }
+  flange_depth: { value: null, note: how far the side flanges bend back from the face }
+  flange_count: { value: 2, note: left and right long edges }
   standoff: { value: null, note: gap from the grille's front face to the baffle face }
+  sheet_thickness: { value: null }
+  perforation:
+    pattern: square holes on a square grid, very fine
+    pitch: { value: null, note: centre to centre of neighbouring holes }
+    hole_size: { value: null }
+  finish: matte black, painted or powder-coated
+  felt_strips: { note: soft black strips on the inside of the flanges and tabs, probably felt; size not measured }
+  badge:
+    description: small gold Nakamichi mark on a black square
+    position: upper right corner when the speaker is upright
+    width: { value: null }
+    from_right_edge: { value: null }
+    from_top_edge: { value: null }
 
 # Still to measure. Grouped by part so you can work through one at a time.
 # Each is an entry to fill in; delete the ones that turn out not to apply.
