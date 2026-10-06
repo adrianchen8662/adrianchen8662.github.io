@@ -403,6 +403,12 @@ h2 strong {
   padding: 0;
 }
 
+.footer-license {
+  margin-top: 40px;
+  font-size: .8em;
+  opacity: .85;
+}
+
 .site-footer a {
   color: var(--footer-text);
 }

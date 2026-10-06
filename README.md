@@ -141,6 +141,10 @@ Do steps 1 to 8 before merging this to `main`: until `PUBLIC_API_URL` is set, th
 
 Every push to `main` builds the site and publishes it with `.github/workflows/deploy.yml`; pull requests get a build check. The Worker deploys separately, with `.github/workflows/worker.yml`. In the repository's Settings → Pages, **Source** must be set to **GitHub Actions**.
 
+## License
+
+The source code is open source under the [MIT License](LICENSE). The content (blog posts and their images, the timeline and other data in `_data/`, the resume, the icons, and the written text of the pages) is copyrighted, all rights reserved; see [CONTENT-LICENSE.md](CONTENT-LICENSE.md) for the full list. If you reuse the code, swap in your own content.
+
 ## Credits
 
 The Now Playing card is adapted from [prcutler/listenbrainz-widget](https://github.com/prcutler/listenbrainz-widget) (MIT); its license notice is in `src/components/NowPlayingCard.tsx`.

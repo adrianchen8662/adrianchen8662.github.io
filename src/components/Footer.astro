@@ -1,6 +1,8 @@
 ---
 import { BLOGS, blogUrl } from '../blogs';
-import { PROFILES } from '../site';
+import { PROFILES, SITE } from '../site';
+
+const REPO = 'https://github.com/adrianchen8662/adrianchen8662.github.io';
 
 const pages = [
   { name: 'Resume', href: '/resume/' },
@@ -35,4 +37,8 @@ const icons = {
       ))}
     </ul>
   </div>
+  <p class="footer-license container">
+    © {new Date().getFullYear()} {SITE.name}. Content is all rights reserved;
+    <a href={`${REPO}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer">the code is MIT licensed</a>.
+  </p>
 </footer>
