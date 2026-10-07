@@ -8,6 +8,8 @@
     // Unknown addresses get Astro's 404 page
     "not_found_handling": "404-page"
   },
+  // The site is only served from adrianchen.fyi, not from adrianchen8662-github-io.<account>.workers.dev
+  "workers_dev": false,
   // Keeps the domain attached on every deploy, so a deploy can't drop what was set up in the dashboard.
   // Cloudflare creates the DNS record and certificate for it; the domain must be on this account.
   "routes": [{ "pattern": "adrianchen.fyi", "custom_domain": true }],
