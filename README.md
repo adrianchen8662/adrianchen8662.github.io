@@ -141,11 +141,11 @@ Do steps 1 to 8 before merging this to `main`: until `PUBLIC_API_URL` is set, th
 
 ## Deploying
 
-The site is at https://adrianchen.fyi. Cloudflare builds it from this repository on every push to `main` (and gives each branch a preview URL), using `npm run build` and `npx wrangler deploy` with the settings in `wrangler.jsonc`. Its build variables are `NODE_VERSION` (22) and `PUBLIC_API_URL`, set in the project's Settings → Build in the Cloudflare dashboard.
+The site is at https://adrianchen.fyi. Cloudflare builds it from this repository on every push to `main` (other branches and pull requests get a preview on a `workers.dev` address; the site itself is only on adrianchen.fyi), using `npm run build` and `npx wrangler deploy` with the settings in `wrangler.jsonc`. Its build variables are `NODE_VERSION` (22) and `PUBLIC_API_URL`, set in the project's Settings → Build in the Cloudflare dashboard.
 
 `https://adrianchen8662.github.io` only forwards to the new address now. `.github/workflows/deploy.yml` builds every push and pull request as a check, and on `main` publishes a copy of the site where each page redirects to the same page on adrianchen.fyi (`scripts/github-pages-redirects.mjs`; Settings → Pages, **Source**: GitHub Actions). The Worker deploys separately, with `.github/workflows/worker.yml`.
 
-`www.adrianchen.fyi` isn't served by the Worker; a Cloudflare Redirect Rule forwards it to the main address (dashboard → the domain → Rules → Redirect Rules, from the "Redirect from WWW to root" template, 301, query string kept), and it needs a proxied `AAAA` record for `www` pointing at `100::` so there's something for the rule to catch. That setting lives in Cloudflare, not in this repository.
+`www.adrianchen.fyi` isn't served by the Worker; a Cloudflare Redirect Rule forwards it to the main address (dashboard → the domain → Rules → Redirect Rules, from the "Redirect from WWW to root" template, 301, query string kept), and it needs a proxied `AAAA` record for `www` pointing at `100::` so there's something for the rule to catch. The template only matches `https://`, so the domain's **Always Use HTTPS** setting (SSL/TLS → Edge Certificates) needs to be on for `http://www` links to reach it. Those settings live in Cloudflare, not in this repository.
 
 Google Analytics is the tag in `src/layouts/BaseLayout.astro`, with its measurement ID in `src/site.ts`; it only sends data from the site's own address.
 
